@@ -21,3 +21,42 @@ Generated image and future media outputs are imported into Drive `ai_generated` 
 Task and webhook providers converge through the same normalized provider result model. Polling refresh, webhook refresh, Drive import planning, Drive upload preparation, SQL repository updates, and notification outbox planning are explicit runtime steps so multi-output generations cannot diverge between provider state and Drive state.
 
 Claw Router generated Rust SDK exposes `images.create_generation` for OpenAI-compatible image generation, including the OpenAI `n` output-count field. `sdkwork-image` binds `output_count` through that generated SDK field and normalizes multi-output provider responses before Drive import.
+
+## SDKWork Documentation Contract
+
+Domain: content
+Capability: image-workspace
+Package type: react-package
+Status: standard
+
+### Public API
+
+Public exports are declared in `specs/component.spec.json` under `contracts.publicExports`.
+
+### Required SDK Surface
+
+- None declared in `specs/component.spec.json`.
+
+### Configuration
+
+Configuration keys and runtime entrypoints are declared in `specs/component.spec.json`.
+
+### SaaS/Private/Local Behavior
+
+This module follows the canonical standards linked from `specs/component.spec.json`, including deployment and runtime configuration rules where applicable.
+
+### Security
+
+Do not add secrets, live tokens, manual auth headers, or app-local credential handling to this module.
+
+### Extension Points
+
+Extension points are limited to declared public exports, runtime entrypoints, SDK clients, events, and config keys.
+
+### Verification
+
+- `pnpm typecheck`
+
+### Owner And Status
+
+Owner and lifecycle status are tracked in `specs/component.spec.json`.
