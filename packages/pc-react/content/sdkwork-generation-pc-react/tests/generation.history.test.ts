@@ -93,6 +93,17 @@ describe("sdkwork-generation-pc-react history helpers", () => {
       images: [mediaResource("image", "https://cdn.example/a.png")],
     });
     expect(readSdkworkGenerationMediaUrl(mediaResource("image", "image"))).toBe("image");
+    expect(readSdkworkGenerationMediaUrl({
+      id: "node-ai-generated-1",
+      kind: "image",
+      metadata: { scene: "brand_variants" },
+      source: "drive",
+      uri: "drive://spaces/space-ai-generated-user-user-1/nodes/node-ai-generated-1",
+    })).toBe("drive://spaces/space-ai-generated-user-user-1/nodes/node-ai-generated-1");
+    expect(readSdkworkGenerationMediaUrl({
+      kind: "image",
+      source: "drive",
+    })).toBeUndefined();
   });
 
   it("appends streamed artifacts to history items without duplicating existing media", () => {

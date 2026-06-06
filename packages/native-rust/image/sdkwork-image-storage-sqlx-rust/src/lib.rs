@@ -1,7 +1,9 @@
 pub const IMAGE_INITIAL_MIGRATION: &str = "0001_image_foundation.sql";
+pub const IMAGE_RUNTIME_MIGRATION: &str = "0002_image_generation_drive_runtime.sql";
 
-const IMAGE_INITIAL_MIGRATION_SQL: &str =
-    include_str!("../migrations/0001_image_foundation.sql");
+const IMAGE_INITIAL_MIGRATION_SQL: &str = include_str!("../migrations/0001_image_foundation.sql");
+const IMAGE_RUNTIME_MIGRATION_SQL: &str =
+    include_str!("../migrations/0002_image_generation_drive_runtime.sql");
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ImageRepositoryBinding {
@@ -24,7 +26,16 @@ pub struct ImageStorageCapabilityManifest {
 }
 
 pub fn image_generation_tables() -> Vec<&'static str> {
-    vec!["image_preset", "image_generation_job", "image_edit_task"]
+    vec![
+        "image_preset",
+        "image_generation_job",
+        "image_generation_output",
+        "image_provider_binding",
+        "image_provider_task",
+        "image_provider_webhook_event",
+        "image_notification_outbox",
+        "image_edit_task",
+    ]
 }
 
 pub fn image_asset_tables() -> Vec<&'static str> {
@@ -46,6 +57,10 @@ pub fn image_initial_migration_sql() -> &'static str {
     IMAGE_INITIAL_MIGRATION_SQL
 }
 
+pub fn image_runtime_migration_sql() -> &'static str {
+    IMAGE_RUNTIME_MIGRATION_SQL
+}
+
 pub fn image_storage_capability_manifest() -> ImageStorageCapabilityManifest {
     ImageStorageCapabilityManifest {
         name: "image-storage",
@@ -54,7 +69,7 @@ pub fn image_storage_capability_manifest() -> ImageStorageCapabilityManifest {
         generation_tables: image_generation_tables(),
         asset_tables: image_asset_tables(),
         gallery_tables: image_gallery_tables(),
-        migrations: vec![IMAGE_INITIAL_MIGRATION],
+        migrations: vec![IMAGE_INITIAL_MIGRATION, IMAGE_RUNTIME_MIGRATION],
         repository_bindings: vec![
             ImageRepositoryBinding {
                 domain: "image",

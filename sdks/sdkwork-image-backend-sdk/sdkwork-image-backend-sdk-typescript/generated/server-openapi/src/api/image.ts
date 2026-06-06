@@ -1,7 +1,7 @@
 import { backendApiPath } from './paths';
 import type { HttpClient } from '../http/client';
 
-import type { ImageApiResult, ImageOperationCommand } from '../types';
+import type { ImageApiResult, ImageGenerationCancelCommand, ImageGenerationRefreshCommand, ImageGenerationRetryCommand, ImageOperationCommand } from '../types';
 
 
 export interface ImagePresetsListParams {
@@ -53,7 +53,7 @@ export class ImagePresetsApi {
   }
 }
 
-export interface ImageGenerationJobsListParams {
+export interface ImageGenerationsListParams {
   page?: number;
   pageSize?: number;
   cursor?: string;
@@ -61,7 +61,7 @@ export interface ImageGenerationJobsListParams {
   q?: string;
 }
 
-export class ImageGenerationJobsApi {
+export class ImageGenerationsApi {
   private client: HttpClient;
   
   constructor(client: HttpClient) { 
@@ -69,8 +69,8 @@ export class ImageGenerationJobsApi {
   }
 
 
-/** Generation Jobs list. */
-  async list(params?: ImageGenerationJobsListParams): Promise<ImageApiResult> {
+/** Generations list. */
+  async list(params?: ImageGenerationsListParams): Promise<ImageApiResult> {
     const query = buildQueryString([
       { name: 'page', value: params?.page, style: 'form', explode: true, allowReserved: false },
       { name: 'page_size', value: params?.pageSize, style: 'form', explode: true, allowReserved: false },
@@ -78,17 +78,27 @@ export class ImageGenerationJobsApi {
       { name: 'sort', value: params?.sort, style: 'form', explode: true, allowReserved: false },
       { name: 'q', value: params?.q, style: 'form', explode: true, allowReserved: false },
     ]);
-    return this.client.get<ImageApiResult>(appendQueryString(backendApiPath(`/image/generation_jobs`), query));
+    return this.client.get<ImageApiResult>(appendQueryString(backendApiPath(`/image/generations`), query));
   }
 
-/** Generation Jobs retrieve. */
-  async retrieve(jobId: string): Promise<ImageApiResult> {
-    return this.client.get<ImageApiResult>(backendApiPath(`/image/generation_jobs/${serializePathParameter(jobId, { name: 'jobId', style: 'simple', explode: false })}`));
+/** Generations retrieve. */
+  async retrieve(generationId: string): Promise<ImageApiResult> {
+    return this.client.get<ImageApiResult>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}`));
   }
 
-/** Generation Jobs cancel. */
-  async cancel(jobId: string, body: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(backendApiPath(`/image/generation_jobs/${serializePathParameter(jobId, { name: 'jobId', style: 'simple', explode: false })}/cancel`), body, undefined, undefined, 'application/json');
+/** Generations cancel. */
+  async cancel(generationId: string, body: ImageGenerationCancelCommand): Promise<ImageApiResult> {
+    return this.client.post<ImageApiResult>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/cancel`), body, undefined, undefined, 'application/json');
+  }
+
+/** Generations refresh. */
+  async refresh(generationId: string, body: ImageGenerationRefreshCommand): Promise<ImageApiResult> {
+    return this.client.post<ImageApiResult>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/refresh`), body, undefined, undefined, 'application/json');
+  }
+
+/** Generations retry. */
+  async retry(generationId: string, body: ImageGenerationRetryCommand): Promise<ImageApiResult> {
+    return this.client.post<ImageApiResult>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/retry`), body, undefined, undefined, 'application/json');
   }
 }
 
@@ -265,7 +275,7 @@ export class ImageApi {
   public readonly assets: ImageAssetsApi;
   public readonly editTasks: ImageEditTasksApi;
   public readonly galleries: ImageGalleriesApi;
-  public readonly generationJobs: ImageGenerationJobsApi;
+  public readonly generations: ImageGenerationsApi;
   public readonly presets: ImagePresetsApi;
   
   constructor(client: HttpClient) { 
@@ -273,7 +283,7 @@ export class ImageApi {
     this.assets = new ImageAssetsApi(client);
     this.editTasks = new ImageEditTasksApi(client);
     this.galleries = new ImageGalleriesApi(client);
-    this.generationJobs = new ImageGenerationJobsApi(client);
+    this.generations = new ImageGenerationsApi(client);
     this.presets = new ImagePresetsApi(client); 
   }
 

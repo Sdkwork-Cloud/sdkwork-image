@@ -40,10 +40,7 @@ export default defineConfig({
       },
       {
         find: "@sdkwork/core-pc-react",
-        replacement: path.resolve(
-          workspaceRoot,
-          "../../javasource/spring-ai-plus/spring-ai-plus-business/apps/sdkwork-core/sdkwork-core-pc-react/src/index.ts",
-        ),
+        replacement: path.resolve(workspaceRoot, "tests/support/sdkwork-core-pc-react.ts"),
       },
       {
         find: "@sdkwork/ui-pc-react/theme",

@@ -12,7 +12,7 @@
   "mode": "apply",
   "hasChanges": true,
   "hasDestructiveChanges": false,
-  "changeFingerprint": "8d6f857692a33fbfdf6fffc959ff5a0dcde0889e11727096e36d0ea885afdc22",
+  "changeFingerprint": "5d280bfdb3564667d6ca7871d4f52884eb6539b31f675bc2fc8686484e9c0038",
   "changeImpact": {
     "schemaVersion": 1,
     "areas": [
@@ -41,10 +41,22 @@
         "area": "models",
         "paths": [
           "src/types/common.ts",
+          "src/types/drive-sync-status.ts",
           "src/types/field-error.ts",
           "src/types/image-api-result.ts",
+          "src/types/image-generation-cancel-command.ts",
+          "src/types/image-generation-command.ts",
+          "src/types/image-generation-output.ts",
+          "src/types/image-generation-refresh-command.ts",
+          "src/types/image-generation-retry-command.ts",
+          "src/types/image-generation-status.ts",
+          "src/types/image-generation.ts",
           "src/types/image-operation-command.ts",
           "src/types/index.ts",
+          "src/types/media-ai-provenance.ts",
+          "src/types/media-kind.ts",
+          "src/types/media-resource.ts",
+          "src/types/media-source.ts",
           "src/types/problem-detail.ts"
         ]
       },
@@ -212,20 +224,20 @@
     "localVersions": []
   },
   "stats": {
-    "totalFiles": 28,
-    "models": 4,
+    "totalFiles": 40,
+    "models": 16,
     "apis": 1,
-    "types": 6
+    "types": 18
   },
   "warnings": [],
   "syncSummary": {
     "dryRun": false,
-    "writtenFiles": 28,
+    "writtenFiles": 40,
     "skippedScaffoldFiles": 0,
     "skippedUnchangedGeneratedFiles": 0,
     "deletedGeneratedFiles": 0,
     "changeSummaryPath": ".sdkwork/sdkwork-generator-changes.json",
-    "changeFingerprint": "8d6f857692a33fbfdf6fffc959ff5a0dcde0889e11727096e36d0ea885afdc22",
+    "changeFingerprint": "5d280bfdb3564667d6ca7871d4f52884eb6539b31f675bc2fc8686484e9c0038",
     "changes": {
       "createdGeneratedFiles": [
         "bin/publish-core.mjs",
@@ -248,10 +260,22 @@
         "src/index.ts",
         "src/sdk.ts",
         "src/types/common.ts",
+        "src/types/drive-sync-status.ts",
         "src/types/field-error.ts",
         "src/types/image-api-result.ts",
+        "src/types/image-generation-cancel-command.ts",
+        "src/types/image-generation-command.ts",
+        "src/types/image-generation-output.ts",
+        "src/types/image-generation-refresh-command.ts",
+        "src/types/image-generation-retry-command.ts",
+        "src/types/image-generation-status.ts",
+        "src/types/image-generation.ts",
         "src/types/image-operation-command.ts",
         "src/types/index.ts",
+        "src/types/media-ai-provenance.ts",
+        "src/types/media-kind.ts",
+        "src/types/media-resource.ts",
+        "src/types/media-source.ts",
         "src/types/problem-detail.ts",
         "tsconfig.json"
       ],
@@ -293,10 +317,22 @@
           "area": "models",
           "paths": [
             "src/types/common.ts",
+            "src/types/drive-sync-status.ts",
             "src/types/field-error.ts",
             "src/types/image-api-result.ts",
+            "src/types/image-generation-cancel-command.ts",
+            "src/types/image-generation-command.ts",
+            "src/types/image-generation-output.ts",
+            "src/types/image-generation-refresh-command.ts",
+            "src/types/image-generation-retry-command.ts",
+            "src/types/image-generation-status.ts",
+            "src/types/image-generation.ts",
             "src/types/image-operation-command.ts",
             "src/types/index.ts",
+            "src/types/media-ai-provenance.ts",
+            "src/types/media-kind.ts",
+            "src/types/media-resource.ts",
+            "src/types/media-source.ts",
             "src/types/problem-detail.ts"
           ]
         },

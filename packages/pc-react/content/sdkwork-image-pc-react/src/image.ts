@@ -108,16 +108,25 @@ function createGeneratedImageResource(
   const [width, height] = resolution.split("x").map((part) => Number.parseInt(part, 10));
   return {
     ai: {
+      generationTaskId: id,
       provenance: "generated",
+      moderationStatus: "unknown",
     },
     altText: prompt,
-    id: `media-resource-${id}`,
+    id: `node-ai-generated-${id}`,
     kind: "image",
     metadata: {
+      scene: style,
       style,
+      drive: {
+        nodeId: `node-ai-generated-${id}`,
+        spaceId: "space-ai-generated-user-demo",
+        spaceType: "ai_generated",
+      },
     },
-    source: "generated",
+    source: "drive",
     title,
+    uri: `drive://spaces/space-ai-generated-user-demo/nodes/node-ai-generated-${id}`,
     ...(Number.isFinite(width) ? { width } : {}),
     ...(Number.isFinite(height) ? { height } : {}),
   };

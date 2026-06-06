@@ -241,7 +241,6 @@ export function readSdkworkGenerationMediaUrl(
 ): string | undefined {
   const mediaKey = getSdkworkMediaDeliveryUrl(media)
     || media?.uri
-    || media?.objectKey
     || media?.id;
   return mediaKey;
 }

@@ -3,7 +3,7 @@
   "info": {
     "title": "SDKWork Image Backend API",
     "version": "1.0.0",
-    "description": "Backend/admin contract for SDKWork image presets, generation jobs, assets, and gallery management.",
+    "description": "Backend/admin contract for SDKWork image presets, generations, assets, and gallery management.",
     "x-sdkwork-api-authority": "sdkwork-image-backend-api",
     "x-sdkwork-sdk-family": "sdkwork-image-backend-sdk",
     "x-sdkwork-audience": "Backend consoles, operators, image control-plane integrations, and admin automation"
@@ -1653,13 +1653,13 @@
         "x-sdkwork-server-request-id": true
       }
     },
-    "/backend/v3/api/image/generation_jobs": {
+    "/backend/v3/api/image/generations": {
       "get": {
         "tags": [
           "image"
         ],
-        "summary": "Generation Jobs list.",
-        "operationId": "generationJobs.list",
+        "summary": "Generations list.",
+        "operationId": "generations.list",
         "parameters": [
           {
             "name": "page",
@@ -1788,21 +1788,21 @@
         "x-sdkwork-owner": "sdkwork-image",
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
-        "x-sdkwork-resource": "generationJobs",
+        "x-sdkwork-resource": "generations",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       }
     },
-    "/backend/v3/api/image/generation_jobs/{jobId}": {
+    "/backend/v3/api/image/generations/{generationId}": {
       "get": {
         "tags": [
           "image"
         ],
-        "summary": "Generation Jobs retrieve.",
-        "operationId": "generationJobs.retrieve",
+        "summary": "Generations retrieve.",
+        "operationId": "generations.retrieve",
         "parameters": [
           {
-            "name": "jobId",
+            "name": "generationId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1891,21 +1891,21 @@
         "x-sdkwork-owner": "sdkwork-image",
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
-        "x-sdkwork-resource": "generationJobs",
+        "x-sdkwork-resource": "generations",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       }
     },
-    "/backend/v3/api/image/generation_jobs/{jobId}/cancel": {
+    "/backend/v3/api/image/generations/{generationId}/cancel": {
       "post": {
         "tags": [
           "image"
         ],
-        "summary": "Generation Jobs cancel.",
-        "operationId": "generationJobs.cancel",
+        "summary": "Generations cancel.",
+        "operationId": "generations.cancel",
         "parameters": [
           {
-            "name": "jobId",
+            "name": "generationId",
             "in": "path",
             "required": true,
             "schema": {
@@ -1994,7 +1994,7 @@
         "x-sdkwork-owner": "sdkwork-image",
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
-        "x-sdkwork-resource": "generationJobs",
+        "x-sdkwork-resource": "generations",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -2002,7 +2002,233 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ImageOperationCommand"
+                "$ref": "#/components/schemas/ImageGenerationCancelCommand"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/v3/api/image/generations/{generationId}/refresh": {
+      "post": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Generations refresh.",
+        "operationId": "generations.refresh",
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageApiResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": [],
+            "AccessToken": []
+          }
+        ],
+        "x-sdkwork-owner": "sdkwork-image",
+        "x-sdkwork-api-authority": "sdkwork-image-backend-api",
+        "x-sdkwork-domain": "image",
+        "x-sdkwork-resource": "generations",
+        "x-sdkwork-request-context": "AppRequestContext",
+        "x-sdkwork-server-request-id": true,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageGenerationRefreshCommand"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backend/v3/api/image/generations/{generationId}/retry": {
+      "post": {
+        "tags": [
+          "image"
+        ],
+        "summary": "Generations retry.",
+        "operationId": "generations.retry",
+        "parameters": [
+          {
+            "name": "generationId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageApiResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetail"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "AuthToken": [],
+            "AccessToken": []
+          }
+        ],
+        "x-sdkwork-owner": "sdkwork-image",
+        "x-sdkwork-api-authority": "sdkwork-image-backend-api",
+        "x-sdkwork-domain": "image",
+        "x-sdkwork-resource": "generations",
+        "x-sdkwork-request-context": "AppRequestContext",
+        "x-sdkwork-server-request-id": true,
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageGenerationRetryCommand"
               }
             }
           }
@@ -2614,6 +2840,485 @@
         "type": "object",
         "additionalProperties": true,
         "description": "Operation-specific image command payload defined by the owning sdkwork-image Rust module."
+      },
+      "ImageGenerationCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "prompt",
+          "scene"
+        ],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 8000
+          },
+          "negativePrompt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 8000
+          },
+          "scene": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "pattern": "^[A-Za-z0-9._:@-]+$",
+            "description": "Business scene recorded on generated Drive files for filtering and lifecycle governance."
+          },
+          "providerCode": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "model": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "resolution": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 64
+          },
+          "style": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "outputCount": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 16,
+            "default": 1
+          },
+          "webhookUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "idempotencyKey": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 128
+          },
+          "input": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "ImageGenerationRefreshCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "forceProviderPoll": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "default": false
+          },
+          "importReadyOutputs": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "default": true
+          }
+        }
+      },
+      "ImageGenerationRetryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "retryProviderDispatch": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "default": true
+          },
+          "retryDriveImport": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "default": true
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 512
+          }
+        }
+      },
+      "ImageGenerationCancelCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 512
+          }
+        }
+      },
+      "ImageGeneration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "generationId",
+          "status",
+          "scene",
+          "outputs"
+        ],
+        "properties": {
+          "generationId": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ImageGenerationStatus"
+          },
+          "scene": {
+            "type": "string"
+          },
+          "providerCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "providerTaskId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "providerStatus": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "driveSpaceId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "driveSyncStatus": {
+            "$ref": "#/components/schemas/DriveSyncStatus"
+          },
+          "outputAssetCount": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ImageGenerationOutput"
+            }
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "ImageGenerationOutput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "outputIndex",
+          "mediaKind",
+          "scene",
+          "syncStatus"
+        ],
+        "properties": {
+          "outputIndex": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "mediaKind": {
+            "$ref": "#/components/schemas/MediaKind"
+          },
+          "scene": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "providerCode": {
+            "type": "string"
+          },
+          "providerAssetId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "providerUri": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "driveSpaceId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "driveNodeId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "driveUri": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "objectBlobId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "syncStatus": {
+            "$ref": "#/components/schemas/DriveSyncStatus"
+          },
+          "resource": {
+            "$ref": "#/components/schemas/MediaResource"
+          },
+          "errorCode": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "errorMessage": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      },
+      "ImageGenerationStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "dispatching",
+          "submitted",
+          "rendering",
+          "importing",
+          "succeeded",
+          "failed",
+          "cancel_requested",
+          "cancelled",
+          "expired"
+        ]
+      },
+      "DriveSyncStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "importing",
+          "imported",
+          "failed"
+        ]
+      },
+      "MediaKind": {
+        "type": "string",
+        "enum": [
+          "image",
+          "video",
+          "audio",
+          "voice",
+          "document",
+          "archive",
+          "model",
+          "other"
+        ]
+      },
+      "MediaSource": {
+        "type": "string",
+        "enum": [
+          "drive",
+          "external_url",
+          "data_url",
+          "provider_asset",
+          "generated"
+        ]
+      },
+      "MediaResource": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "source"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/MediaKind"
+          },
+          "source": {
+            "$ref": "#/components/schemas/MediaSource"
+          },
+          "url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "publicUrl": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uri"
+          },
+          "uri": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "objectBlobId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fileName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 512
+          },
+          "mimeType": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 256
+          },
+          "sizeBytes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^[0-9]+$"
+          },
+          "width": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "height": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "durationSeconds": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "ai": {
+            "$ref": "#/components/schemas/MediaAiProvenance"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "MediaAiProvenance": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "uploaded",
+              "generated",
+              "edited",
+              "imported"
+            ]
+          },
+          "provider": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "model": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "generationTaskId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "moderationStatus": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "unknown",
+              "pending",
+              "approved",
+              "rejected",
+              "blocked",
+              null
+            ]
+          }
+        }
       },
       "ProblemDetail": {
         "type": "object",

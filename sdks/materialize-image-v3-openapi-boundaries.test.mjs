@@ -60,17 +60,42 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
   assert.equal(app.info["x-sdkwork-api-authority"], "sdkwork-image-app-api");
   assert.equal(app.info["x-sdkwork-sdk-family"], "sdkwork-image-app-sdk");
   assert.equal(app.paths["/image/v3/api/compat/openai/images/generations"], undefined);
-  assert.equal(app.paths["/app/v3/api/image/generation_jobs"].post.operationId, "generationJobs.create");
-  assert.equal(app.paths["/app/v3/api/image/generation_jobs"].post["x-sdkwork-owner"], "sdkwork-image");
-  assert.equal(app.paths["/app/v3/api/image/generation_jobs"].post["x-sdkwork-domain"], "image");
-  assert.deepEqual(app.paths["/app/v3/api/image/generation_jobs"].post.security, [
+  assert.equal(app.paths["/app/v3/api/image/generations"].post.operationId, "generations.create");
+  assert.equal(app.paths["/app/v3/api/image/generations"].post["x-sdkwork-owner"], "sdkwork-image");
+  assert.equal(app.paths["/app/v3/api/image/generations"].post["x-sdkwork-domain"], "image");
+  assert.deepEqual(app.paths["/app/v3/api/image/generations"].post.security, [
     { AuthToken: [], AccessToken: [] },
   ]);
+  assert.equal(
+    app.paths["/app/v3/api/image/generations/{generationId}"].get.operationId,
+    "generations.retrieve",
+  );
+  assert.equal(
+    app.paths["/app/v3/api/image/generations/{generationId}"].get.parameters[0].name,
+    "generationId",
+  );
+  assert.equal(
+    app.paths["/app/v3/api/image/generations/{generationId}/refresh"].post.operationId,
+    "generations.refresh",
+  );
+  assert.equal(
+    app.paths["/app/v3/api/image/generations/{generationId}/cancel"].post.operationId,
+    "generations.cancel",
+  );
 
   assert.equal(backend.openapi, "3.1.2");
   assert.equal(backend.info["x-sdkwork-api-authority"], "sdkwork-image-backend-api");
   assert.equal(backend.info["x-sdkwork-sdk-family"], "sdkwork-image-backend-sdk");
   assert.equal(backend.paths["/image/v3/api/compat/openai/images/generations"], undefined);
+  assert.equal(backend.paths["/backend/v3/api/image/generations"].get.operationId, "generations.list");
+  assert.equal(
+    backend.paths["/backend/v3/api/image/generations/{generationId}/retry"].post.operationId,
+    "generations.retry",
+  );
+  assert.equal(
+    backend.paths["/backend/v3/api/image/generations/{generationId}/cancel"].post.parameters[0].name,
+    "generationId",
+  );
   assert.equal(backend.paths["/backend/v3/api/image/presets"].post.operationId, "presets.create");
   assert.equal(backend.paths["/backend/v3/api/image/galleries/{galleryId}/items"].post.operationId, "galleries.items.create");
   assert.equal(
@@ -93,6 +118,17 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
   assert.equal(
     readFileSync(resolve(workspaceRoot, "sdks/sdkwork-image-backend-sdk/openapi/sdkwork-image-backend-api.openapi.yaml"), "utf8"),
     readFileSync(resolve(workspaceRoot, "sdks/sdkwork-image-backend-sdk/openapi/sdkwork-image-backend-api.sdkgen.yaml"), "utf8"),
+  );
+
+  const serialized = JSON.stringify({ app, backend });
+  assert.equal(serialized.includes("generation_jobs"), false);
+  assert.equal(serialized.includes("generationJobs"), false);
+  assert.equal(serialized.includes("jobId"), false);
+  assert.equal(app.components.schemas.ImageGenerationCommand.properties.scene.type, "string");
+  assert.equal(app.components.schemas.ImageGenerationOutput.properties.scene.type, "string");
+  assert.equal(
+    app.components.schemas.ImageGenerationOutput.properties.resource.$ref,
+    "#/components/schemas/MediaResource",
   );
 });
 

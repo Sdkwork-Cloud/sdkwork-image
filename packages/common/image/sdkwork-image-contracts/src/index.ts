@@ -1,18 +1,23 @@
-export type SdkworkMediaKind = "audio" | "file" | "image" | "text" | "video";
+export type SdkworkMediaKind =
+  | "archive"
+  | "audio"
+  | "document"
+  | "image"
+  | "model"
+  | "other"
+  | "video"
+  | "voice";
 export type SdkworkMediaSource =
   | "data_url"
+  | "drive"
   | "external_url"
   | "generated"
-  | "object_storage"
-  | "provider_asset"
-  | "remote"
-  | "upload";
-export type SdkworkMediaAiProvenance = "edited" | "generated" | "human" | "unknown";
+  | "provider_asset";
+export type SdkworkMediaAiProvenance = "edited" | "generated" | "imported" | "uploaded";
 
 export interface SdkworkMediaAccess {
   expiresAt?: string;
-  policy?: string;
-  visibility?: "private" | "public" | "tenant";
+  visibility?: "organization" | "private" | "public" | "signed" | "tenant";
 }
 
 export interface SdkworkMediaChecksum {
@@ -23,26 +28,29 @@ export interface SdkworkMediaChecksum {
 export interface SdkworkMediaResource {
   access?: SdkworkMediaAccess;
   ai?: {
+    generationTaskId?: string;
     model?: string;
+    moderationStatus?: "approved" | "blocked" | "pending" | "rejected" | "unknown";
     provenance: SdkworkMediaAiProvenance;
-    promptHash?: string;
+    provider?: string;
+    promptId?: string;
+    safetyLabels?: string[];
+    seed?: string;
+    sourceMediaIds?: string[];
   };
   altText?: string;
   checksum?: SdkworkMediaChecksum;
-  deliveryUrl?: string;
   durationSeconds?: number;
-  fileSizeBytes?: number;
   fileName?: string;
   height?: number;
   id?: string;
   kind: SdkworkMediaKind;
   metadata?: Record<string, unknown>;
   mimeType?: string;
-  objectKey?: string;
   objectBlobId?: string;
-  objectVersion?: string;
   poster?: SdkworkMediaResource;
   publicUrl?: string;
+  sizeBytes?: string;
   source: SdkworkMediaSource;
   thumbnails?: SdkworkMediaResource[];
   title?: string;
@@ -53,10 +61,9 @@ export interface SdkworkMediaResource {
 }
 
 export function getSdkworkMediaDeliveryUrl(
-  resource: Pick<SdkworkMediaResource, "deliveryUrl" | "publicUrl" | "url"> | null | undefined,
+  resource: Pick<SdkworkMediaResource, "publicUrl" | "url"> | null | undefined,
 ): string | undefined {
-  return normalizeOptionalText(resource?.deliveryUrl)
-    || normalizeOptionalText(resource?.publicUrl)
+  return normalizeOptionalText(resource?.publicUrl)
     || normalizeOptionalText(resource?.url);
 }
 

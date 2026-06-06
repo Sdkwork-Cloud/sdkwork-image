@@ -55,7 +55,7 @@
     },
     {
       "path": "src/api/image.ts",
-      "sha256": "b9383eb806e64ccd174caa9141c010683f6e4ec7ac1d5b1390b7a0f5c6614063"
+      "sha256": "96e7d4f0bcbd96e16aa0131741ebe353dd81c880d1aa913c319c1c70fc52cae2"
     },
     {
       "path": "src/api/index.ts",
@@ -90,6 +90,10 @@
       "sha256": "c6adbdca8ccdb1656d1cb904e35cfc765d4a9075923190fba4b8787afd0cc710"
     },
     {
+      "path": "src/types/drive-sync-status.ts",
+      "sha256": "65979d7f078d15f9f1e75e7f8bee6882d120c4cef456efe7cf588b25587101bb"
+    },
+    {
       "path": "src/types/field-error.ts",
       "sha256": "44b8c95731a9dd8f7b30bb07a415b9541460964861f9ee806c31a4291953bf60"
     },
@@ -98,12 +102,56 @@
       "sha256": "5ddd501971e7fd96c954c40fa34c5c5fdca28258693e9756227b587132411e4b"
     },
     {
+      "path": "src/types/image-generation-cancel-command.ts",
+      "sha256": "15e0a631a8dab726563e8dede850487cc3bedd3a8d5241b306038c5f8244a41f"
+    },
+    {
+      "path": "src/types/image-generation-command.ts",
+      "sha256": "7e8a852b67d2b1865ee4d022460f0a9f63b68aac28425bbcc87655d01d0aaac0"
+    },
+    {
+      "path": "src/types/image-generation-output.ts",
+      "sha256": "3ec4b47102e2cbd7361b44f0afee43330af167ce45268f134e72fb9ac9f1f06b"
+    },
+    {
+      "path": "src/types/image-generation-refresh-command.ts",
+      "sha256": "8f6542022c0a14dce5bfc86f7eb0f2ccd8429bc6d1ba464a11612d18a89823cd"
+    },
+    {
+      "path": "src/types/image-generation-retry-command.ts",
+      "sha256": "dad83ce460cb56f5ee8447c8ff56a162cefe90db8dabd013c9393940483650f6"
+    },
+    {
+      "path": "src/types/image-generation-status.ts",
+      "sha256": "4996c5f0e2a79f3063c3822f68cd9f61e207de62ab6b581e5bca420ea27aec58"
+    },
+    {
+      "path": "src/types/image-generation.ts",
+      "sha256": "c3e0ab6839e47c12d4396beee791d223d7625bb46fcbd058337f0196efce46ed"
+    },
+    {
       "path": "src/types/image-operation-command.ts",
       "sha256": "15f0fd87d0889b6cdb3de6df321840615c2c06c99ac29d23f6208c985d5027c0"
     },
     {
       "path": "src/types/index.ts",
-      "sha256": "e30bc6d42c89495bfcf15ed1851a32bb77bdd2e9abd0e45763b4beb970dec039"
+      "sha256": "62857cc84429b83edd244ccd24054dbd5b1c5f7d5ed62bf4a723872f927bc7cb"
+    },
+    {
+      "path": "src/types/media-ai-provenance.ts",
+      "sha256": "0cc1af520c6a3198abaa4d8e182ceda901e42e15a20ea28b817fc30712ae5535"
+    },
+    {
+      "path": "src/types/media-kind.ts",
+      "sha256": "9ae71fdca9590315dc06ad6713f2b735a106b28f3ad0f52a43f2e57830c52630"
+    },
+    {
+      "path": "src/types/media-resource.ts",
+      "sha256": "47c256c6752986df81e5281af4567af3a4db86caa77ec833d3a0aa0827baddea"
+    },
+    {
+      "path": "src/types/media-source.ts",
+      "sha256": "ebb9a604403756a4529cb47f1700dbd9c0beb6e4145b9a51985783429e29adf3"
     },
     {
       "path": "src/types/problem-detail.ts",

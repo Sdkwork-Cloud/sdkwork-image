@@ -45,9 +45,13 @@ describe("sdkwork-image-pc-react domain contract", () => {
     });
     expect(workspace.images[0]).toMatchObject({
       resource: {
+        metadata: {
+          scene: "studio",
+        },
         kind: "image",
-        source: "generated",
+        source: "drive",
       },
     });
+    expect(workspace.images[0].resource.uri).toContain("drive://spaces/space-ai-generated-user-demo");
   });
 });

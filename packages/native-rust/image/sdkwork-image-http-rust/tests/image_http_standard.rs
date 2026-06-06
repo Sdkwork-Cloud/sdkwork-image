@@ -23,15 +23,21 @@ fn app_routes_expose_user_facing_image_workspace_operations() {
         ),
         ImageHttpRoute::new(
             HttpMethod::Post,
-            "/app/v3/api/image/generation_jobs",
+            "/app/v3/api/image/generations",
             "image",
-            "generationJobs.create",
+            "generations.create",
         ),
         ImageHttpRoute::new(
             HttpMethod::Get,
-            "/app/v3/api/image/generation_jobs",
+            "/app/v3/api/image/generations",
             "image",
-            "generationJobs.list",
+            "generations.list",
+        ),
+        ImageHttpRoute::new(
+            HttpMethod::Post,
+            "/app/v3/api/image/generations/{generationId}/refresh",
+            "image",
+            "generations.refresh",
         ),
         ImageHttpRoute::new(
             HttpMethod::Get,
@@ -46,7 +52,10 @@ fn app_routes_expose_user_facing_image_workspace_operations() {
             "galleries.list",
         ),
     ] {
-        assert!(routes.contains(&route), "missing app image route: {route:?}");
+        assert!(
+            routes.contains(&route),
+            "missing app image route: {route:?}"
+        );
     }
 }
 
@@ -75,9 +84,15 @@ fn backend_routes_expose_image_management_operations() {
         ),
         ImageHttpRoute::new(
             HttpMethod::Get,
-            "/backend/v3/api/image/generation_jobs",
+            "/backend/v3/api/image/generations",
             "image",
-            "generationJobs.list",
+            "generations.list",
+        ),
+        ImageHttpRoute::new(
+            HttpMethod::Post,
+            "/backend/v3/api/image/generations/{generationId}/retry",
+            "image",
+            "generations.retry",
         ),
         ImageHttpRoute::new(
             HttpMethod::Get,
@@ -92,14 +107,19 @@ fn backend_routes_expose_image_management_operations() {
             "galleries.update",
         ),
     ] {
-        assert!(routes.contains(&route), "missing backend image route: {route:?}");
+        assert!(
+            routes.contains(&route),
+            "missing backend image route: {route:?}"
+        );
     }
 }
 
 #[test]
 fn route_catalog_has_stable_operation_surface() {
-    let mut app_operation_ids: Vec<&str> =
-        app_routes().iter().map(|route| route.operation_id).collect();
+    let mut app_operation_ids: Vec<&str> = app_routes()
+        .iter()
+        .map(|route| route.operation_id)
+        .collect();
     app_operation_ids.sort();
 
     assert_eq!(
@@ -112,16 +132,20 @@ fn route_catalog_has_stable_operation_surface() {
             "galleries.items.create",
             "galleries.list",
             "galleries.retrieve",
-            "generationJobs.create",
-            "generationJobs.list",
-            "generationJobs.retrieve",
+            "generations.cancel",
+            "generations.create",
+            "generations.list",
+            "generations.refresh",
+            "generations.retrieve",
             "presets.list",
             "presets.retrieve",
         ],
     );
 
-    let mut backend_operation_ids: Vec<&str> =
-        backend_routes().iter().map(|route| route.operation_id).collect();
+    let mut backend_operation_ids: Vec<&str> = backend_routes()
+        .iter()
+        .map(|route| route.operation_id)
+        .collect();
     backend_operation_ids.sort();
 
     assert_eq!(
@@ -141,9 +165,11 @@ fn route_catalog_has_stable_operation_surface() {
             "galleries.list",
             "galleries.retrieve",
             "galleries.update",
-            "generationJobs.cancel",
-            "generationJobs.list",
-            "generationJobs.retrieve",
+            "generations.cancel",
+            "generations.list",
+            "generations.refresh",
+            "generations.retrieve",
+            "generations.retry",
             "presets.create",
             "presets.delete",
             "presets.list",
@@ -183,13 +209,28 @@ fn routes_use_standard_ownership_and_security_contracts() {
         assert!(route.path.contains("/image/"));
         assert!(route.operation_id.contains('.'));
         assert!(!route.operation_id.contains('_'));
+        assert!(
+            !route.operation_id.contains("generationJobs"),
+            "external image APIs must use generations.* operationIds",
+        );
         assert!(!route.path.contains("studio"));
         assert!(!route.path.contains("appbase"));
+        assert!(
+            !route.path.contains("generation_jobs"),
+            "external image APIs must use /generations paths",
+        );
+        assert!(
+            !route.path.contains("{jobId}"),
+            "external image APIs must expose generationId path parameters",
+        );
     }
 
     for route in app_routes().into_iter().chain(backend_routes()) {
         assert_eq!(route.tag, "image");
     }
 
-    assert_eq!(required_dual_token_headers(), ["Authorization", "Access-Token"]);
+    assert_eq!(
+        required_dual_token_headers(),
+        ["Authorization", "Access-Token"]
+    );
 }

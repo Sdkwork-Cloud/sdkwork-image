@@ -1,5 +1,17 @@
 export * from './common';
 export type { ImageApiResult } from './image-api-result';
 export type { ImageOperationCommand } from './image-operation-command';
+export type { ImageGenerationCommand } from './image-generation-command';
+export type { ImageGenerationRefreshCommand } from './image-generation-refresh-command';
+export type { ImageGenerationRetryCommand } from './image-generation-retry-command';
+export type { ImageGenerationCancelCommand } from './image-generation-cancel-command';
+export type { ImageGeneration } from './image-generation';
+export type { ImageGenerationOutput } from './image-generation-output';
+export type { ImageGenerationStatus } from './image-generation-status';
+export type { DriveSyncStatus } from './drive-sync-status';
+export type { MediaKind } from './media-kind';
+export type { MediaSource } from './media-source';
+export type { MediaResource } from './media-resource';
+export type { MediaAiProvenance } from './media-ai-provenance';
 export type { ProblemDetail } from './problem-detail';
 export type { FieldError } from './field-error';
