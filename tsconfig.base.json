@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "declaration": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2022",
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
+    "paths": {
+      "@sdkwork/image-contracts": [
+        "packages/common/image/sdkwork-image-contracts/src/index.ts"
+      ],
+      "@sdkwork/image-pc-react": [
+        "packages/pc-react/content/sdkwork-image-pc-react/src/index.ts"
+      ],
+      "@sdkwork/generation-pc-react": [
+        "packages/pc-react/content/sdkwork-generation-pc-react/src/index.ts"
+      ],
+      "@sdkwork/core-pc-react": [
+        "types/sdkwork-core-pc-react.d.ts"
+      ],
+      "@sdkwork/ui-pc-react": [
+        "types/sdkwork-ui-pc-react.d.ts"
+      ]
+    }
+  }
+}

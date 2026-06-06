@@ -1,0 +1,21 @@
+{
+  "workspace": "sdkwork-image-backend-sdk",
+  "title": "SDKWork Image Backend API SDK",
+  "apiVersion": "1.0.0",
+  "openapiVersion": "3.1.2",
+  "authoritySpec": "openapi/sdkwork-image-backend-api.openapi.yaml",
+  "generationInputSpec": "openapi/sdkwork-image-backend-api.sdkgen.yaml",
+  "derivedSpecs": {
+    "default": "openapi/sdkwork-image-backend-api.sdkgen.yaml",
+    "flutter": "openapi/sdkwork-image-backend-api.flutter.sdkgen.yaml"
+  },
+  "sdkOwner": "sdkwork-image",
+  "apiAuthority": "sdkwork-image-backend-api",
+  "discoverySurface": {
+    "sdkTarget": "backend",
+    "apiPrefix": "/backend/v3/api",
+    "schemaUrl": "/backend/v3/openapi.json",
+    "generatedProtocols": ["http-openapi"],
+    "manualTransports": []
+  }
+}

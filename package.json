@@ -1,0 +1,33 @@
+{
+  "name": "@sdkwork/image-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.30.3",
+  "scripts": {
+    "test": "vitest",
+    "typecheck": "tsc --noEmit",
+    "test:rust": "cargo test --manifest-path packages/native-rust/image/sdkwork-image-core-rust/Cargo.toml && cargo test --manifest-path packages/native-rust/image/sdkwork-image-storage-sqlx-rust/Cargo.toml && cargo test --manifest-path packages/native-rust/image/sdkwork-image-http-rust/Cargo.toml",
+    "openapi:materialize": "node sdks/materialize-image-v3-openapi-boundaries.mjs",
+    "sdk:generate:ts": "powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-sdk/bin/generate-sdk.ps1 -Languages typescript && powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-app-sdk/bin/generate-sdk.ps1 -Languages typescript && powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-backend-sdk/bin/generate-sdk.ps1 -Languages typescript"
+  },
+  "devDependencies": {
+    "@sdkwork/core-pc-react": "workspace:*",
+    "@sdkwork/image-contracts": "workspace:*",
+    "@sdkwork/ui-pc-react": "workspace:*",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/node": "^25.9.2",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "jsdom": "^29.1.1",
+    "lucide-react": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "^6.0.2",
+    "vite": "catalog:",
+    "vitest": "^4.1.8"
+  }
+}

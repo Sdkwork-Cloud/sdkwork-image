@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "sdkwork-image-sdk",
+  "type": "sdk-family",
+  "domain": "image",
+  "apiAuthority": "sdkwork-image-open-api",
+  "apiPrefix": "/image/v3/api",
+  "sdkType": "open-api",
+  "languages": [
+    "typescript",
+    "dart",
+    "python",
+    "go",
+    "java",
+    "kotlin",
+    "swift",
+    "csharp",
+    "flutter",
+    "rust",
+    "php",
+    "ruby"
+  ],
+  "generator": {
+    "package": "@sdkwork/sdk-generator",
+    "entrypoint": "D:\\javasource\\spring-ai-plus\\sdk\\sdkwork-sdk-generator\\bin\\sdkgen.js",
+    "standardProfile": "sdkwork-v3"
+  },
+  "contracts": {
+    "sdkDependencies": []
+  },
+  "auth": {
+    "mode": "api-key",
+    "apiKeyHeader": "X-API-Key",
+    "requestIdOwnership": "server"
+  }
+}
