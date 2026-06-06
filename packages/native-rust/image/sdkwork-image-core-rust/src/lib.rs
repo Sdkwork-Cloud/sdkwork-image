@@ -38,6 +38,421 @@ pub struct ImageGenerationRequest {
     pub status: ImageJobStatus,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ImageGenerationRuntimeStatus {
+    Queued,
+    Dispatching,
+    Submitted,
+    Rendering,
+    Importing,
+    Succeeded,
+    Failed,
+    CancelRequested,
+    Cancelled,
+    Expired,
+}
+
+impl ImageGenerationRuntimeStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Queued => "queued",
+            Self::Dispatching => "dispatching",
+            Self::Submitted => "submitted",
+            Self::Rendering => "rendering",
+            Self::Importing => "importing",
+            Self::Succeeded => "succeeded",
+            Self::Failed => "failed",
+            Self::CancelRequested => "cancel_requested",
+            Self::Cancelled => "cancelled",
+            Self::Expired => "expired",
+        }
+    }
+
+    pub fn as_job_status(&self) -> ImageJobStatus {
+        match self {
+            Self::Queued | Self::Dispatching | Self::Submitted => ImageJobStatus::Queued,
+            Self::Rendering | Self::Importing | Self::CancelRequested => ImageJobStatus::Rendering,
+            Self::Succeeded => ImageJobStatus::Ready,
+            Self::Failed | Self::Cancelled | Self::Expired => ImageJobStatus::Failed,
+        }
+    }
+
+    pub fn as_job_status_code(&self) -> i32 {
+        self.as_job_status() as i32
+    }
+
+    pub fn as_drive_sync_status(&self) -> &'static str {
+        match self {
+            Self::Importing => "importing",
+            Self::Succeeded => "imported",
+            Self::Failed | Self::Cancelled | Self::Expired => "failed",
+            Self::Queued
+            | Self::Dispatching
+            | Self::Submitted
+            | Self::Rendering
+            | Self::CancelRequested => "pending",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ImageProviderTaskMode {
+    Synchronous,
+    Task,
+    Webhook,
+}
+
+impl ImageProviderTaskMode {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Synchronous => "sync",
+            Self::Task => "task",
+            Self::Webhook => "webhook",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ImageProviderOperation {
+    OpenAiImageGeneration,
+    MidjourneyImageGeneration,
+    NanoBananaImageGeneration,
+    ProviderNativeImageGeneration,
+}
+
+impl ImageProviderOperation {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::OpenAiImageGeneration => "openai.images.generate",
+            Self::MidjourneyImageGeneration => "midjourney.images.generate",
+            Self::NanoBananaImageGeneration => "nano_banana.images.generate",
+            Self::ProviderNativeImageGeneration => "provider_native.images.generate",
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ImageGenerationCreateCommand {
+    pub prompt: String,
+    pub negative_prompt: Option<String>,
+    pub scene: String,
+    pub provider_code: Option<String>,
+    pub model: Option<String>,
+    pub resolution: Option<String>,
+    pub style: Option<String>,
+    pub output_count: Option<i32>,
+    pub webhook_url: Option<String>,
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ImageProviderDispatchPlan {
+    pub provider_code: String,
+    pub provider_operation: ImageProviderOperation,
+    pub task_mode: ImageProviderTaskMode,
+    pub claw_router_api_path: &'static str,
+    pub claw_router_sdk_resource: &'static str,
+    pub claw_router_sdk_method: &'static str,
+    pub prompt: String,
+    pub negative_prompt: Option<String>,
+    pub model: Option<String>,
+    pub size: Option<String>,
+    pub quality: Option<String>,
+    pub response_format: Option<String>,
+    pub output_count: i32,
+    pub output_count_provider_parameter: Option<&'static str>,
+    pub callback_url: Option<String>,
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OpenAiGeneratedImage {
+    pub url: Option<String>,
+    pub b64_json: Option<String>,
+    pub mime_type: Option<String>,
+    pub revised_prompt: Option<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProviderGeneratedMediaAsset {
+    pub id: Option<String>,
+    pub uri: Option<String>,
+    pub url: Option<String>,
+    pub mime_type: Option<String>,
+    pub width: Option<i64>,
+    pub height: Option<i64>,
+    pub duration_seconds: Option<i32>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProviderTaskErrorSnapshot {
+    pub code: Option<String>,
+    pub message: Option<String>,
+    pub error_type: Option<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ProviderTaskSnapshot {
+    pub task_id: Option<String>,
+    pub id: Option<String>,
+    pub status: Option<String>,
+    pub state: Option<String>,
+    pub model: Option<String>,
+    pub images: Vec<ProviderGeneratedMediaAsset>,
+    pub error: Option<ProviderTaskErrorSnapshot>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NormalizedProviderGenerationResult {
+    pub provider_code: String,
+    pub provider_task_id: Option<String>,
+    pub provider_status: Option<String>,
+    pub provider_state: Option<String>,
+    pub status: ImageGenerationRuntimeStatus,
+    pub provider_terminal: bool,
+    pub ready_for_drive_import: bool,
+    pub outputs: Vec<GeneratedMediaOutput>,
+    pub error_code: Option<String>,
+    pub error_message: Option<String>,
+}
+
+pub fn plan_image_generation_provider_dispatch(
+    command: &ImageGenerationCreateCommand,
+) -> Result<ImageProviderDispatchPlan, &'static str> {
+    let prompt = require_trimmed(&command.prompt, "image generation prompt is required")?;
+    let scene = require_trimmed(&command.scene, "image generation scene is required")?;
+    validate_scene_code(scene)?;
+    let provider_code = command
+        .provider_code
+        .as_deref()
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .unwrap_or("openai")
+        .to_ascii_lowercase();
+    let output_count = command.output_count.unwrap_or(1);
+    if !(1..=16).contains(&output_count) {
+        return Err("image generation output_count must be between 1 and 16");
+    }
+
+    let model = normalized_optional_text(command.model.as_deref());
+    let size = normalized_optional_text(command.resolution.as_deref());
+    let quality = normalized_optional_text(command.style.as_deref());
+    let negative_prompt = normalized_optional_text(command.negative_prompt.as_deref());
+    let callback_url = normalized_optional_text(command.webhook_url.as_deref());
+    let idempotency_key = normalized_optional_text(command.idempotency_key.as_deref());
+
+    let (
+        provider_operation,
+        task_mode,
+        claw_router_api_path,
+        claw_router_sdk_resource,
+        claw_router_sdk_method,
+    ) = match provider_code.as_str() {
+        "midjourney" => (
+            ImageProviderOperation::MidjourneyImageGeneration,
+            ImageProviderTaskMode::Task,
+            "/midjourney/v1/images/generations",
+            "images_midjourney",
+            "create_v1_images_generation",
+        ),
+        "nano-banana" | "nano_banana" | "nanobanana" => (
+            ImageProviderOperation::NanoBananaImageGeneration,
+            ImageProviderTaskMode::Task,
+            "/nano-banana/v1/images/generations",
+            "images_nano_banana",
+            "create_generations",
+        ),
+        "openai" | "gpt-image" | "gpt_image" => (
+            ImageProviderOperation::OpenAiImageGeneration,
+            ImageProviderTaskMode::Synchronous,
+            "/v1/images/generations",
+            "images",
+            "create_generation",
+        ),
+        "gemini" | "kling" | "jimeng" | "volcengine" => (
+            ImageProviderOperation::ProviderNativeImageGeneration,
+            ImageProviderTaskMode::Task,
+            "/v1/images/generations",
+            "images",
+            "create_generation",
+        ),
+        _ => (
+            ImageProviderOperation::ProviderNativeImageGeneration,
+            if callback_url.is_some() {
+                ImageProviderTaskMode::Webhook
+            } else {
+                ImageProviderTaskMode::Task
+            },
+            "/v1/images/generations",
+            "images",
+            "create_generation",
+        ),
+    };
+
+    Ok(ImageProviderDispatchPlan {
+        provider_code: normalize_provider_code_for_storage(&provider_code),
+        provider_operation,
+        task_mode,
+        claw_router_api_path,
+        claw_router_sdk_resource,
+        claw_router_sdk_method,
+        prompt: prompt.to_string(),
+        negative_prompt,
+        model,
+        size,
+        quality,
+        response_format: Some("url".to_string()),
+        output_count,
+        output_count_provider_parameter: Some("n"),
+        callback_url,
+        idempotency_key,
+    })
+}
+
+pub fn normalize_openai_image_generation_outputs(
+    provider_code: impl AsRef<str>,
+    images: Vec<OpenAiGeneratedImage>,
+) -> Result<Vec<GeneratedMediaOutput>, &'static str> {
+    let provider_code = require_trimmed(
+        provider_code.as_ref(),
+        "image generation provider_code is required",
+    )?;
+    if images.is_empty() {
+        return Err("image generation provider outputs are required");
+    }
+
+    let mut outputs = Vec::with_capacity(images.len());
+    for (index, image) in images.into_iter().enumerate() {
+        let mime_type = normalized_optional_text(image.mime_type.as_deref())
+            .or_else(|| infer_mime_type_from_url(image.url.as_deref()))
+            .or_else(|| Some("image/png".to_string()));
+        let provider_url = normalized_optional_text(image.url.as_deref());
+        let provider_uri = match normalized_optional_text(image.b64_json.as_deref()) {
+            Some(b64_json) => {
+                let mime = mime_type.as_deref().unwrap_or("image/png");
+                Some(format!("data:{mime};base64,{b64_json}"))
+            }
+            None => Some(format!(
+                "provider://{}/images/{}",
+                normalize_provider_code_for_storage(provider_code),
+                index
+            )),
+        };
+
+        outputs.push(GeneratedMediaOutput {
+            output_index: index as i32,
+            kind: GeneratedMediaKind::Image,
+            provider_asset_id: None,
+            provider_uri,
+            provider_url,
+            file_name: Some(format!(
+                "generated-{}.{}",
+                index,
+                file_extension_for_mime(mime_type.as_deref())
+            )),
+            mime_type,
+            size_bytes: None,
+            width: None,
+            height: None,
+            duration_seconds: None,
+        });
+    }
+
+    Ok(outputs)
+}
+
+pub fn normalize_provider_task_generation_result(
+    provider_code: impl AsRef<str>,
+    task: ProviderTaskSnapshot,
+) -> Result<NormalizedProviderGenerationResult, &'static str> {
+    let provider_code = normalize_provider_code_for_storage(require_trimmed(
+        provider_code.as_ref(),
+        "image generation provider_code is required",
+    )?);
+    let provider_status = normalized_optional_text(task.status.as_deref());
+    let provider_state = normalized_optional_text(task.state.as_deref());
+    let normalized_state = provider_status
+        .as_deref()
+        .or(provider_state.as_deref())
+        .unwrap_or("submitted");
+    let status = normalize_provider_status(
+        normalized_state,
+        !task.images.is_empty(),
+        task.error.is_some(),
+    );
+    let provider_terminal = matches!(
+        status,
+        ImageGenerationRuntimeStatus::Importing
+            | ImageGenerationRuntimeStatus::Succeeded
+            | ImageGenerationRuntimeStatus::Failed
+            | ImageGenerationRuntimeStatus::Cancelled
+            | ImageGenerationRuntimeStatus::Expired
+    );
+    let ready_for_drive_import = matches!(
+        status,
+        ImageGenerationRuntimeStatus::Importing | ImageGenerationRuntimeStatus::Succeeded
+    ) && !task.images.is_empty();
+
+    let outputs = task
+        .images
+        .into_iter()
+        .enumerate()
+        .map(|(index, asset)| GeneratedMediaOutput {
+            output_index: index as i32,
+            kind: GeneratedMediaKind::Image,
+            provider_asset_id: normalized_optional_text(asset.id.as_deref()),
+            provider_uri: normalized_optional_text(asset.uri.as_deref()).or_else(|| {
+                Some(format!(
+                    "provider://{}/tasks/{}/images/{}",
+                    provider_code,
+                    task.task_id
+                        .as_deref()
+                        .map(str::trim)
+                        .filter(|value| !value.is_empty())
+                        .unwrap_or("unknown"),
+                    index
+                ))
+            }),
+            provider_url: normalized_optional_text(asset.url.as_deref()),
+            file_name: Some(format!(
+                "generated-{}.{}",
+                index,
+                file_extension_for_mime(asset.mime_type.as_deref())
+            )),
+            mime_type: normalized_optional_text(asset.mime_type.as_deref())
+                .or_else(|| infer_mime_type_from_url(asset.url.as_deref()))
+                .or_else(|| Some("image/png".to_string())),
+            size_bytes: None,
+            width: i64_to_i32(asset.width),
+            height: i64_to_i32(asset.height),
+            duration_seconds: asset.duration_seconds,
+        })
+        .collect::<Vec<_>>();
+
+    let (error_code, error_message) = match task.error {
+        Some(error) => (
+            normalized_optional_text(error.code.as_deref())
+                .or_else(|| normalized_optional_text(error.error_type.as_deref())),
+            normalized_optional_text(error.message.as_deref()),
+        ),
+        None => (None, None),
+    };
+
+    Ok(NormalizedProviderGenerationResult {
+        provider_code,
+        provider_task_id: normalized_optional_text(task.task_id.as_deref())
+            .or_else(|| normalized_optional_text(task.id.as_deref())),
+        provider_status,
+        provider_state,
+        status,
+        provider_terminal,
+        ready_for_drive_import,
+        outputs,
+        error_code,
+        error_message,
+    })
+}
+
 pub fn create_image_generation_request(
     tenant_id: impl Into<String>,
     organization_id: Option<&str>,
@@ -86,6 +501,110 @@ pub fn validate_image_generation_request(
 fn parse_positive_dimension(value: &str) -> Option<u32> {
     let dimension = value.trim().parse::<u32>().ok()?;
     (dimension > 0).then_some(dimension)
+}
+
+fn validate_scene_code(scene: &str) -> Result<(), &'static str> {
+    if scene.len() > 128 {
+        return Err("image generation scene must be at most 128 characters");
+    }
+    if scene.bytes().all(|byte| {
+        byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b':' | b'@' | b'-')
+    }) {
+        Ok(())
+    } else {
+        Err("image generation scene must use visible code characters")
+    }
+}
+
+fn normalized_optional_text(value: Option<&str>) -> Option<String> {
+    value
+        .map(str::trim)
+        .filter(|value| !value.is_empty())
+        .map(str::to_string)
+}
+
+fn normalize_provider_code_for_storage(value: &str) -> String {
+    value.trim().replace('_', "-").to_ascii_lowercase()
+}
+
+fn normalize_provider_status(
+    status: &str,
+    has_outputs: bool,
+    has_error: bool,
+) -> ImageGenerationRuntimeStatus {
+    let normalized = status.trim().to_ascii_lowercase();
+    if has_error {
+        return ImageGenerationRuntimeStatus::Failed;
+    }
+    if matches!(
+        normalized.as_str(),
+        "succeeded" | "success" | "completed" | "complete" | "done" | "finished"
+    ) {
+        return if has_outputs {
+            ImageGenerationRuntimeStatus::Importing
+        } else {
+            ImageGenerationRuntimeStatus::Succeeded
+        };
+    }
+    if matches!(
+        normalized.as_str(),
+        "failed" | "failure" | "error" | "rejected" | "blocked"
+    ) {
+        return ImageGenerationRuntimeStatus::Failed;
+    }
+    if matches!(normalized.as_str(), "cancelled" | "canceled") {
+        return ImageGenerationRuntimeStatus::Cancelled;
+    }
+    if matches!(normalized.as_str(), "expired" | "timeout" | "timed_out") {
+        return ImageGenerationRuntimeStatus::Expired;
+    }
+    if matches!(
+        normalized.as_str(),
+        "running" | "processing" | "rendering" | "in_progress"
+    ) {
+        return ImageGenerationRuntimeStatus::Rendering;
+    }
+    if matches!(normalized.as_str(), "queued" | "pending") {
+        return ImageGenerationRuntimeStatus::Submitted;
+    }
+    ImageGenerationRuntimeStatus::Rendering
+}
+
+fn infer_mime_type_from_url(value: Option<&str>) -> Option<String> {
+    let value = value?.trim().to_ascii_lowercase();
+    if value.ends_with(".jpg") || value.ends_with(".jpeg") {
+        return Some("image/jpeg".to_string());
+    }
+    if value.ends_with(".webp") {
+        return Some("image/webp".to_string());
+    }
+    if value.ends_with(".gif") {
+        return Some("image/gif".to_string());
+    }
+    if value.ends_with(".png") {
+        return Some("image/png".to_string());
+    }
+    None
+}
+
+fn file_extension_for_mime(value: Option<&str>) -> &'static str {
+    match value
+        .unwrap_or_default()
+        .trim()
+        .to_ascii_lowercase()
+        .as_str()
+    {
+        "image/jpeg" => "jpg",
+        "image/webp" => "webp",
+        "image/gif" => "gif",
+        "video/mp4" => "mp4",
+        "audio/mpeg" => "mp3",
+        _ => "png",
+    }
+}
+
+fn i64_to_i32(value: Option<i64>) -> Option<i32> {
+    value.and_then(|value| i32::try_from(value).ok())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -212,13 +731,14 @@ pub struct DriveGeneratedMediaImportPlan {
     pub drive_space_type: String,
     pub drive_owner_subject_type: String,
     pub drive_owner_subject_id: String,
+    pub drive_actor_type: String,
+    pub drive_actor_id: String,
     pub drive_space_id: String,
     pub drive_parent_node_id: Option<String>,
     pub drive_node_id: String,
     pub drive_uri: String,
     pub drive_upload_profile_code: String,
     pub drive_upload_task_id: String,
-    pub drive_object_key: String,
     pub media_resource: DriveBackedMediaResource,
 }
 
@@ -226,7 +746,7 @@ pub fn plan_drive_import_for_generated_outputs(
     context: DriveGeneratedMediaContext,
     outputs: Vec<GeneratedMediaOutput>,
 ) -> Result<Vec<DriveGeneratedMediaImportPlan>, &'static str> {
-    let tenant_id = require_trimmed(&context.tenant_id, "generated media tenant is required")?;
+    require_trimmed(&context.tenant_id, "generated media tenant is required")?;
     let generation_id = require_trimmed(
         &context.generation_id,
         "generated media generation_id is required",
@@ -252,7 +772,7 @@ pub fn plan_drive_import_for_generated_outputs(
 
     let owner = resolve_drive_owner(&context.actor)?;
     let drive_space_type = DriveSpaceType::AiGenerated.as_str().to_string();
-    let owner_suffix = stable_identifier_suffix(&owner.space_suffix);
+    let owner_suffix = stable_identifier_suffix(&owner.owner_subject_id);
     let drive_space_id = format!(
         "space-ai-generated-{}-{}",
         owner.owner_subject_type, owner_suffix
@@ -289,13 +809,6 @@ pub fn plan_drive_import_for_generated_outputs(
             "image-generation-{}-{}",
             stable_identifier_suffix(generation_id),
             output.output_index
-        );
-        let drive_object_key = format!(
-            "sdkwork-image/ai-generated/{}/{}/{}/{}",
-            stable_identifier_suffix(tenant_id),
-            stable_identifier_suffix(generation_id),
-            output.output_index,
-            sanitize_file_name(&file_name),
         );
         let mut metadata = BTreeMap::new();
         metadata.insert("spaceType".to_string(), drive_space_type.clone());
@@ -369,13 +882,14 @@ pub fn plan_drive_import_for_generated_outputs(
             drive_space_type: drive_space_type.clone(),
             drive_owner_subject_type: owner.owner_subject_type.clone(),
             drive_owner_subject_id: owner.owner_subject_id.clone(),
+            drive_actor_type: owner.actor_type.clone(),
+            drive_actor_id: owner.actor_id.clone(),
             drive_space_id: drive_space_id.clone(),
             drive_parent_node_id: None,
             drive_node_id,
             drive_uri,
             drive_upload_profile_code: output.kind.as_drive_upload_profile_code().to_string(),
             drive_upload_task_id,
-            drive_object_key,
             media_resource,
         });
     }
@@ -447,8 +961,7 @@ pub fn build_drive_uploader_command_for_generated_output(
         content_type,
         content_length: parse_content_length(plan.media_resource.size_bytes.as_deref())?,
         chunk_size_bytes: GENERATED_MEDIA_DEFAULT_CHUNK_SIZE_BYTES,
-        target: UploaderTarget::Space {
-            space_id: plan.drive_space_id.clone(),
+        target: UploaderTarget::AiGeneratedSpace {
             parent_node_id: plan.drive_parent_node_id.clone(),
         },
         retention: UploaderRetention::LongTerm,
@@ -460,7 +973,8 @@ pub fn build_drive_uploader_command_for_generated_output(
 struct DriveOwner {
     owner_subject_type: String,
     owner_subject_id: String,
-    space_suffix: String,
+    actor_type: String,
+    actor_id: String,
 }
 
 fn resolve_drive_owner(actor: &ImageGenerationActor) -> Result<DriveOwner, &'static str> {
@@ -470,7 +984,8 @@ fn resolve_drive_owner(actor: &ImageGenerationActor) -> Result<DriveOwner, &'sta
             Ok(DriveOwner {
                 owner_subject_type: "user".to_string(),
                 owner_subject_id: user_id.to_string(),
-                space_suffix: user_id.to_string(),
+                actor_type: "user".to_string(),
+                actor_id: user_id.to_string(),
             })
         }
         ImageGenerationActor::Anonymous { anonymous_id } => {
@@ -478,8 +993,9 @@ fn resolve_drive_owner(actor: &ImageGenerationActor) -> Result<DriveOwner, &'sta
                 require_trimmed(anonymous_id, "generated media anonymous_id is required")?;
             Ok(DriveOwner {
                 owner_subject_type: "app".to_string(),
-                owner_subject_id: format!("app:sdkwork-image:anonymous:{anonymous_id}"),
-                space_suffix: format!("anonymous-{anonymous_id}"),
+                owner_subject_id: format!("app:{IMAGE_WORKSPACE}:anonymous"),
+                actor_type: "anonymous".to_string(),
+                actor_id: anonymous_id.to_string(),
             })
         }
         ImageGenerationActor::System { operator_id } => {
@@ -487,8 +1003,9 @@ fn resolve_drive_owner(actor: &ImageGenerationActor) -> Result<DriveOwner, &'sta
                 require_trimmed(operator_id, "generated media operator_id is required")?;
             Ok(DriveOwner {
                 owner_subject_type: "app".to_string(),
-                owner_subject_id: format!("app:sdkwork-image:system:{operator_id}"),
-                space_suffix: format!("system-{operator_id}"),
+                owner_subject_id: format!("app:{IMAGE_WORKSPACE}:system"),
+                actor_type: "system".to_string(),
+                actor_id: operator_id.to_string(),
             })
         }
     }
@@ -497,48 +1014,29 @@ fn resolve_drive_owner(actor: &ImageGenerationActor) -> Result<DriveOwner, &'sta
 fn uploader_actor_for_drive_plan(
     plan: &DriveGeneratedMediaImportPlan,
 ) -> Result<UploaderActor, &'static str> {
-    match plan.drive_owner_subject_type.as_str() {
+    match plan.drive_actor_type.as_str() {
         "user" => Ok(UploaderActor::User {
             user_id: require_trimmed(
-                &plan.drive_owner_subject_id,
+                &plan.drive_actor_id,
                 "generated media drive user_id is required",
             )?
             .to_string(),
         }),
-        "app" => {
-            if let Some(anonymous_id) = plan
-                .drive_owner_subject_id
-                .strip_prefix("app:sdkwork-image:anonymous:")
-            {
-                return Ok(UploaderActor::Anonymous {
-                    anonymous_id: require_trimmed(
-                        anonymous_id,
-                        "generated media drive anonymous_id is required",
-                    )?
-                    .to_string(),
-                });
-            }
-            if let Some(operator_id) = plan
-                .drive_owner_subject_id
-                .strip_prefix("app:sdkwork-image:system:")
-            {
-                return Ok(UploaderActor::System {
-                    operator_id: require_trimmed(
-                        operator_id,
-                        "generated media drive system operator_id is required",
-                    )?
-                    .to_string(),
-                });
-            }
-            Ok(UploaderActor::System {
-                operator_id: require_trimmed(
-                    &plan.drive_owner_subject_id,
-                    "generated media drive app operator_id is required",
-                )?
-                .to_string(),
-            })
-        }
-        _ => Err("generated media drive owner_subject_type is not supported"),
+        "anonymous" => Ok(UploaderActor::Anonymous {
+            anonymous_id: require_trimmed(
+                &plan.drive_actor_id,
+                "generated media drive anonymous_id is required",
+            )?
+            .to_string(),
+        }),
+        "system" => Ok(UploaderActor::System {
+            operator_id: require_trimmed(
+                &plan.drive_actor_id,
+                "generated media drive system operator_id is required",
+            )?
+            .to_string(),
+        }),
+        _ => Err("generated media drive actor_type is not supported"),
     }
 }
 
@@ -597,25 +1095,5 @@ fn stable_identifier_suffix(value: &str) -> String {
         "unknown".to_string()
     } else {
         suffix
-    }
-}
-
-fn sanitize_file_name(value: &str) -> String {
-    let sanitized = value
-        .trim()
-        .chars()
-        .map(|ch| {
-            if ch.is_ascii_alphanumeric() || matches!(ch, '.' | '_' | '-') {
-                ch
-            } else {
-                '-'
-            }
-        })
-        .collect::<String>();
-    let sanitized = sanitized.trim_matches('-').to_string();
-    if sanitized.is_empty() {
-        "generated.bin".to_string()
-    } else {
-        sanitized.chars().take(128).collect()
     }
 }

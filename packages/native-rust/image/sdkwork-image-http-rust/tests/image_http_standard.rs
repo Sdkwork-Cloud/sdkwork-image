@@ -95,6 +95,12 @@ fn backend_routes_expose_image_management_operations() {
             "generations.retry",
         ),
         ImageHttpRoute::new(
+            HttpMethod::Post,
+            "/backend/v3/api/image/provider_webhooks/{providerCode}",
+            "image",
+            "providerWebhooks.receive",
+        ),
+        ImageHttpRoute::new(
             HttpMethod::Get,
             "/backend/v3/api/image/assets",
             "image",
@@ -175,6 +181,7 @@ fn route_catalog_has_stable_operation_surface() {
             "presets.list",
             "presets.retrieve",
             "presets.update",
+            "providerWebhooks.receive",
         ],
     );
 }

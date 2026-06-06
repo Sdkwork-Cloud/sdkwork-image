@@ -187,6 +187,12 @@ pub fn backend_routes() -> Vec<ImageHttpRoute> {
             "generations.cancel",
         ),
         ImageHttpRoute::new(
+            HttpMethod::Post,
+            "/backend/v3/api/image/provider_webhooks/{providerCode}",
+            "image",
+            "providerWebhooks.receive",
+        ),
+        ImageHttpRoute::new(
             HttpMethod::Get,
             "/backend/v3/api/image/edit_tasks",
             "image",

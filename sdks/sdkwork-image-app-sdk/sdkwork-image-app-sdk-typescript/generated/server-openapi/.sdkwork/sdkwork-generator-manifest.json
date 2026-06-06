@@ -55,7 +55,7 @@
     },
     {
       "path": "src/api/image.ts",
-      "sha256": "b9ab960a1e4361308575eec2cac5140068a0749facd6cf068a3e9dee12e72e94"
+      "sha256": "e559f220ad322947e062ab17e8eea4554d1f3b8f763c80a1486e5530e1103e06"
     },
     {
       "path": "src/api/index.ts",

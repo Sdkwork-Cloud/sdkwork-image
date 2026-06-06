@@ -6,9 +6,9 @@ import type { ImageApiResult, ImageOperationCommand } from '../types';
 
 export class ImageCompatCompatOpenaiImagesApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -21,10 +21,10 @@ export class ImageCompatCompatOpenaiImagesApi {
 export class ImageCompatCompatOpenaiApi {
   private client: HttpClient;
   public readonly images: ImageCompatCompatOpenaiImagesApi;
-  
-  constructor(client: HttpClient) { 
+
+  constructor(client: HttpClient) {
     this.client = client;
-    this.images = new ImageCompatCompatOpenaiImagesApi(client); 
+    this.images = new ImageCompatCompatOpenaiImagesApi(client);
   }
 
 }
@@ -32,10 +32,10 @@ export class ImageCompatCompatOpenaiApi {
 export class ImageCompatCompatApi {
   private client: HttpClient;
   public readonly openai: ImageCompatCompatOpenaiApi;
-  
-  constructor(client: HttpClient) { 
+
+  constructor(client: HttpClient) {
     this.client = client;
-    this.openai = new ImageCompatCompatOpenaiApi(client); 
+    this.openai = new ImageCompatCompatOpenaiApi(client);
   }
 
 }
@@ -43,10 +43,10 @@ export class ImageCompatCompatApi {
 export class ImageCompatApi {
   private client: HttpClient;
   public readonly compat: ImageCompatCompatApi;
-  
-  constructor(client: HttpClient) { 
+
+  constructor(client: HttpClient) {
     this.client = client;
-    this.compat = new ImageCompatCompatApi(client); 
+    this.compat = new ImageCompatCompatApi(client);
   }
 
 }

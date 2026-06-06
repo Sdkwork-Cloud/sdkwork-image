@@ -8,7 +8,7 @@
     "sdkType": "app",
     "packageName": "@sdkwork/image-app-sdk"
   },
-  "changeFingerprint": "5d280bfdb3564667d6ca7871d4f52884eb6539b31f675bc2fc8686484e9c0038",
+  "changeFingerprint": "3ec48ec1e0cab25fd239c5bf4cfe8f99f13b9fa653be1e7400830830221699af",
   "changes": {
     "createdGeneratedFiles": [
       "bin/publish-core.mjs",

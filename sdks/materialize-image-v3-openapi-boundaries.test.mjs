@@ -106,6 +106,14 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
     backend.paths["/backend/v3/api/image/galleries/{galleryId}/items/{itemId}"].delete.parameters.length,
     2,
   );
+  assert.equal(
+    backend.paths["/backend/v3/api/image/provider_webhooks/{providerCode}"].post.operationId,
+    "providerWebhooks.receive",
+  );
+  assert.equal(
+    backend.paths["/backend/v3/api/image/provider_webhooks/{providerCode}"].post.parameters[0].name,
+    "providerCode",
+  );
 
   assert.equal(
     readFileSync(resolve(workspaceRoot, "sdks/sdkwork-image-sdk/openapi/sdkwork-image-open-api.openapi.yaml"), "utf8"),
@@ -130,6 +138,18 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
     app.components.schemas.ImageGenerationOutput.properties.resource.$ref,
     "#/components/schemas/MediaResource",
   );
+
+  const backendSdkSource = readFileSync(
+    resolve(
+      workspaceRoot,
+      "sdks/sdkwork-image-backend-sdk/sdkwork-image-backend-sdk-typescript/generated/server-openapi/src/api/image.ts",
+    ),
+    "utf8",
+  );
+  assert.match(backendSdkSource, /class ImageProviderWebhooksApi/u);
+  assert.match(backendSdkSource, /providerWebhooks: ImageProviderWebhooksApi/u);
+  assert.match(backendSdkSource, /receive\(providerCode: string, body: ImageOperationCommand\)/u);
+  assert.match(backendSdkSource, /\/image\/provider_webhooks\/\$\{serializePathParameter\(providerCode/u);
 });
 
 test("image workspace TypeScript SDK script covers open, app, and backend SDK families", () => {

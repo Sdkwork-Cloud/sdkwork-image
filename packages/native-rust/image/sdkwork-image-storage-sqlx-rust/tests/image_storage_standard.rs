@@ -1,7 +1,8 @@
 use sdkwork_image_storage_sqlx::{
-    image_asset_tables, image_database_tables, image_gallery_tables, image_generation_tables,
-    image_initial_migration_sql, image_runtime_migration_sql, image_storage_capability_manifest,
-    IMAGE_INITIAL_MIGRATION, IMAGE_RUNTIME_MIGRATION,
+    image_asset_tables, image_database_tables, image_gallery_tables,
+    image_generation_repository_sql_contract, image_generation_tables, image_initial_migration_sql,
+    image_runtime_migration_sql, image_storage_capability_manifest, IMAGE_INITIAL_MIGRATION,
+    IMAGE_RUNTIME_MIGRATION,
 };
 
 #[test]
@@ -220,6 +221,94 @@ fn manifest_declares_image_storage_contract() {
         .repository_bindings
         .iter()
         .any(|binding| binding.repository_name == "ImageGalleryRepository"));
+}
+
+#[test]
+fn generation_repository_sql_contract_covers_runtime_consistency_methods() {
+    let contract = image_generation_repository_sql_contract();
+
+    assert!(contract.requires_transaction);
+    assert_eq!(contract.methods.len(), 12);
+
+    for expected in [
+        ("create_generation", "INSERT INTO image_generation_job"),
+        ("mark_provider_submitted", "UPDATE image_generation_job"),
+        ("upsert_provider_task", "INSERT INTO image_provider_task"),
+        (
+            "record_provider_webhook_event",
+            "INSERT INTO image_provider_webhook_event",
+        ),
+        (
+            "upsert_generation_outputs",
+            "INSERT INTO image_generation_output",
+        ),
+        ("mark_drive_importing", "UPDATE image_generation_output"),
+        ("mark_drive_imported", "UPDATE image_generation_output"),
+        ("mark_generation_succeeded", "UPDATE image_generation_job"),
+        ("mark_generation_failed", "UPDATE image_generation_job"),
+        (
+            "enqueue_notification",
+            "INSERT INTO image_notification_outbox",
+        ),
+        ("find_due_provider_tasks", "SELECT"),
+        ("find_pending_drive_imports", "SELECT"),
+    ] {
+        let method = contract
+            .methods
+            .iter()
+            .find(|method| method.name == expected.0)
+            .unwrap_or_else(|| panic!("missing repository SQL method {}", expected.0));
+        assert!(
+            method.sql.contains(expected.1),
+            "{} must contain `{}`",
+            expected.0,
+            expected.1,
+        );
+        assert!(
+            method.sql.contains("tenant_id") && method.sql.contains("organization_id"),
+            "{} must preserve tenant and organization scope",
+            expected.0,
+        );
+    }
+}
+
+#[test]
+fn generation_repository_sql_contract_preserves_idempotency_and_output_uniqueness() {
+    let contract = image_generation_repository_sql_contract();
+
+    let create_generation = contract
+        .methods
+        .iter()
+        .find(|method| method.name == "create_generation")
+        .expect("create_generation sql");
+    assert!(create_generation.sql.contains("idempotency_key"));
+    assert!(create_generation.sql.contains("provider_operation"));
+    assert!(create_generation.sql.contains("drive_sync_status"));
+    assert!(create_generation.sql.contains("RETURNING id"));
+
+    let upsert_outputs = contract
+        .methods
+        .iter()
+        .find(|method| method.name == "upsert_generation_outputs")
+        .expect("upsert_generation_outputs sql");
+    assert!(upsert_outputs
+        .sql
+        .contains("ON CONFLICT (tenant_id, organization_id, generation_job_id, output_index)"));
+    assert!(upsert_outputs.sql.contains("scene"));
+    assert!(upsert_outputs.sql.contains("provider_uri"));
+    assert!(upsert_outputs.sql.contains("drive_space_id"));
+    assert!(upsert_outputs.sql.contains("resource_snapshot"));
+
+    let webhook = contract
+        .methods
+        .iter()
+        .find(|method| method.name == "record_provider_webhook_event")
+        .expect("record_provider_webhook_event sql");
+    assert!(webhook.sql.contains("payload_hash"));
+    assert!(webhook
+        .sql
+        .contains("ON CONFLICT (provider_code, payload_hash)"));
+    assert!(webhook.sql.contains("process_status"));
 }
 
 fn table_definition<'a>(sql: &'a str, table_name: &str) -> Option<&'a str> {

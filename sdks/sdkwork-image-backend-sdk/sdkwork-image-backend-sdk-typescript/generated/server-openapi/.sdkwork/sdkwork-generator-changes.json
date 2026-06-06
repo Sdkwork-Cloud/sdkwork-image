@@ -8,7 +8,7 @@
     "sdkType": "backend",
     "packageName": "@sdkwork/image-backend-sdk"
   },
-  "changeFingerprint": "2a7c7d2072baf72f25d6cc179df0d9bfea2a9b92fddb5b0aa86b8912c695f4ba",
+  "changeFingerprint": "46af295f31d2a696ec71c8516dfdbf0b06616650a7de6d98a275b82104ea2a8d",
   "changes": {
     "createdGeneratedFiles": [
       "bin/publish-core.mjs",

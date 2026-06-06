@@ -14,9 +14,9 @@ export interface ImagePresetsListParams {
 
 export class ImagePresetsApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -48,9 +48,9 @@ export interface ImageGenerationsListParams {
 
 export class ImageGenerationsApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -89,9 +89,9 @@ export class ImageGenerationsApi {
 
 export class ImageGalleriesItemsApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -112,10 +112,10 @@ export interface ImageGalleriesListParams {
 export class ImageGalleriesApi {
   private client: HttpClient;
   public readonly items: ImageGalleriesItemsApi;
-  
-  constructor(client: HttpClient) { 
+
+  constructor(client: HttpClient) {
     this.client = client;
-    this.items = new ImageGalleriesItemsApi(client); 
+    this.items = new ImageGalleriesItemsApi(client);
   }
 
 
@@ -139,9 +139,9 @@ export class ImageGalleriesApi {
 
 export class ImageEditTasksApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -166,9 +166,9 @@ export interface ImageAssetsListParams {
 
 export class ImageAssetsApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -197,14 +197,14 @@ export class ImageApi {
   public readonly galleries: ImageGalleriesApi;
   public readonly generations: ImageGenerationsApi;
   public readonly presets: ImagePresetsApi;
-  
-  constructor(client: HttpClient) { 
+
+  constructor(client: HttpClient) {
     this.client = client;
     this.assets = new ImageAssetsApi(client);
     this.editTasks = new ImageEditTasksApi(client);
     this.galleries = new ImageGalleriesApi(client);
     this.generations = new ImageGenerationsApi(client);
-    this.presets = new ImagePresetsApi(client); 
+    this.presets = new ImagePresetsApi(client);
   }
 
 }

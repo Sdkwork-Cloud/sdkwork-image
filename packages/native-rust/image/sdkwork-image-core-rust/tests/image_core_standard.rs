@@ -1,10 +1,14 @@
 use sdkwork_drive_product::uploader::{UploaderActor, UploaderRetention, UploaderTarget};
 use sdkwork_image_core::{
     build_drive_uploader_command_for_generated_output, create_image_generation_request,
-    plan_drive_import_for_generated_outputs, validate_image_generation_request,
-    DriveGeneratedMediaContext, GeneratedMediaKind, GeneratedMediaOutput, ImageGenerationActor,
-    ImageGenerationRequest, ImageJobStatus, ImageVisibility,
-    GENERATED_MEDIA_DEFAULT_CHUNK_SIZE_BYTES, IMAGE_CAPABILITY, IMAGE_DOMAIN, IMAGE_WORKSPACE,
+    normalize_openai_image_generation_outputs, normalize_provider_task_generation_result,
+    plan_drive_import_for_generated_outputs, plan_image_generation_provider_dispatch,
+    validate_image_generation_request, DriveGeneratedMediaContext, GeneratedMediaKind,
+    GeneratedMediaOutput, ImageGenerationActor, ImageGenerationCreateCommand,
+    ImageGenerationRequest, ImageGenerationRuntimeStatus, ImageJobStatus, ImageProviderOperation,
+    ImageProviderTaskMode, ImageVisibility, OpenAiGeneratedImage, ProviderGeneratedMediaAsset,
+    ProviderTaskErrorSnapshot, ProviderTaskSnapshot, GENERATED_MEDIA_DEFAULT_CHUNK_SIZE_BYTES,
+    IMAGE_CAPABILITY, IMAGE_DOMAIN, IMAGE_WORKSPACE,
 };
 
 #[test]
@@ -62,6 +66,60 @@ fn image_status_and_visibility_are_stable_integer_contracts() {
 }
 
 #[test]
+fn runtime_statuses_map_to_storage_job_status_and_drive_sync_status() {
+    for status in [
+        ImageGenerationRuntimeStatus::Queued,
+        ImageGenerationRuntimeStatus::Dispatching,
+        ImageGenerationRuntimeStatus::Submitted,
+    ] {
+        assert_eq!(status.as_job_status(), ImageJobStatus::Queued);
+        assert_eq!(status.as_job_status_code(), 1);
+        assert_eq!(status.as_drive_sync_status(), "pending");
+    }
+
+    for status in [
+        ImageGenerationRuntimeStatus::Rendering,
+        ImageGenerationRuntimeStatus::CancelRequested,
+    ] {
+        assert_eq!(status.as_job_status(), ImageJobStatus::Rendering);
+        assert_eq!(status.as_job_status_code(), 2);
+        assert_eq!(status.as_drive_sync_status(), "pending");
+    }
+
+    assert_eq!(
+        ImageGenerationRuntimeStatus::Importing.as_job_status(),
+        ImageJobStatus::Rendering,
+    );
+    assert_eq!(
+        ImageGenerationRuntimeStatus::Importing.as_drive_sync_status(),
+        "importing",
+    );
+
+    assert_eq!(
+        ImageGenerationRuntimeStatus::Succeeded.as_job_status(),
+        ImageJobStatus::Ready,
+    );
+    assert_eq!(
+        ImageGenerationRuntimeStatus::Succeeded.as_job_status_code(),
+        3,
+    );
+    assert_eq!(
+        ImageGenerationRuntimeStatus::Succeeded.as_drive_sync_status(),
+        "imported",
+    );
+
+    for status in [
+        ImageGenerationRuntimeStatus::Failed,
+        ImageGenerationRuntimeStatus::Cancelled,
+        ImageGenerationRuntimeStatus::Expired,
+    ] {
+        assert_eq!(status.as_job_status(), ImageJobStatus::Failed);
+        assert_eq!(status.as_job_status_code(), 4);
+        assert_eq!(status.as_drive_sync_status(), "failed");
+    }
+}
+
+#[test]
 fn plans_ai_generated_outputs_into_drive_ai_generated_space_for_logged_in_users() {
     let plans = plan_drive_import_for_generated_outputs(
         DriveGeneratedMediaContext {
@@ -98,6 +156,8 @@ fn plans_ai_generated_outputs_into_drive_ai_generated_space_for_logged_in_users(
     assert_eq!(plan.drive_space_type, "ai_generated");
     assert_eq!(plan.drive_owner_subject_type, "user");
     assert_eq!(plan.drive_owner_subject_id, "user-001");
+    assert_eq!(plan.drive_actor_type, "user");
+    assert_eq!(plan.drive_actor_id, "user-001");
     assert_eq!(plan.drive_space_id, "space-ai-generated-user-user-001");
     assert_eq!(plan.drive_upload_profile_code, "image");
     assert_eq!(plan.media_resource.kind, "image");
@@ -189,8 +249,9 @@ fn builds_drive_uploader_command_with_scene_for_logged_in_generated_output() {
     ));
     assert!(matches!(
         command.target,
-        UploaderTarget::Space { ref space_id, parent_node_id: None }
-            if space_id == "space-ai-generated-user-user-001"
+        UploaderTarget::AiGeneratedSpace {
+            parent_node_id: None
+        }
     ));
     assert!(matches!(command.retention, UploaderRetention::LongTerm));
 }
@@ -228,13 +289,12 @@ fn plans_anonymous_generated_outputs_with_app_owned_ai_generation_space() {
     let plan = &plans[0];
     assert_eq!(plan.drive_space_type, "ai_generated");
     assert_eq!(plan.drive_owner_subject_type, "app");
-    assert_eq!(
-        plan.drive_owner_subject_id,
-        "app:sdkwork-image:anonymous:anon-session-001",
-    );
+    assert_eq!(plan.drive_owner_subject_id, "app:sdkwork-image:anonymous",);
+    assert_eq!(plan.drive_actor_type, "anonymous");
+    assert_eq!(plan.drive_actor_id, "anon-session-001");
     assert_eq!(
         plan.drive_space_id,
-        "space-ai-generated-app-anonymous-anon-session-001",
+        "space-ai-generated-app-app-sdkwork-image-anonymous",
     );
     assert_eq!(plan.drive_upload_profile_code, "video");
     assert_eq!(plan.media_resource.kind, "video");
@@ -296,8 +356,9 @@ fn builds_drive_uploader_command_with_scene_for_anonymous_generated_output() {
     ));
     assert!(matches!(
         command.target,
-        UploaderTarget::Space { ref space_id, parent_node_id: None }
-            if space_id == "space-ai-generated-app-anonymous-anon-session-001"
+        UploaderTarget::AiGeneratedSpace {
+            parent_node_id: None
+        }
     ));
 }
 
@@ -417,4 +478,223 @@ fn rejects_duplicate_output_indexes_before_drive_sync() {
     );
 
     assert_eq!(result, Err("generated media output_index must be unique"));
+}
+
+#[test]
+fn plans_image_generation_provider_dispatch_through_claw_router_sdk_boundary() {
+    let plan = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
+        prompt: "Premium product shot on a matte desk".to_string(),
+        negative_prompt: Some("blurry, distorted".to_string()),
+        scene: "product_hero".to_string(),
+        provider_code: Some("openai".to_string()),
+        model: Some("gpt-image-1".to_string()),
+        resolution: Some("1024x1024".to_string()),
+        style: Some("natural".to_string()),
+        output_count: Some(3),
+        webhook_url: Some("https://app.example.com/hooks/image".to_string()),
+        idempotency_key: Some("generation-idempotency-001".to_string()),
+    })
+    .expect("provider dispatch plan should be created");
+
+    assert_eq!(plan.provider_code, "openai");
+    assert_eq!(
+        plan.provider_operation,
+        ImageProviderOperation::OpenAiImageGeneration,
+    );
+    assert_eq!(plan.task_mode, ImageProviderTaskMode::Synchronous);
+    assert_eq!(plan.claw_router_api_path, "/v1/images/generations");
+    assert_eq!(plan.claw_router_sdk_resource, "images");
+    assert_eq!(plan.claw_router_sdk_method, "create_generation");
+    assert_eq!(plan.prompt, "Premium product shot on a matte desk");
+    assert_eq!(plan.model.as_deref(), Some("gpt-image-1"));
+    assert_eq!(plan.size.as_deref(), Some("1024x1024"));
+    assert_eq!(plan.quality.as_deref(), Some("natural"));
+    assert_eq!(plan.response_format.as_deref(), Some("url"));
+    assert_eq!(plan.output_count, 3);
+    assert_eq!(plan.output_count_provider_parameter.as_deref(), Some("n"));
+    assert!(!plan.claw_router_api_path.contains("generation_jobs"));
+    assert!(!plan.claw_router_sdk_method.contains("generationJobs"));
+}
+
+#[test]
+fn plans_async_provider_dispatch_for_task_based_image_providers() {
+    let plan = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
+        prompt: "Brand campaign key visual".to_string(),
+        negative_prompt: None,
+        scene: "brand_campaign".to_string(),
+        provider_code: Some("nano-banana".to_string()),
+        model: Some("banana-image-pro".to_string()),
+        resolution: Some("1536x1024".to_string()),
+        style: None,
+        output_count: Some(1),
+        webhook_url: Some("https://app.example.com/hooks/nano-banana".to_string()),
+        idempotency_key: None,
+    })
+    .expect("task provider dispatch plan should be created");
+
+    assert_eq!(plan.provider_code, "nano-banana");
+    assert_eq!(
+        plan.provider_operation,
+        ImageProviderOperation::NanoBananaImageGeneration,
+    );
+    assert_eq!(plan.task_mode, ImageProviderTaskMode::Task);
+    assert_eq!(
+        plan.claw_router_api_path,
+        "/nano-banana/v1/images/generations"
+    );
+    assert_eq!(plan.claw_router_sdk_resource, "images_nano_banana");
+    assert_eq!(plan.claw_router_sdk_method, "create_generations");
+    assert_eq!(
+        plan.callback_url.as_deref(),
+        Some("https://app.example.com/hooks/nano-banana")
+    );
+}
+
+#[test]
+fn normalizes_openai_image_generation_response_into_multi_output_drive_inputs() {
+    let outputs = normalize_openai_image_generation_outputs(
+        "openai",
+        vec![
+            OpenAiGeneratedImage {
+                url: Some("https://provider.example.com/generated/hero-a.png".to_string()),
+                b64_json: None,
+                mime_type: Some("image/png".to_string()),
+                revised_prompt: Some("A refined hero shot".to_string()),
+            },
+            OpenAiGeneratedImage {
+                url: None,
+                b64_json: Some("ZmFrZS1pbWFnZS1ieXRlcw==".to_string()),
+                mime_type: Some("image/png".to_string()),
+                revised_prompt: None,
+            },
+        ],
+    )
+    .expect("openai image outputs should normalize");
+
+    assert_eq!(outputs.len(), 2);
+    assert_eq!(outputs[0].output_index, 0);
+    assert_eq!(outputs[0].kind, GeneratedMediaKind::Image);
+    assert_eq!(
+        outputs[0].provider_url.as_deref(),
+        Some("https://provider.example.com/generated/hero-a.png"),
+    );
+    assert_eq!(
+        outputs[0].provider_uri.as_deref(),
+        Some("provider://openai/images/0"),
+    );
+    assert_eq!(outputs[0].mime_type.as_deref(), Some("image/png"));
+    assert_eq!(outputs[1].output_index, 1);
+    assert_eq!(
+        outputs[1].provider_uri.as_deref(),
+        Some("data:image/png;base64,ZmFrZS1pbWFnZS1ieXRlcw=="),
+    );
+    assert!(outputs[1].provider_url.is_none());
+
+    let plans = plan_drive_import_for_generated_outputs(
+        DriveGeneratedMediaContext {
+            tenant_id: "tenant-1".to_string(),
+            organization_id: Some("org-1".to_string()),
+            generation_id: "generation-openai-sync".to_string(),
+            provider_code: "openai".to_string(),
+            model: Some("gpt-image-1".to_string()),
+            scene: "product_hero".to_string(),
+            actor: ImageGenerationActor::User {
+                user_id: "user-001".to_string(),
+            },
+        },
+        outputs,
+    )
+    .expect("drive import plans should be created from normalized provider outputs");
+
+    assert_eq!(plans.len(), 2);
+    assert_eq!(plans[0].drive_space_type, "ai_generated");
+    assert_eq!(plans[1].drive_space_type, "ai_generated");
+    assert_eq!(plans[0].scene, "product_hero");
+    assert_eq!(plans[1].scene, "product_hero");
+}
+
+#[test]
+fn normalizes_async_provider_task_result_for_webhook_or_polling_consistency() {
+    let normalized = normalize_provider_task_generation_result(
+        "nano-banana",
+        ProviderTaskSnapshot {
+            task_id: Some("task-nano-001".to_string()),
+            id: Some("provider-result-001".to_string()),
+            status: Some("SUCCEEDED".to_string()),
+            state: Some("completed".to_string()),
+            model: Some("banana-image-pro".to_string()),
+            images: vec![
+                ProviderGeneratedMediaAsset {
+                    id: Some("asset-0".to_string()),
+                    uri: Some("provider://nano-banana/tasks/task-nano-001/images/0".to_string()),
+                    url: Some("https://provider.example.com/nano/0.png".to_string()),
+                    mime_type: Some("image/png".to_string()),
+                    width: Some(1536),
+                    height: Some(1024),
+                    duration_seconds: None,
+                },
+                ProviderGeneratedMediaAsset {
+                    id: Some("asset-1".to_string()),
+                    uri: Some("provider://nano-banana/tasks/task-nano-001/images/1".to_string()),
+                    url: Some("https://provider.example.com/nano/1.png".to_string()),
+                    mime_type: Some("image/png".to_string()),
+                    width: Some(1536),
+                    height: Some(1024),
+                    duration_seconds: None,
+                },
+            ],
+            error: None,
+        },
+    )
+    .expect("provider task should normalize");
+
+    assert_eq!(normalized.provider_code, "nano-banana");
+    assert_eq!(
+        normalized.provider_task_id.as_deref(),
+        Some("task-nano-001")
+    );
+    assert_eq!(normalized.provider_status.as_deref(), Some("SUCCEEDED"));
+    assert_eq!(normalized.status, ImageGenerationRuntimeStatus::Importing);
+    assert!(normalized.provider_terminal);
+    assert!(normalized.ready_for_drive_import);
+    assert_eq!(normalized.outputs.len(), 2);
+    assert_eq!(
+        normalized.outputs[0].provider_asset_id.as_deref(),
+        Some("asset-0")
+    );
+    assert_eq!(
+        normalized.outputs[1].provider_asset_id.as_deref(),
+        Some("asset-1")
+    );
+}
+
+#[test]
+fn normalizes_provider_failure_without_drive_import_outputs() {
+    let normalized = normalize_provider_task_generation_result(
+        "midjourney",
+        ProviderTaskSnapshot {
+            task_id: Some("task-midjourney-001".to_string()),
+            id: None,
+            status: Some("failed".to_string()),
+            state: None,
+            model: Some("mj-v7".to_string()),
+            images: vec![],
+            error: Some(ProviderTaskErrorSnapshot {
+                code: Some("provider_failed".to_string()),
+                message: Some("Provider rejected prompt".to_string()),
+                error_type: Some("moderation".to_string()),
+            }),
+        },
+    )
+    .expect("provider failure should normalize");
+
+    assert_eq!(normalized.status, ImageGenerationRuntimeStatus::Failed);
+    assert!(normalized.provider_terminal);
+    assert!(!normalized.ready_for_drive_import);
+    assert!(normalized.outputs.is_empty());
+    assert_eq!(normalized.error_code.as_deref(), Some("provider_failed"));
+    assert_eq!(
+        normalized.error_message.as_deref(),
+        Some("Provider rejected prompt")
+    );
 }

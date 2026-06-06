@@ -4,6 +4,20 @@ import type { HttpClient } from '../http/client';
 import type { ImageApiResult, ImageGenerationCancelCommand, ImageGenerationRefreshCommand, ImageGenerationRetryCommand, ImageOperationCommand } from '../types';
 
 
+export class ImageProviderWebhooksApi {
+  private client: HttpClient;
+
+  constructor(client: HttpClient) {
+    this.client = client;
+  }
+
+
+/** Provider Webhooks receive. */
+  async receive(providerCode: string, body: ImageOperationCommand): Promise<ImageApiResult> {
+    return this.client.post<ImageApiResult>(backendApiPath(`/image/provider_webhooks/${serializePathParameter(providerCode, { name: 'providerCode', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
+  }
+}
+
 export interface ImagePresetsListParams {
   page?: number;
   pageSize?: number;
@@ -14,9 +28,9 @@ export interface ImagePresetsListParams {
 
 export class ImagePresetsApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -63,9 +77,9 @@ export interface ImageGenerationsListParams {
 
 export class ImageGenerationsApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -112,9 +126,9 @@ export interface ImageGalleriesItemsListParams {
 
 export class ImageGalleriesItemsApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -152,10 +166,10 @@ export interface ImageGalleriesListParams {
 export class ImageGalleriesApi {
   private client: HttpClient;
   public readonly items: ImageGalleriesItemsApi;
-  
-  constructor(client: HttpClient) { 
+
+  constructor(client: HttpClient) {
     this.client = client;
-    this.items = new ImageGalleriesItemsApi(client); 
+    this.items = new ImageGalleriesItemsApi(client);
   }
 
 
@@ -202,9 +216,9 @@ export interface ImageEditTasksListParams {
 
 export class ImageEditTasksApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -236,9 +250,9 @@ export interface ImageAssetsListParams {
 
 export class ImageAssetsApi {
   private client: HttpClient;
-  
-  constructor(client: HttpClient) { 
-    this.client = client; 
+
+  constructor(client: HttpClient) {
+    this.client = client;
   }
 
 
@@ -277,14 +291,16 @@ export class ImageApi {
   public readonly galleries: ImageGalleriesApi;
   public readonly generations: ImageGenerationsApi;
   public readonly presets: ImagePresetsApi;
-  
-  constructor(client: HttpClient) { 
+  public readonly providerWebhooks: ImageProviderWebhooksApi;
+
+  constructor(client: HttpClient) {
     this.client = client;
     this.assets = new ImageAssetsApi(client);
     this.editTasks = new ImageEditTasksApi(client);
     this.galleries = new ImageGalleriesApi(client);
     this.generations = new ImageGenerationsApi(client);
-    this.presets = new ImagePresetsApi(client); 
+    this.presets = new ImagePresetsApi(client);
+    this.providerWebhooks = new ImageProviderWebhooksApi(client);
   }
 
 }
