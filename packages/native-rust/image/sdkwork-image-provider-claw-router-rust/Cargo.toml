@@ -9,6 +9,6 @@ name = "sdkwork_image_provider_claw_router"
 path = "src/lib.rs"
 
 [dependencies]
-clawrouter-open-sdk = { path = "../../../../../sdkwork-claw-router/sdks/clawrouter-open-sdk/clawrouter-open-sdk-rust/generated/server-openapi" }
-sdkwork_image_core = { path = "../sdkwork-image-core-rust" }
+clawrouter-open-sdk.workspace = true
+sdkwork-image-core-rust.workspace = true
 serde_json = "1.0"
