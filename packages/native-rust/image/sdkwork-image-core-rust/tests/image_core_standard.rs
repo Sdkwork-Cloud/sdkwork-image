@@ -491,6 +491,7 @@ fn plans_image_generation_provider_dispatch_through_claw_router_sdk_boundary() {
         resolution: Some("1024x1024".to_string()),
         style: Some("natural".to_string()),
         output_count: Some(3),
+        reference_images: vec![],
         webhook_url: Some("https://app.example.com/hooks/image".to_string()),
         idempotency_key: Some("generation-idempotency-001".to_string()),
     })
@@ -527,6 +528,7 @@ fn plans_async_provider_dispatch_for_task_based_image_providers() {
         resolution: Some("1536x1024".to_string()),
         style: None,
         output_count: Some(1),
+        reference_images: vec![],
         webhook_url: Some("https://app.example.com/hooks/nano-banana".to_string()),
         idempotency_key: None,
     })
@@ -548,6 +550,195 @@ fn plans_async_provider_dispatch_for_task_based_image_providers() {
         plan.callback_url.as_deref(),
         Some("https://app.example.com/hooks/nano-banana")
     );
+}
+
+#[test]
+fn plans_vidu_reference_image_dispatch_through_generated_claw_router_sdk() {
+    let plan = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
+        prompt: "Turn this product reference into a campaign visual".to_string(),
+        negative_prompt: Some("blurred text".to_string()),
+        scene: "campaign_reference".to_string(),
+        provider_code: Some("vidu".to_string()),
+        model: Some("vidu-image-pro".to_string()),
+        resolution: Some("1536x1024".to_string()),
+        style: Some("cinematic".to_string()),
+        output_count: Some(1),
+        reference_images: vec![
+            "drive://spaces/space-1/nodes/source-product".to_string(),
+            "https://cdn.example.com/reference.png".to_string(),
+        ],
+        webhook_url: Some("https://app.example.com/hooks/vidu".to_string()),
+        idempotency_key: Some("vidu-idem-001".to_string()),
+    })
+    .expect("vidu reference image dispatch plan should be created");
+
+    assert_eq!(plan.provider_code, "vidu");
+    assert_eq!(
+        plan.provider_operation,
+        ImageProviderOperation::ViduReferenceToImageGeneration,
+    );
+    assert_eq!(plan.task_mode, ImageProviderTaskMode::Task);
+    assert_eq!(plan.claw_router_api_path, "/vidu/ent/v2/reference2image");
+    assert_eq!(plan.claw_router_sdk_resource, "images_vidu");
+    assert_eq!(plan.claw_router_sdk_method, "create_ent_v2_reference2image");
+    assert_eq!(plan.reference_images.len(), 2);
+    assert_eq!(plan.output_count_provider_parameter, None);
+}
+
+#[test]
+fn normalizes_reference_images_before_enforcing_effective_item_limit() {
+    let mut reference_images = vec![
+        " https://cdn.example.com/reference-a.png ".to_string(),
+        "https://cdn.example.com/reference-a.png".to_string(),
+        "drive://spaces/space-1/nodes/reference-b".to_string(),
+    ];
+    reference_images.extend((0..14).map(|_| "   ".to_string()));
+
+    let plan = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
+        prompt: "Use normalized reference images".to_string(),
+        negative_prompt: None,
+        scene: "reference_normalization".to_string(),
+        provider_code: Some("nano-banana".to_string()),
+        model: Some("banana-image-pro".to_string()),
+        resolution: Some("1024x1024".to_string()),
+        style: None,
+        output_count: Some(1),
+        reference_images,
+        webhook_url: None,
+        idempotency_key: None,
+    })
+    .expect("raw reference image input can contain empty and duplicate values");
+
+    assert_eq!(
+        plan.reference_images,
+        vec![
+            "https://cdn.example.com/reference-a.png".to_string(),
+            "drive://spaces/space-1/nodes/reference-b".to_string(),
+        ],
+    );
+}
+
+#[test]
+fn plans_task_provider_retrieval_through_generated_claw_router_sdk() {
+    let cases = [
+        (
+            "midjourney",
+            "mj-v7",
+            "images_midjourney",
+            "list_v1_images_generations",
+            "/midjourney/v1/images/generations/{task_id}",
+            vec![],
+        ),
+        (
+            "nano-banana",
+            "banana-image-pro",
+            "images_nano_banana",
+            "retrieve_generations",
+            "/nano-banana/v1/images/generations/{task_id}",
+            vec![],
+        ),
+        (
+            "vidu",
+            "vidu-image-pro",
+            "videos_vidu",
+            "list_ent_v2_tasks_creations",
+            "/vidu/ent/v2/tasks/{task_id}/creations",
+            vec!["https://cdn.example.com/reference.png".to_string()],
+        ),
+    ];
+
+    for (
+        provider_code,
+        model,
+        retrieve_sdk_resource,
+        retrieve_sdk_method,
+        retrieve_api_path,
+        reference_images,
+    ) in cases
+    {
+        let plan = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
+            prompt: "Poll generated image task".to_string(),
+            negative_prompt: None,
+            scene: "polling_contract".to_string(),
+            provider_code: Some(provider_code.to_string()),
+            model: Some(model.to_string()),
+            resolution: Some("1024x1024".to_string()),
+            style: None,
+            output_count: Some(1),
+            reference_images,
+            webhook_url: None,
+            idempotency_key: None,
+        })
+        .expect("task provider dispatch plan should build");
+
+        assert_eq!(plan.task_mode, ImageProviderTaskMode::Task);
+        assert_eq!(
+            plan.claw_router_retrieve_sdk_resource,
+            Some(retrieve_sdk_resource),
+            "{provider_code} retrieve resource must be generated SDK-backed",
+        );
+        assert_eq!(
+            plan.claw_router_retrieve_sdk_method,
+            Some(retrieve_sdk_method),
+            "{provider_code} retrieve method must be generated SDK-backed",
+        );
+        assert_eq!(
+            plan.claw_router_retrieve_api_path,
+            Some(retrieve_api_path),
+            "{provider_code} retrieve path must be auditable",
+        );
+    }
+}
+
+#[test]
+fn rejects_providers_without_generated_claw_router_image_create_method() {
+    for provider_code in ["gemini", "kling", "jimeng", "volcengine", "custom-provider"] {
+        let result = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
+            prompt: "Render through a provider that has no generated image SDK resource"
+                .to_string(),
+            negative_prompt: None,
+            scene: "generated_sdk_guard".to_string(),
+            provider_code: Some(provider_code.to_string()),
+            model: Some("image-model".to_string()),
+            resolution: Some("1024x1024".to_string()),
+            style: None,
+            output_count: Some(1),
+            reference_images: vec![],
+            webhook_url: Some("https://app.example.com/hooks/provider".to_string()),
+            idempotency_key: None,
+        });
+
+        assert_eq!(
+            result,
+            Err("image generation provider is not exposed by the generated Claw Router SDK"),
+            "{provider_code} must not fall back to an unrelated generated SDK method",
+        );
+    }
+}
+
+#[test]
+fn rejects_reference_images_for_providers_without_generated_reference_image_field() {
+    for provider_code in ["openai", "midjourney"] {
+        let result = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
+            prompt: "Use this reference image".to_string(),
+            negative_prompt: None,
+            scene: "reference_guard".to_string(),
+            provider_code: Some(provider_code.to_string()),
+            model: Some("image-model".to_string()),
+            resolution: Some("1024x1024".to_string()),
+            style: None,
+            output_count: Some(1),
+            reference_images: vec!["https://cdn.example.com/reference.png".to_string()],
+            webhook_url: None,
+            idempotency_key: None,
+        });
+
+        assert_eq!(
+            result,
+            Err("image generation provider does not support reference_images"),
+            "{provider_code} must not silently drop reference_images",
+        );
+    }
 }
 
 #[test]

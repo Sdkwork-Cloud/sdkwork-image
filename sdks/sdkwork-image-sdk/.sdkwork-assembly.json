@@ -11,6 +11,7 @@
   },
   "sdkOwner": "sdkwork-image",
   "apiAuthority": "sdkwork-image-open-api",
+  "sdkDependencies": [],
   "discoverySurface": {
     "sdkTarget": "open-api",
     "apiPrefix": "/image/v3/api",

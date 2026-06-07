@@ -4,6 +4,7 @@ target/
 .turbo/
 coverage/
 .vite/
+.npm-cache/
 
 *.log
 *.tgz

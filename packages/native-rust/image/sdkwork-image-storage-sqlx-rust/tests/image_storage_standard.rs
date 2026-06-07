@@ -283,8 +283,17 @@ fn generation_repository_sql_contract_preserves_idempotency_and_output_uniquenes
         .expect("create_generation sql");
     assert!(create_generation.sql.contains("idempotency_key"));
     assert!(create_generation.sql.contains("provider_operation"));
+    assert!(create_generation.sql.contains("input_snapshot"));
     assert!(create_generation.sql.contains("drive_sync_status"));
     assert!(create_generation.sql.contains("RETURNING id"));
+
+    let upsert_provider_task = contract
+        .methods
+        .iter()
+        .find(|method| method.name == "upsert_provider_task")
+        .expect("upsert_provider_task sql");
+    assert!(upsert_provider_task.sql.contains("request_snapshot"));
+    assert!(upsert_provider_task.sql.contains("response_snapshot"));
 
     let upsert_outputs = contract
         .methods

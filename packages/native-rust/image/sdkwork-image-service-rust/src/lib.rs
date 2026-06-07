@@ -71,6 +71,45 @@ pub struct ImageGenerationOutputPersistenceRow {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ImageGenerationInputSnapshot {
+    pub prompt: String,
+    pub negative_prompt: Option<String>,
+    pub scene: String,
+    pub provider_code: String,
+    pub provider_operation: String,
+    pub model: Option<String>,
+    pub resolution: Option<String>,
+    pub style: Option<String>,
+    pub output_count: i32,
+    pub reference_images: Vec<String>,
+    pub callback_url: Option<String>,
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ImageProviderRequestSnapshot {
+    pub provider_code: String,
+    pub provider_operation: String,
+    pub task_mode: String,
+    pub api_path: String,
+    pub sdk_resource: String,
+    pub sdk_method: String,
+    pub retrieve_api_path: Option<String>,
+    pub retrieve_sdk_resource: Option<String>,
+    pub retrieve_sdk_method: Option<String>,
+    pub prompt: String,
+    pub negative_prompt: Option<String>,
+    pub model: Option<String>,
+    pub size: Option<String>,
+    pub quality: Option<String>,
+    pub output_count: i32,
+    pub output_count_provider_parameter: Option<String>,
+    pub reference_images: Vec<String>,
+    pub callback_url: Option<String>,
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ImageGenerationPersistencePlan {
     pub generation_id: String,
     pub runtime_status: ImageGenerationRuntimeStatus,
@@ -79,6 +118,8 @@ pub struct ImageGenerationPersistencePlan {
     pub provider_code: String,
     pub provider_task_id: Option<String>,
     pub provider_status: Option<String>,
+    pub input_snapshot: Option<ImageGenerationInputSnapshot>,
+    pub provider_request_snapshot: Option<ImageProviderRequestSnapshot>,
     pub output_rows: Vec<ImageGenerationOutputPersistenceRow>,
     pub repository_methods: Vec<String>,
 }
@@ -113,7 +154,12 @@ pub enum ImageGenerationRuntimeStep {
         sdk_method: String,
     },
     PersistProviderSubmission,
-    ScheduleProviderPolling,
+    ScheduleProviderPolling {
+        provider_code: String,
+        api_path: String,
+        sdk_resource: String,
+        sdk_method: String,
+    },
     AwaitProviderWebhook,
     PersistDriveImportPlan {
         output_count: i32,
@@ -211,7 +257,21 @@ pub fn plan_generation_create_runtime_steps(
         steps.push(ImageGenerationRuntimeStep::AwaitProviderWebhook);
     }
     if dispatch_plan.task_mode != sdkwork_image_core::ImageProviderTaskMode::Synchronous {
-        steps.push(ImageGenerationRuntimeStep::ScheduleProviderPolling);
+        let api_path = dispatch_plan
+            .claw_router_retrieve_api_path
+            .ok_or("image generation provider polling API path is required")?;
+        let sdk_resource = dispatch_plan
+            .claw_router_retrieve_sdk_resource
+            .ok_or("image generation provider polling SDK resource is required")?;
+        let sdk_method = dispatch_plan
+            .claw_router_retrieve_sdk_method
+            .ok_or("image generation provider polling SDK method is required")?;
+        steps.push(ImageGenerationRuntimeStep::ScheduleProviderPolling {
+            provider_code: dispatch_plan.provider_code.clone(),
+            api_path: api_path.to_string(),
+            sdk_resource: sdk_resource.to_string(),
+            sdk_method: sdk_method.to_string(),
+        });
     }
 
     steps.push(ImageGenerationRuntimeStep::PersistOutboxEvent {
@@ -231,6 +291,7 @@ pub fn plan_generation_create_persistence_plan(
         plan_generation_create_service_flow(scope, generation_id, command, provider_result)?;
     Ok(persistence_plan_from_service_plan(
         &service_plan.record,
+        &service_plan.dispatch.dispatch_plan,
         &service_plan.dispatch.normalized_result,
         &service_plan.drive_import_plans,
         true,
@@ -357,6 +418,7 @@ pub fn plan_generation_refresh_from_webhook(
 
 fn persistence_plan_from_service_plan(
     record: &ImageGenerationRecord,
+    dispatch_plan: &ImageProviderDispatchPlan,
     normalized_result: &Option<NormalizedProviderGenerationResult>,
     drive_import_plans: &[DriveGeneratedMediaImportPlan],
     include_create_generation: bool,
@@ -389,6 +451,10 @@ fn persistence_plan_from_service_plan(
                 .as_ref()
                 .and_then(|result| result.provider_status.clone())
         }),
+        input_snapshot: include_create_generation
+            .then(|| input_snapshot_from_dispatch_plan(dispatch_plan, &record.scene)),
+        provider_request_snapshot: include_create_generation
+            .then(|| provider_request_snapshot_from_dispatch_plan(dispatch_plan)),
         output_rows: drive_import_plans
             .iter()
             .map(output_persistence_row_from_drive_plan)
@@ -419,12 +485,60 @@ fn persistence_plan_from_refresh_plan(
         provider_code: plan.provider_code.clone(),
         provider_task_id: plan.provider_task_id.clone(),
         provider_status: plan.provider_status.clone(),
+        input_snapshot: None,
+        provider_request_snapshot: None,
         output_rows: plan
             .drive_import_plans
             .iter()
             .map(output_persistence_row_from_drive_plan)
             .collect(),
         repository_methods,
+    }
+}
+
+fn input_snapshot_from_dispatch_plan(
+    plan: &ImageProviderDispatchPlan,
+    scene: &str,
+) -> ImageGenerationInputSnapshot {
+    ImageGenerationInputSnapshot {
+        prompt: plan.prompt.clone(),
+        negative_prompt: plan.negative_prompt.clone(),
+        scene: scene.to_string(),
+        provider_code: plan.provider_code.clone(),
+        provider_operation: plan.provider_operation.as_str().to_string(),
+        model: plan.model.clone(),
+        resolution: plan.size.clone(),
+        style: plan.quality.clone(),
+        output_count: plan.output_count,
+        reference_images: plan.reference_images.clone(),
+        callback_url: plan.callback_url.clone(),
+        idempotency_key: plan.idempotency_key.clone(),
+    }
+}
+
+fn provider_request_snapshot_from_dispatch_plan(
+    plan: &ImageProviderDispatchPlan,
+) -> ImageProviderRequestSnapshot {
+    ImageProviderRequestSnapshot {
+        provider_code: plan.provider_code.clone(),
+        provider_operation: plan.provider_operation.as_str().to_string(),
+        task_mode: plan.task_mode.as_str().to_string(),
+        api_path: plan.claw_router_api_path.to_string(),
+        sdk_resource: plan.claw_router_sdk_resource.to_string(),
+        sdk_method: plan.claw_router_sdk_method.to_string(),
+        retrieve_api_path: plan.claw_router_retrieve_api_path.map(str::to_string),
+        retrieve_sdk_resource: plan.claw_router_retrieve_sdk_resource.map(str::to_string),
+        retrieve_sdk_method: plan.claw_router_retrieve_sdk_method.map(str::to_string),
+        prompt: plan.prompt.clone(),
+        negative_prompt: plan.negative_prompt.clone(),
+        model: plan.model.clone(),
+        size: plan.size.clone(),
+        quality: plan.quality.clone(),
+        output_count: plan.output_count,
+        output_count_provider_parameter: plan.output_count_provider_parameter.map(str::to_string),
+        reference_images: plan.reference_images.clone(),
+        callback_url: plan.callback_url.clone(),
+        idempotency_key: plan.idempotency_key.clone(),
     }
 }
 

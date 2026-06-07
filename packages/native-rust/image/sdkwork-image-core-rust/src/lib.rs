@@ -117,6 +117,7 @@ pub enum ImageProviderOperation {
     OpenAiImageGeneration,
     MidjourneyImageGeneration,
     NanoBananaImageGeneration,
+    ViduReferenceToImageGeneration,
     ProviderNativeImageGeneration,
 }
 
@@ -126,6 +127,7 @@ impl ImageProviderOperation {
             Self::OpenAiImageGeneration => "openai.images.generate",
             Self::MidjourneyImageGeneration => "midjourney.images.generate",
             Self::NanoBananaImageGeneration => "nano_banana.images.generate",
+            Self::ViduReferenceToImageGeneration => "vidu.images.reference_to_image",
             Self::ProviderNativeImageGeneration => "provider_native.images.generate",
         }
     }
@@ -141,6 +143,7 @@ pub struct ImageGenerationCreateCommand {
     pub resolution: Option<String>,
     pub style: Option<String>,
     pub output_count: Option<i32>,
+    pub reference_images: Vec<String>,
     pub webhook_url: Option<String>,
     pub idempotency_key: Option<String>,
 }
@@ -153,6 +156,9 @@ pub struct ImageProviderDispatchPlan {
     pub claw_router_api_path: &'static str,
     pub claw_router_sdk_resource: &'static str,
     pub claw_router_sdk_method: &'static str,
+    pub claw_router_retrieve_api_path: Option<&'static str>,
+    pub claw_router_retrieve_sdk_resource: Option<&'static str>,
+    pub claw_router_retrieve_sdk_method: Option<&'static str>,
     pub prompt: String,
     pub negative_prompt: Option<String>,
     pub model: Option<String>,
@@ -161,6 +167,7 @@ pub struct ImageProviderDispatchPlan {
     pub response_format: Option<String>,
     pub output_count: i32,
     pub output_count_provider_parameter: Option<&'static str>,
+    pub reference_images: Vec<String>,
     pub callback_url: Option<String>,
     pub idempotency_key: Option<String>,
 }
@@ -240,6 +247,7 @@ pub fn plan_image_generation_provider_dispatch(
     let negative_prompt = normalized_optional_text(command.negative_prompt.as_deref());
     let callback_url = normalized_optional_text(command.webhook_url.as_deref());
     let idempotency_key = normalized_optional_text(command.idempotency_key.as_deref());
+    let reference_images = normalize_reference_images(&command.reference_images)?;
 
     let (
         provider_operation,
@@ -247,6 +255,10 @@ pub fn plan_image_generation_provider_dispatch(
         claw_router_api_path,
         claw_router_sdk_resource,
         claw_router_sdk_method,
+        claw_router_retrieve_api_path,
+        claw_router_retrieve_sdk_resource,
+        claw_router_retrieve_sdk_method,
+        output_count_provider_parameter,
     ) = match provider_code.as_str() {
         "midjourney" => (
             ImageProviderOperation::MidjourneyImageGeneration,
@@ -254,6 +266,10 @@ pub fn plan_image_generation_provider_dispatch(
             "/midjourney/v1/images/generations",
             "images_midjourney",
             "create_v1_images_generation",
+            Some("/midjourney/v1/images/generations/{task_id}"),
+            Some("images_midjourney"),
+            Some("list_v1_images_generations"),
+            None,
         ),
         "nano-banana" | "nano_banana" | "nanobanana" => (
             ImageProviderOperation::NanoBananaImageGeneration,
@@ -261,33 +277,64 @@ pub fn plan_image_generation_provider_dispatch(
             "/nano-banana/v1/images/generations",
             "images_nano_banana",
             "create_generations",
+            Some("/nano-banana/v1/images/generations/{task_id}"),
+            Some("images_nano_banana"),
+            Some("retrieve_generations"),
+            None,
         ),
+        "vidu" => {
+            if model.is_none() {
+                return Err("vidu image generation model is required");
+            }
+            if reference_images.is_empty() {
+                return Err(
+                    "vidu reference image generation requires at least one reference image",
+                );
+            }
+            (
+                ImageProviderOperation::ViduReferenceToImageGeneration,
+                ImageProviderTaskMode::Task,
+                "/vidu/ent/v2/reference2image",
+                "images_vidu",
+                "create_ent_v2_reference2image",
+                Some("/vidu/ent/v2/tasks/{task_id}/creations"),
+                Some("videos_vidu"),
+                Some("list_ent_v2_tasks_creations"),
+                None,
+            )
+        }
         "openai" | "gpt-image" | "gpt_image" => (
             ImageProviderOperation::OpenAiImageGeneration,
             ImageProviderTaskMode::Synchronous,
             "/v1/images/generations",
             "images",
             "create_generation",
+            None,
+            None,
+            None,
+            Some("n"),
         ),
-        "gemini" | "kling" | "jimeng" | "volcengine" => (
-            ImageProviderOperation::ProviderNativeImageGeneration,
-            ImageProviderTaskMode::Task,
-            "/v1/images/generations",
-            "images",
-            "create_generation",
-        ),
-        _ => (
-            ImageProviderOperation::ProviderNativeImageGeneration,
-            if callback_url.is_some() {
-                ImageProviderTaskMode::Webhook
-            } else {
-                ImageProviderTaskMode::Task
-            },
-            "/v1/images/generations",
-            "images",
-            "create_generation",
-        ),
+        "gemini" | "kling" | "jimeng" | "volcengine" => {
+            return Err(
+                "image generation provider is not exposed by the generated Claw Router SDK",
+            );
+        }
+        _ => {
+            return Err(
+                "image generation provider is not exposed by the generated Claw Router SDK",
+            );
+        }
     };
+
+    if !reference_images.is_empty()
+        && !matches!(
+            provider_operation,
+            ImageProviderOperation::NanoBananaImageGeneration
+                | ImageProviderOperation::ViduReferenceToImageGeneration
+        )
+    {
+        return Err("image generation provider does not support reference_images");
+    }
 
     Ok(ImageProviderDispatchPlan {
         provider_code: normalize_provider_code_for_storage(&provider_code),
@@ -296,6 +343,9 @@ pub fn plan_image_generation_provider_dispatch(
         claw_router_api_path,
         claw_router_sdk_resource,
         claw_router_sdk_method,
+        claw_router_retrieve_api_path,
+        claw_router_retrieve_sdk_resource,
+        claw_router_retrieve_sdk_method,
         prompt: prompt.to_string(),
         negative_prompt,
         model,
@@ -303,10 +353,33 @@ pub fn plan_image_generation_provider_dispatch(
         quality,
         response_format: Some("url".to_string()),
         output_count,
-        output_count_provider_parameter: Some("n"),
+        output_count_provider_parameter,
+        reference_images,
         callback_url,
         idempotency_key,
     })
+}
+
+fn normalize_reference_images(values: &[String]) -> Result<Vec<String>, &'static str> {
+    let mut normalized = Vec::new();
+    let mut seen = BTreeSet::new();
+    for value in values {
+        let value = value.trim();
+        if value.is_empty() {
+            continue;
+        }
+        if value.len() > 2048 {
+            return Err("image generation reference_image must be at most 2048 characters");
+        }
+        if !seen.insert(value.to_string()) {
+            continue;
+        }
+        normalized.push(value.to_string());
+        if normalized.len() > 16 {
+            return Err("image generation reference_images must be at most 16 items");
+        }
+    }
+    Ok(normalized)
 }
 
 pub fn normalize_openai_image_generation_outputs(

@@ -11,6 +11,7 @@
   },
   "sdkOwner": "sdkwork-image",
   "apiAuthority": "sdkwork-image-backend-api",
+  "sdkDependencies": [],
   "discoverySurface": {
     "sdkTarget": "backend",
     "apiPrefix": "/backend/v3/api",

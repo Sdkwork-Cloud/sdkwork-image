@@ -46,14 +46,14 @@ export default defineConfig({
         find: "@sdkwork/ui-pc-react/theme",
         replacement: path.resolve(
           workspaceRoot,
-          "../../javasource/spring-ai-plus/spring-ai-plus-business/apps/sdkwork-ui/sdkwork-ui-pc-react/src/theme/index.ts",
+          "../sdkwork-ui/sdkwork-ui-pc-react/src/theme/index.ts",
         ),
       },
       {
         find: "@sdkwork/ui-pc-react",
         replacement: path.resolve(
           workspaceRoot,
-          "../../javasource/spring-ai-plus/spring-ai-plus-business/apps/sdkwork-ui/sdkwork-ui-pc-react/src/index.ts",
+          "../sdkwork-ui/sdkwork-ui-pc-react/src/index.ts",
         ),
       },
     ],

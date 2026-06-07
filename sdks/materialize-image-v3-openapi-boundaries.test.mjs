@@ -52,9 +52,29 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
     open.paths["/image/v3/api/compat/openai/images/generations"].post["x-sdkwork-domain"],
     "image",
   );
+  assert.equal(
+    open.paths["/image/v3/api/compat/openai/images/generations"].post.requestBody.content["application/json"].schema.$ref,
+    "#/components/schemas/ImageOperationCommand",
+  );
   assert.deepEqual(open.paths["/image/v3/api/compat/openai/images/generations"].post.security, [
     { ApiKey: [] },
   ]);
+  for (const schemaName of [
+    "ImageGenerationCommand",
+    "ImageGenerationRefreshCommand",
+    "ImageGenerationRetryCommand",
+    "ImageGenerationCancelCommand",
+    "ImageGeneration",
+    "ImageGenerationOutput",
+    "ImageGenerationStatus",
+    "DriveSyncStatus",
+  ]) {
+    assert.equal(
+      Object.hasOwn(open.components.schemas, schemaName),
+      false,
+      `open-api authority must not expose app/backend-only schema ${schemaName}`,
+    );
+  }
 
   assert.equal(app.openapi, "3.1.2");
   assert.equal(app.info["x-sdkwork-api-authority"], "sdkwork-image-app-api");
@@ -133,6 +153,35 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
   assert.equal(serialized.includes("generationJobs"), false);
   assert.equal(serialized.includes("jobId"), false);
   assert.equal(app.components.schemas.ImageGenerationCommand.properties.scene.type, "string");
+  assert.deepEqual(
+    Object.keys(app.components.schemas.ImageGenerationCommand.properties).sort(),
+    [
+      "idempotencyKey",
+      "model",
+      "negativePrompt",
+      "outputCount",
+      "prompt",
+      "providerCode",
+      "referenceImages",
+      "resolution",
+      "scene",
+      "style",
+      "webhookUrl",
+    ],
+    "ImageGenerationCommand must expose only fields consumed by ImageGenerationCreateCommand",
+  );
+  for (const [surfaceName, authority] of Object.entries({ app, backend })) {
+    assert.deepEqual(
+      authority.components.schemas.ImageGenerationCommand.properties.referenceImages,
+      {
+        type: "array",
+        maxItems: 16,
+        items: { type: "string", minLength: 1, maxLength: 2048 },
+        default: [],
+      },
+      `${surfaceName} ImageGenerationCommand must expose referenceImages`,
+    );
+  }
   assert.equal(app.components.schemas.ImageGenerationOutput.properties.scene.type, "string");
   assert.equal(
     app.components.schemas.ImageGenerationOutput.properties.resource.$ref,
@@ -166,4 +215,25 @@ test("image workspace TypeScript SDK script covers open, app, and backend SDK fa
 
   assert.doesNotMatch(generateScript, /;/u);
   assert.match(generateScript, /generate-sdk\.ps1 -Languages typescript && powershell/u);
+});
+
+test("image SDK family assembly metadata mirrors component SDK dependencies", () => {
+  for (const familyName of [
+    "sdkwork-image-sdk",
+    "sdkwork-image-app-sdk",
+    "sdkwork-image-backend-sdk",
+  ]) {
+    const assembly = readJson(`sdks/${familyName}/.sdkwork-assembly.json`);
+    const component = readJson(`sdks/${familyName}/specs/component.spec.json`);
+
+    assert.ok(
+      Object.hasOwn(assembly, "sdkDependencies"),
+      `${familyName} assembly must explicitly declare sdkDependencies`,
+    );
+    assert.deepEqual(
+      assembly.sdkDependencies,
+      component.contracts.sdkDependencies,
+      `${familyName} assembly sdkDependencies must match component spec`,
+    );
+  }
 });

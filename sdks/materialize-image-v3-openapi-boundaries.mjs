@@ -181,7 +181,7 @@ function buildOpenApi(surface, routes) {
     paths,
     components: {
       securitySchemes: securitySchemes(surface),
-      schemas: buildSchemas(),
+      schemas: buildSchemas(surface),
     },
     "x-sdkwork-materialized-from": routeSources.map((source) => ({
       owner: source.owner,
@@ -282,8 +282,8 @@ function securitySchemes(surface) {
   };
 }
 
-function buildSchemas() {
-  return {
+function buildSchemas(surface) {
+  const schemas = {
     ImageApiResult: {
       type: "object",
       additionalProperties: false,
@@ -326,10 +326,14 @@ function buildSchemas() {
         resolution: { type: ["string", "null"], maxLength: 64 },
         style: { type: ["string", "null"], maxLength: 128 },
         outputCount: { type: ["integer", "null"], minimum: 1, maximum: 16, default: 1 },
+        referenceImages: {
+          type: "array",
+          maxItems: 16,
+          items: { type: "string", minLength: 1, maxLength: 2048 },
+          default: [],
+        },
         webhookUrl: { type: ["string", "null"], format: "uri" },
         idempotencyKey: { type: ["string", "null"], maxLength: 128 },
-        input: { type: "object", additionalProperties: true },
-        metadata: { type: "object", additionalProperties: true },
       },
     },
     ImageGenerationRefreshCommand: {
@@ -495,6 +499,16 @@ function buildSchemas() {
       },
     },
   };
+
+  if (surface.sdkType === "open-api") {
+    return pickSchemas(schemas, ["ImageApiResult", "ImageOperationCommand", "ProblemDetail", "FieldError"]);
+  }
+
+  return schemas;
+}
+
+function pickSchemas(schemas, names) {
+  return Object.fromEntries(names.map((name) => [name, schemas[name]]));
 }
 
 function requestSchemaFor(route) {

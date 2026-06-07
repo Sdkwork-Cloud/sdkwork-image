@@ -41,7 +41,8 @@ function Resolve-NamespaceArgs {
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $FamilyRoot = (Get-Item $ScriptDir).Parent.FullName
 $ImageRoot = (Get-Item $FamilyRoot).Parent.Parent.FullName
-$GeneratorPath = "D:\javasource\spring-ai-plus\sdk\sdkwork-sdk-generator\bin\sdkgen.js"
+$WorkspaceRoot = (Get-Item (Join-Path $FamilyRoot "..\..\..")).FullName
+$GeneratorPath = Join-Path $WorkspaceRoot "sdkwork-sdk-generator\bin\sdkgen.js"
 $InputPath = Join-Path $FamilyRoot "openapi\sdkwork-image-open-api.sdkgen.yaml"
 $SdkName = "sdkwork-image-sdk"
 $ApiPrefix = "/image/v3/api"

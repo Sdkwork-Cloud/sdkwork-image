@@ -8,8 +8,7 @@ export interface ImageGenerationCommand {
   resolution?: string | null;
   style?: string | null;
   outputCount?: number | null;
+  referenceImages?: string[];
   webhookUrl?: string;
   idempotencyKey?: string | null;
-  input?: Record<string, unknown>;
-  metadata?: Record<string, unknown>;
 }

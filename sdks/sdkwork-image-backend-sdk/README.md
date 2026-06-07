@@ -20,7 +20,7 @@ node .\sdks\materialize-image-v3-openapi-boundaries.mjs
 .\sdks\sdkwork-image-backend-sdk\bin\generate-sdk.ps1
 ```
 
-The wrapper calls `D:\javasource\spring-ai-plus\sdk\sdkwork-sdk-generator\bin\sdkgen.js` with `--standard-profile sdkwork-v3`.
+The wrapper calls `..\sdkwork-sdk-generator\bin\sdkgen.js` with `--standard-profile sdkwork-v3`.
 
 ## SDKWork Documentation Contract
 

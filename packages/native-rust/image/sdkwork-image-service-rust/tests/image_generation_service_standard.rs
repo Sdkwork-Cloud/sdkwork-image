@@ -52,6 +52,7 @@ fn plans_create_flow_with_provider_result_drive_import_and_outbox() {
             resolution: Some("1024x1024".to_string()),
             style: None,
             output_count: Some(1),
+            reference_images: vec![],
             webhook_url: Some("https://app.example.com/hooks/image".to_string()),
             idempotency_key: Some("idem-001".to_string()),
         },
@@ -253,6 +254,7 @@ fn plans_create_persistence_bindings_with_integer_job_status_and_drive_sync_stat
             resolution: Some("1024x1024".to_string()),
             style: None,
             output_count: Some(1),
+            reference_images: vec![],
             webhook_url: Some("https://app.example.com/hooks/image".to_string()),
             idempotency_key: Some("idem-persist-001".to_string()),
         },
@@ -276,6 +278,81 @@ fn plans_create_persistence_bindings_with_integer_job_status_and_drive_sync_stat
     assert_eq!(plan.output_rows[0].scene, "product_hero");
     assert_eq!(plan.output_rows[0].drive_space_type, "ai_generated");
     assert_eq!(plan.output_rows[0].media_kind, "image");
+}
+
+#[test]
+fn plans_create_persistence_snapshots_with_reference_images_for_replay_and_audit() {
+    let plan = plan_generation_create_persistence_plan(
+        ImageGenerationScope {
+            tenant_id: "tenant-1".to_string(),
+            organization_id: Some("org-1".to_string()),
+            actor: ImageGenerationActor::User {
+                user_id: "user-001".to_string(),
+            },
+        },
+        "generation-persist-reference-001",
+        ImageGenerationCreateCommand {
+            prompt: "Use the reference products for a campaign visual".to_string(),
+            negative_prompt: Some("warped packaging".to_string()),
+            scene: "campaign_reference".to_string(),
+            provider_code: Some("nano-banana".to_string()),
+            model: Some("banana-image-pro".to_string()),
+            resolution: Some("1024x1024".to_string()),
+            style: Some("editorial".to_string()),
+            output_count: Some(1),
+            reference_images: vec![
+                " https://cdn.example.com/source-a.png ".to_string(),
+                "https://cdn.example.com/source-a.png".to_string(),
+                "drive://spaces/space-1/nodes/source-b".to_string(),
+            ],
+            webhook_url: Some("https://app.example.com/hooks/nano".to_string()),
+            idempotency_key: Some("idem-reference-001".to_string()),
+        },
+        None,
+    )
+    .expect("reference-image persistence plan should build");
+
+    let input_snapshot = plan
+        .input_snapshot
+        .as_ref()
+        .expect("create persistence must retain the normalized input snapshot");
+    assert_eq!(input_snapshot.provider_code, "nano-banana");
+    assert_eq!(input_snapshot.scene, "campaign_reference");
+    assert_eq!(
+        input_snapshot.provider_operation,
+        "nano_banana.images.generate",
+    );
+    assert_eq!(input_snapshot.output_count, 1);
+    assert_eq!(
+        input_snapshot.reference_images,
+        vec![
+            "https://cdn.example.com/source-a.png".to_string(),
+            "drive://spaces/space-1/nodes/source-b".to_string(),
+        ],
+    );
+
+    let provider_request_snapshot = plan
+        .provider_request_snapshot
+        .as_ref()
+        .expect("create persistence must retain the generated provider request snapshot");
+    assert_eq!(provider_request_snapshot.sdk_resource, "images_nano_banana");
+    assert_eq!(provider_request_snapshot.sdk_method, "create_generations");
+    assert_eq!(
+        provider_request_snapshot.retrieve_sdk_resource.as_deref(),
+        Some("images_nano_banana"),
+    );
+    assert_eq!(
+        provider_request_snapshot.retrieve_sdk_method.as_deref(),
+        Some("retrieve_generations"),
+    );
+    assert_eq!(
+        provider_request_snapshot.retrieve_api_path.as_deref(),
+        Some("/nano-banana/v1/images/generations/{task_id}"),
+    );
+    assert_eq!(
+        provider_request_snapshot.reference_images,
+        input_snapshot.reference_images,
+    );
 }
 
 #[test]
@@ -385,6 +462,7 @@ fn plans_executable_runtime_steps_for_generation_create_flow() {
             resolution: Some("1024x1024".to_string()),
             style: None,
             output_count: Some(2),
+            reference_images: vec![],
             webhook_url: Some("https://app.example.com/hooks/image".to_string()),
             idempotency_key: Some("idem-runtime-001".to_string()),
         },
@@ -402,11 +480,48 @@ fn plans_executable_runtime_steps_for_generation_create_flow() {
             },
             ImageGenerationRuntimeStep::PersistProviderSubmission,
             ImageGenerationRuntimeStep::AwaitProviderWebhook,
-            ImageGenerationRuntimeStep::ScheduleProviderPolling,
+            ImageGenerationRuntimeStep::ScheduleProviderPolling {
+                provider_code: "nano-banana".to_string(),
+                api_path: "/nano-banana/v1/images/generations/{task_id}".to_string(),
+                sdk_resource: "images_nano_banana".to_string(),
+                sdk_method: "retrieve_generations".to_string(),
+            },
             ImageGenerationRuntimeStep::PersistOutboxEvent {
                 event_type: "image.generation.created".to_string(),
             },
         ],
+    );
+}
+
+#[test]
+fn rejects_executable_runtime_steps_without_generated_create_sdk_method() {
+    let result = plan_generation_create_runtime_steps(
+        ImageGenerationScope {
+            tenant_id: "tenant-1".to_string(),
+            organization_id: None,
+            actor: ImageGenerationActor::User {
+                user_id: "user-001".to_string(),
+            },
+        },
+        "generation-runtime-provider-native",
+        ImageGenerationCreateCommand {
+            prompt: "Future provider render".to_string(),
+            negative_prompt: None,
+            scene: "provider_native_unmapped".to_string(),
+            provider_code: Some("gemini".to_string()),
+            model: Some("gemini-image-pro".to_string()),
+            resolution: Some("1024x1024".to_string()),
+            style: None,
+            output_count: Some(1),
+            reference_images: vec![],
+            webhook_url: None,
+            idempotency_key: None,
+        },
+    );
+
+    assert_eq!(
+        result,
+        Err("image generation provider is not exposed by the generated Claw Router SDK"),
     );
 }
 

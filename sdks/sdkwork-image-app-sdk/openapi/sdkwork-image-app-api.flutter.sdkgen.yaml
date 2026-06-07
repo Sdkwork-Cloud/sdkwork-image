@@ -1761,6 +1761,16 @@
             "maximum": 16,
             "default": 1
           },
+          "referenceImages": {
+            "type": "array",
+            "maxItems": 16,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2048
+            },
+            "default": []
+          },
           "webhookUrl": {
             "type": [
               "string",
@@ -1774,14 +1784,6 @@
               "null"
             ],
             "maxLength": 128
-          },
-          "input": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "metadata": {
-            "type": "object",
-            "additionalProperties": true
           }
         }
       },

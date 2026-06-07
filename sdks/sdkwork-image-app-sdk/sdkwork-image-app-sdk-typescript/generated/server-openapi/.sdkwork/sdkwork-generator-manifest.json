@@ -107,7 +107,7 @@
     },
     {
       "path": "src/types/image-generation-command.ts",
-      "sha256": "7e8a852b67d2b1865ee4d022460f0a9f63b68aac28425bbcc87655d01d0aaac0"
+      "sha256": "e6da5d4afb1ffeee4dbf8d405cbda50a2310651a1b548f73352e048ad11a76cc"
     },
     {
       "path": "src/types/image-generation-output.ts",

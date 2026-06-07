@@ -22,7 +22,7 @@
   ],
   "generator": {
     "package": "@sdkwork/sdk-generator",
-    "entrypoint": "D:\\javasource\\spring-ai-plus\\sdk\\sdkwork-sdk-generator\\bin\\sdkgen.js",
+    "entrypoint": "../sdkwork-sdk-generator/bin/sdkgen.js",
     "standardProfile": "sdkwork-v3"
   },
   "contracts": {

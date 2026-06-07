@@ -8,7 +8,7 @@
     "sdkType": "app",
     "packageName": "@sdkwork/image-app-sdk"
   },
-  "changeFingerprint": "3ec48ec1e0cab25fd239c5bf4cfe8f99f13b9fa653be1e7400830830221699af",
+  "changeFingerprint": "a781927159f284b03e162983af46a0ad803b9c13e034cc72e63f451a71151f2a",
   "changes": {
     "createdGeneratedFiles": [
       "bin/publish-core.mjs",
@@ -169,7 +169,7 @@
         "title": "Unified package check",
         "required": true,
         "rationale": "Validate the generated package with the unified publish helper. Triggered by: api-surface, models, runtime, build-metadata, publish-workflow, documentation, custom-scaffold, unknown.",
-        "workingDirectory": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-app-sdk\\sdkwork-image-app-sdk-typescript\\generated\\server-openapi",
+        "workingDirectory": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-app-sdk\\sdkwork-image-app-sdk-typescript\\generated\\server-openapi",
         "command": "node",
         "args": [
           "./bin/publish-core.mjs",
@@ -187,7 +187,7 @@
         "title": "Unified package build",
         "required": true,
         "rationale": "Run the full package build because this language uses a lighter check path than the final build. Triggered by: api-surface, models, runtime, build-metadata, publish-workflow, documentation, custom-scaffold, unknown.",
-        "workingDirectory": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-app-sdk\\sdkwork-image-app-sdk-typescript\\generated\\server-openapi",
+        "workingDirectory": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-app-sdk\\sdkwork-image-app-sdk-typescript\\generated\\server-openapi",
         "command": "node",
         "args": [
           "./bin/publish-core.mjs",

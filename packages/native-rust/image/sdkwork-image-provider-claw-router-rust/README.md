@@ -13,7 +13,13 @@ This README is the SDKWork module entrypoint for `sdkwork_image_provider_claw_ro
 
 ## Required SDK Surface
 
-- None declared in `specs/component.spec.json`.
+- Generated Rust SDK crate: `clawrouter-open-sdk`.
+- Generated client resources used by this adapter: `images.create_generation`, `images_midjourney.create_v1_images_generation`, `images_midjourney.list_v1_images_generations`, `images_nano_banana.create_generations`, `images_nano_banana.retrieve_generations`, `images_vidu.create_ent_v2_reference2image`, and `videos_vidu.list_ent_v2_tasks_creations`.
+- Task-based generation plans persist the generated create method and the generated retrieve method separately so polling can be audited without raw HTTP or provider-local route strings.
+- Supported executable provider operations: OpenAI-compatible image generation, Midjourney image generation tasks, Nano Banana image generation tasks including optional reference images, and Vidu reference-to-image generation tasks.
+- `referenceImages` is executable only for generated Claw Router request models that expose a reference-image field. The core dispatch layer rejects reference images for OpenAI-compatible and Midjourney plans so this adapter does not silently drop caller input.
+- Provider-native codes without an explicit generated Claw Router image create resource are rejected before dispatch planning until the generated SDK resource exists and is mapped here.
+- Product code must use this adapter or another approved generated-SDK adapter instead of raw Claw Router HTTP.
 
 ## Configuration
 

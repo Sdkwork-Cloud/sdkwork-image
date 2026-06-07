@@ -12,7 +12,7 @@
   "mode": "apply",
   "hasChanges": true,
   "hasDestructiveChanges": false,
-  "changeFingerprint": "c4132fd01d0d64a5d3c4e7098b81403bcb3d7448f446468e78155b70dcf91c70",
+  "changeFingerprint": "e364f34acc49ecdc900c5f11a9e108c91d28ed10a6f5f0fdd7282d234d64daf6",
   "changeImpact": {
     "schemaVersion": 1,
     "areas": [
@@ -41,22 +41,10 @@
         "area": "models",
         "paths": [
           "src/types/common.ts",
-          "src/types/drive-sync-status.ts",
           "src/types/field-error.ts",
           "src/types/image-api-result.ts",
-          "src/types/image-generation-cancel-command.ts",
-          "src/types/image-generation-command.ts",
-          "src/types/image-generation-output.ts",
-          "src/types/image-generation-refresh-command.ts",
-          "src/types/image-generation-retry-command.ts",
-          "src/types/image-generation-status.ts",
-          "src/types/image-generation.ts",
           "src/types/image-operation-command.ts",
           "src/types/index.ts",
-          "src/types/media-ai-provenance.ts",
-          "src/types/media-kind.ts",
-          "src/types/media-resource.ts",
-          "src/types/media-source.ts",
           "src/types/problem-detail.ts"
         ]
       },
@@ -135,7 +123,7 @@
         "title": "Unified package check",
         "required": true,
         "rationale": "Validate the generated package with the unified publish helper. Triggered by: api-surface, models, runtime, build-metadata, publish-workflow, documentation, custom-scaffold, unknown.",
-        "workingDirectory": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
+        "workingDirectory": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
         "command": "node",
         "args": [
           "./bin/publish-core.mjs",
@@ -153,7 +141,7 @@
         "title": "Unified package build",
         "required": true,
         "rationale": "Run the full package build because this language uses a lighter check path than the final build. Triggered by: api-surface, models, runtime, build-metadata, publish-workflow, documentation, custom-scaffold, unknown.",
-        "workingDirectory": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
+        "workingDirectory": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
         "command": "node",
         "args": [
           "./bin/publish-core.mjs",
@@ -178,7 +166,7 @@
         "title": "Unified package check",
         "required": true,
         "rationale": "Validate the generated package with the unified publish helper. Triggered by: api-surface, models, runtime, build-metadata, publish-workflow, documentation, custom-scaffold, unknown.",
-        "workingDirectory": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
+        "workingDirectory": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
         "command": "node",
         "args": [
           "./bin/publish-core.mjs",
@@ -196,7 +184,7 @@
         "title": "Unified package build",
         "required": true,
         "rationale": "Run the full package build because this language uses a lighter check path than the final build. Triggered by: api-surface, models, runtime, build-metadata, publish-workflow, documentation, custom-scaffold, unknown.",
-        "workingDirectory": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
+        "workingDirectory": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
         "command": "node",
         "args": [
           "./bin/publish-core.mjs",
@@ -216,7 +204,7 @@
     "version": "1.0.0",
     "language": "typescript",
     "sdkType": "custom",
-    "outputPath": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
+    "outputPath": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
     "packageName": "@sdkwork/image-sdk"
   },
   "versioning": {
@@ -224,20 +212,20 @@
     "localVersions": []
   },
   "stats": {
-    "totalFiles": 40,
-    "models": 16,
+    "totalFiles": 28,
+    "models": 4,
     "apis": 1,
-    "types": 18
+    "types": 6
   },
   "warnings": [],
   "syncSummary": {
     "dryRun": false,
-    "writtenFiles": 40,
+    "writtenFiles": 28,
     "skippedScaffoldFiles": 0,
     "skippedUnchangedGeneratedFiles": 0,
     "deletedGeneratedFiles": 0,
     "changeSummaryPath": ".sdkwork/sdkwork-generator-changes.json",
-    "changeFingerprint": "c4132fd01d0d64a5d3c4e7098b81403bcb3d7448f446468e78155b70dcf91c70",
+    "changeFingerprint": "e364f34acc49ecdc900c5f11a9e108c91d28ed10a6f5f0fdd7282d234d64daf6",
     "changes": {
       "createdGeneratedFiles": [
         "bin/publish-core.mjs",
@@ -260,22 +248,10 @@
         "src/index.ts",
         "src/sdk.ts",
         "src/types/common.ts",
-        "src/types/drive-sync-status.ts",
         "src/types/field-error.ts",
         "src/types/image-api-result.ts",
-        "src/types/image-generation-cancel-command.ts",
-        "src/types/image-generation-command.ts",
-        "src/types/image-generation-output.ts",
-        "src/types/image-generation-refresh-command.ts",
-        "src/types/image-generation-retry-command.ts",
-        "src/types/image-generation-status.ts",
-        "src/types/image-generation.ts",
         "src/types/image-operation-command.ts",
         "src/types/index.ts",
-        "src/types/media-ai-provenance.ts",
-        "src/types/media-kind.ts",
-        "src/types/media-resource.ts",
-        "src/types/media-source.ts",
         "src/types/problem-detail.ts",
         "tsconfig.json"
       ],
@@ -317,22 +293,10 @@
           "area": "models",
           "paths": [
             "src/types/common.ts",
-            "src/types/drive-sync-status.ts",
             "src/types/field-error.ts",
             "src/types/image-api-result.ts",
-            "src/types/image-generation-cancel-command.ts",
-            "src/types/image-generation-command.ts",
-            "src/types/image-generation-output.ts",
-            "src/types/image-generation-refresh-command.ts",
-            "src/types/image-generation-retry-command.ts",
-            "src/types/image-generation-status.ts",
-            "src/types/image-generation.ts",
             "src/types/image-operation-command.ts",
             "src/types/index.ts",
-            "src/types/media-ai-provenance.ts",
-            "src/types/media-kind.ts",
-            "src/types/media-resource.ts",
-            "src/types/media-source.ts",
             "src/types/problem-detail.ts"
           ]
         },
@@ -398,7 +362,7 @@
           "title": "Unified package check",
           "required": true,
           "rationale": "Validate the generated package with the unified publish helper. Triggered by: api-surface, models, runtime, build-metadata, publish-workflow, documentation, custom-scaffold, unknown.",
-          "workingDirectory": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
+          "workingDirectory": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
           "command": "node",
           "args": [
             "./bin/publish-core.mjs",
@@ -416,7 +380,7 @@
           "title": "Unified package build",
           "required": true,
           "rationale": "Run the full package build because this language uses a lighter check path than the final build. Triggered by: api-surface, models, runtime, build-metadata, publish-workflow, documentation, custom-scaffold, unknown.",
-          "workingDirectory": "D:\\sdkwork-opensource\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
+          "workingDirectory": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-sdk\\sdkwork-image-sdk-typescript\\generated\\server-openapi",
           "command": "node",
           "args": [
             "./bin/publish-core.mjs",
