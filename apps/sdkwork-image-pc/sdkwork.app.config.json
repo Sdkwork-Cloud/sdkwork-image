@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "applicationCode": "sdkwork-image-pc",
+  "productName": "sdkwork-image",
+  "surface": "pc",
+  "architecture": "pc-react",
+  "description": "SDKWork image generation, editing, and gallery PC application",
+  "version": "0.1.0",
+  "login": {
+    "provider": "appbase",
+    "sdkFamily": "sdkwork-appbase-app-sdk"
+  },
+  "sdkDependencies": {
+    "sdkwork-image-app-sdk": {
+      "version": "workspace:*",
+      "surface": "app-api"
+    },
+    "sdkwork-appbase-app-sdk": {
+      "version": "workspace:*",
+      "surface": "app-api"
+    }
+  },
+  "environments": {
+    "development": {
+      "browserRuntimeConfig": "config/browser/runtime-env.development.example.json"
+    },
+    "test": {
+      "browserRuntimeConfig": "config/browser/runtime-env.test.example.json"
+    },
+    "staging": {
+      "browserRuntimeConfig": "config/browser/runtime-env.staging.example.json"
+    },
+    "production": {
+      "browserRuntimeConfig": "config/browser/runtime-env.production.example.json"
+    }
+  },
+  "build": {
+    "type": "vite",
+    "entry": "src/main.tsx",
+    "outDir": "dist"
+  }
+}

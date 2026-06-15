@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "kind": "sdkwork.route.manifest",
+  "packageName": "sdkwork-router-image-open-api",
+  "surface": "open-api",
+  "owner": "sdkwork-image",
+  "domain": "image",
+  "capability": "image",
+  "apiAuthority": "sdkwork-image-open-api",
+  "sdkFamily": "sdkwork-image-sdk",
+  "prefix": "/image/v3/api",
+  "source": {
+    "crateRoot": "crates/sdkwork-router-image-open-api",
+    "crateImport": "sdkwork_router_image_open_api"
+  },
+  "routes": [
+    {
+      "method": "POST",
+      "path": "/image/v3/api/compat/openai/images/generations",
+      "operationId": "compat.openai.images.generate",
+      "tags": [
+        "imageCompat"
+      ],
+      "auth": {
+        "mode": "api-key",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-open-api",
+        "sdkFamily": "sdkwork-image-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-open-api"
+      }
+    }
+  ]
+}

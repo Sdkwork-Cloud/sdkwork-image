@@ -1,0 +1,10 @@
+[package]
+name = "sdkwork-router-image-open-api"
+version = "0.1.0"
+edition = "2021"
+description = "SDKWork image open-api Rust route manifest."
+
+[lib]
+name = "sdkwork_router_image_open_api"
+path = "src/lib.rs"
+

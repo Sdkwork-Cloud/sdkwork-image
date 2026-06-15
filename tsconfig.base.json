@@ -24,11 +24,11 @@
       "@sdkwork/image-contracts": [
         "packages/common/image/sdkwork-image-contracts/src/index.ts"
       ],
-      "@sdkwork/image-pc-react": [
-        "packages/pc-react/content/sdkwork-image-pc-react/src/index.ts"
+      "@sdkwork/image-pc": [
+        "apps/sdkwork-image-pc/packages/sdkwork-image-pc/src/index.ts"
       ],
-      "@sdkwork/generation-pc-react": [
-        "packages/pc-react/content/sdkwork-generation-pc-react/src/index.ts"
+      "@sdkwork/image-pc-generation": [
+        "apps/sdkwork-image-pc/packages/sdkwork-image-pc-generation/src/index.ts"
       ],
       "@sdkwork/core-pc-react": [
         "types/sdkwork-core-pc-react.d.ts"

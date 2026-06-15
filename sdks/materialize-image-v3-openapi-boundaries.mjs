@@ -8,13 +8,27 @@ const imageRoot = resolve(__dirname, "..");
 const routeSources = [
   {
     owner: "image",
-    path: resolve(imageRoot, "packages/native-rust/image/sdkwork-image-http-rust/src/lib.rs"),
+    sourceRouteCrate: "sdkwork-router-image-open-api",
+    path: resolve(imageRoot, "crates/sdkwork-router-image-open-api/src/manifest.rs"),
+    constructors: ["ImageHttpRoute::new"],
+  },
+  {
+    owner: "image",
+    sourceRouteCrate: "sdkwork-router-image-app-api",
+    path: resolve(imageRoot, "crates/sdkwork-router-image-app-api/src/manifest.rs"),
+    constructors: ["ImageHttpRoute::new"],
+  },
+  {
+    owner: "image",
+    sourceRouteCrate: "sdkwork-router-image-backend-api",
+    path: resolve(imageRoot, "crates/sdkwork-router-image-backend-api/src/manifest.rs"),
     constructors: ["ImageHttpRoute::new"],
   },
 ];
 
 const surfaces = {
   open: {
+    routeSurface: "open-api",
     sdkType: "open-api",
     generatorSdkType: "custom",
     sdkOwner: "sdkwork-image",
@@ -27,6 +41,7 @@ const surfaces = {
     authMode: "api-key",
   },
   app: {
+    routeSurface: "app-api",
     sdkType: "app",
     generatorSdkType: "app",
     sdkOwner: "sdkwork-image",
@@ -39,6 +54,7 @@ const surfaces = {
     authMode: "dual-token",
   },
   backend: {
+    routeSurface: "backend-api",
     sdkType: "backend",
     generatorSdkType: "backend",
     sdkOwner: "sdkwork-image",
@@ -79,6 +95,9 @@ async function main() {
   await writeSurfaceOpenApi(surfaces.open, openRoutes);
   await writeSurfaceOpenApi(surfaces.app, appRoutes);
   await writeSurfaceOpenApi(surfaces.backend, backendRoutes);
+  await writeRouteManifest(surfaces.open, openRoutes);
+  await writeRouteManifest(surfaces.app, appRoutes);
+  await writeRouteManifest(surfaces.backend, backendRoutes);
 
   console.log(`Materialized ${openRoutes.length} image open-api operations.`);
   console.log(`Materialized ${appRoutes.length} image app-api operations.`);
@@ -98,6 +117,8 @@ async function collectRoutes() {
     for (const match of content.matchAll(routePattern)) {
       routes.push({
         owner: source.owner,
+        sourceRouteCrate: source.sourceRouteCrate,
+        sourcePath: source.path,
         method: methodNames[match[1]],
         path: match[2],
         tag: toLowerCamel(match[3]),
@@ -144,6 +165,47 @@ async function writeSurfaceOpenApi(surface, routes) {
   await writeFile(flutterSdkgenPath, content, "utf8");
 }
 
+async function writeRouteManifest(surface, routes) {
+  const packageName = routePackageForSurface(surface);
+  const manifestRoot = resolve(imageRoot, "sdks", "_route-manifests", surface.routeSurface);
+  await mkdir(manifestRoot, { recursive: true });
+  const manifestPath = resolve(manifestRoot, `${packageName}.route-manifest.json`);
+  const manifest = {
+    schemaVersion: 1,
+    kind: "sdkwork.route.manifest",
+    packageName,
+    surface: surface.routeSurface,
+    owner: surface.sdkOwner,
+    domain: "image",
+    capability: "image",
+    apiAuthority: surface.authorityName,
+    sdkFamily: surface.familyName,
+    prefix: surface.prefix,
+    source: {
+      crateRoot: `crates/${packageName}`,
+      crateImport: packageName.replaceAll("-", "_"),
+    },
+    routes: routes.map((route) => ({
+      method: route.method.toUpperCase(),
+      path: route.path,
+      operationId: route.operationId,
+      tags: [route.tag],
+      auth: {
+        mode: surface.authMode,
+        required: true,
+      },
+      ownership: {
+        owner: surface.sdkOwner,
+        apiAuthority: surface.authorityName,
+        sdkFamily: surface.familyName,
+        sourceRouteCrate: route.sourceRouteCrate,
+      },
+    })),
+  };
+
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+}
+
 function buildOpenApi(surface, routes) {
   const paths = {};
   for (const route of routes) {
@@ -185,6 +247,7 @@ function buildOpenApi(surface, routes) {
     },
     "x-sdkwork-materialized-from": routeSources.map((source) => ({
       owner: source.owner,
+      sourceRouteCrate: source.sourceRouteCrate,
       path: relativeForOpenApi(source.path),
     })),
     "x-sdkwork-request-context": {
@@ -218,6 +281,8 @@ function buildOperation(surface, route) {
     "x-sdkwork-api-authority": surface.authorityName,
     "x-sdkwork-domain": route.owner,
     "x-sdkwork-resource": route.operationId.split(".").slice(0, -1).join("."),
+    "x-sdkwork-source": relativeForOpenApi(route.sourcePath),
+    "x-sdkwork-source-route-crate": route.sourceRouteCrate,
     "x-sdkwork-request-context": surface.authMode === "api-key" ? "OpenApiRequestContext" : "AppRequestContext",
     "x-sdkwork-server-request-id": true,
   };
@@ -505,6 +570,10 @@ function buildSchemas(surface) {
   }
 
   return schemas;
+}
+
+function routePackageForSurface(surface) {
+  return `sdkwork-router-image-${surface.routeSurface}`;
 }
 
 function pickSchemas(schemas, names) {

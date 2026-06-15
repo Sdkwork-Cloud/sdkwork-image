@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "schemaVersion": 1,
+  "applicationCode": "sdkwork-image-h5",
+  "productName": "sdkwork-image",
+  "surface": "h5",
+  "architecture": "mobile-react",
+  "description": "SDKWork image generation, editing, and gallery H5/Capacitor mobile application",
+  "version": "0.1.0",
+  "login": {
+    "provider": "appbase",
+    "sdkFamily": "sdkwork-appbase-app-sdk"
+  },
+  "sdkDependencies": {
+    "sdkwork-image-app-sdk": {
+      "version": "workspace:*",
+      "surface": "app-api"
+    },
+    "sdkwork-appbase-app-sdk": {
+      "version": "workspace:*",
+      "surface": "app-api"
+    }
+  },
+  "environments": {
+    "development": {
+      "browserRuntimeConfig": "config/browser/runtime-env.development.example.json"
+    },
+    "test": {
+      "browserRuntimeConfig": "config/browser/runtime-env.test.example.json"
+    },
+    "staging": {
+      "browserRuntimeConfig": "config/browser/runtime-env.staging.example.json"
+    },
+    "production": {
+      "browserRuntimeConfig": "config/browser/runtime-env.production.example.json"
+    }
+  },
+  "build": {
+    "type": "vite",
+    "entry": "src/main.tsx",
+    "outDir": "dist"
+  }
+}

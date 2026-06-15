@@ -1,0 +1,26 @@
+{
+  "development": {
+    "apiBaseUrl": "http://localhost:3000",
+    "appBaseUrl": "http://localhost:5173",
+    "environment": "development",
+    "deploymentMode": "local"
+  },
+  "test": {
+    "apiBaseUrl": "http://localhost:3001",
+    "appBaseUrl": "http://localhost:5174",
+    "environment": "test",
+    "deploymentMode": "test"
+  },
+  "staging": {
+    "apiBaseUrl": "https://api-staging.sdkwork.com",
+    "appBaseUrl": "https://app-staging.sdkwork.com",
+    "environment": "staging",
+    "deploymentMode": "saas"
+  },
+  "production": {
+    "apiBaseUrl": "https://api.sdkwork.com",
+    "appBaseUrl": "https://app.sdkwork.com",
+    "environment": "production",
+    "deploymentMode": "saas"
+  }
+}

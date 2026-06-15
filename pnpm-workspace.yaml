@@ -1,7 +1,8 @@
 packages:
   - "packages/common/*/*"
-  - "packages/native-rust/*/*"
-  - "packages/pc-react/*/*"
+  - "apps/sdkwork-image-pc/packages/*"
+  - "apps/sdkwork-image-h5/packages/*"
+  - "apps/sdkwork-image-flutter-mobile/packages/*"
   - "sdks/*"
   - "sdks/sdkwork-image-sdk/sdkwork-image-sdk-typescript/generated/server-openapi"
   - "sdks/sdkwork-image-app-sdk/sdkwork-image-app-sdk-typescript/generated/server-openapi"

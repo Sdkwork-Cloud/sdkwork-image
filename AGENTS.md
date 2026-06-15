@@ -32,8 +32,20 @@ No `sdkwork.app.config.json` is present at this root. If the task changes applic
 - `.sdkwork/`: reserved local dictionary folder; create only for local skills, plugins, manifests, or AI workspace metadata.
 - `specs/`: not present here; use when local contracts need to narrow root standards.
 - `sdks/`: SDK families, OpenAPI authorities, route manifests, and generated SDK artifacts.
+- `apis/`: author-owned API contracts and API source inputs.
+- `apps/`: independently runnable application roots (PC, H5, Flutter).
+- `crates/`: Rust crates for services, repositories, route crates, workers.
+- `jobs/`: job definitions, schedules, queue bindings.
+- `tools/`: developer, validation, generation, and operator tools.
+- `plugins/`: application/runtime plugin source packages.
+- `examples/`: runnable examples and integration examples.
+- `configs/`: source-controlled config templates and schemas.
+- `deployments/`: deployment descriptors and environment topology.
+- `scripts/`: thin command entrypoints for build and release.
+- `docs/`: repository documentation and architecture decisions.
+- `tests/`: cross-package tests, contract tests, integration tests.
 - `package.json`, `pnpm-workspace.yaml`: language/build manifests.
-- Local directories to inspect first when relevant: `packages/`, `sdks/`, `tests/`, `types/`.
+- Local directories to inspect first when relevant: `apps/`, `packages/`, `sdks/`, `tests/`, `types/`.
 
 ## Spec Resolution Order
 

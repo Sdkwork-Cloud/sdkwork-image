@@ -7,7 +7,7 @@
   "scripts": {
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "test:rust": "cargo test --manifest-path packages/native-rust/image/sdkwork-image-core-rust/Cargo.toml && cargo test --manifest-path packages/native-rust/image/sdkwork-image-storage-sqlx-rust/Cargo.toml && cargo test --manifest-path packages/native-rust/image/sdkwork-image-http-rust/Cargo.toml && cargo test --manifest-path packages/native-rust/image/sdkwork-image-service-rust/Cargo.toml && cargo test --manifest-path packages/native-rust/image/sdkwork-image-provider-claw-router-rust/Cargo.toml",
+    "test:rust": "cargo test --workspace",
     "openapi:materialize": "node sdks/materialize-image-v3-openapi-boundaries.mjs",
     "sdk:generate:ts": "powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-sdk/bin/generate-sdk.ps1 -Languages typescript && powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-app-sdk/bin/generate-sdk.ps1 -Languages typescript && powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-backend-sdk/bin/generate-sdk.ps1 -Languages typescript"
   },

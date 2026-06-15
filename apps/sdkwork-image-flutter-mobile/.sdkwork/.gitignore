@@ -1,0 +1,6 @@
+local/
+tmp/
+cache/
+secrets/
+.dart_tool/
+build/

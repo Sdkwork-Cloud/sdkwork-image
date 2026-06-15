@@ -230,9 +230,6 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.2.8
         version: 1.2.9(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@sdkwork/drive-app-sdk':
-        specifier: workspace:*
-        version: link:../../sdkwork-drive/sdks/sdkwork-drive-app-sdk/sdkwork-drive-app-sdk-typescript
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -316,18 +313,18 @@ importers:
         specifier: ^3.5.32
         version: 3.5.35(typescript@6.0.2)
 
-  packages/common/image/sdkwork-image-contracts: {}
+  apps/sdkwork-image-pc/packages/sdkwork-image-pc: {}
 
-  packages/pc-react/content/sdkwork-generation-pc-react:
+  apps/sdkwork-image-pc/packages/sdkwork-image-pc-generation:
     dependencies:
       '@sdkwork/image-contracts':
         specifier: workspace:*
-        version: link:../../../common/image/sdkwork-image-contracts
+        version: link:../../../../packages/common/image/sdkwork-image-contracts
       lucide-react:
         specifier: 'catalog:'
         version: 1.7.0(react@19.2.4)
 
-  packages/pc-react/content/sdkwork-image-pc-react: {}
+  packages/common/image/sdkwork-image-contracts: {}
 
   sdks/sdkwork-image-app-sdk/sdkwork-image-app-sdk-typescript/generated/server-openapi:
     dependencies:

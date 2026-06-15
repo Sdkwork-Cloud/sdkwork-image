@@ -1,9 +1,13 @@
 [workspace]
 resolver = "2"
 members = [
-    "packages/native-rust/image/sdkwork-image-core-rust",
-    "packages/native-rust/image/sdkwork-image-provider-claw-router-rust",
-    "packages/native-rust/image/sdkwork-image-service-rust",
+    "crates/sdkwork-image-generation-service",
+    "crates/sdkwork-image-generation-workflow-service",
+    "crates/sdkwork-image-claw-router-provider-service",
+    "crates/sdkwork-image-generation-repository-sqlx",
+    "crates/sdkwork-router-image-open-api",
+    "crates/sdkwork-router-image-app-api",
+    "crates/sdkwork-router-image-backend-api",
 ]
 
 [workspace.package]
@@ -12,8 +16,12 @@ version = "0.1.0"
 
 [workspace.dependencies]
 # SDKWork workspace members - declared once at workspace root
-sdkwork-image-core-rust = { path = "packages/native-rust/image/sdkwork-image-core-rust" }
-sdkwork-image-provider-claw-router-rust = { path = "packages/native-rust/image/sdkwork-image-provider-claw-router-rust" }
-sdkwork-image-service-rust = { path = "packages/native-rust/image/sdkwork-image-service-rust" }
+sdkwork-image-generation-service = { path = "crates/sdkwork-image-generation-service" }
+sdkwork-image-generation-workflow-service = { path = "crates/sdkwork-image-generation-workflow-service" }
+sdkwork-image-claw-router-provider-service = { path = "crates/sdkwork-image-claw-router-provider-service" }
+sdkwork-image-generation-repository-sqlx = { path = "crates/sdkwork-image-generation-repository-sqlx" }
+sdkwork-router-image-open-api = { path = "crates/sdkwork-router-image-open-api" }
+sdkwork-router-image-app-api = { path = "crates/sdkwork-router-image-app-api" }
+sdkwork-router-image-backend-api = { path = "crates/sdkwork-router-image-backend-api" }
 clawrouter-open-sdk = { path = "../sdkwork-claw-router/sdks/clawrouter-open-sdk/clawrouter-open-sdk-rust/generated/server-openapi" }
-sdkwork-drive-product = { path = "../sdkwork-drive/services/sdkwork-drive-product" }
+sdkwork-drive-workspace-service = { path = "../sdkwork-drive/crates/sdkwork-drive-workspace-service" }

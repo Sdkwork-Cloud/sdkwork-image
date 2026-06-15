@@ -35,8 +35,8 @@ export default defineConfig({
         replacement: path.resolve(workspaceRoot, "packages/common/image/sdkwork-image-contracts/src/index.ts"),
       },
       {
-        find: "@sdkwork/image-pc-react",
-        replacement: path.resolve(workspaceRoot, "packages/pc-react/content/sdkwork-image-pc-react/src/index.ts"),
+        find: "@sdkwork/image-pc",
+        replacement: path.resolve(workspaceRoot, "apps/sdkwork-image-pc/packages/sdkwork-image-pc/src/index.ts"),
       },
       {
         find: "@sdkwork/core-pc-react",
@@ -62,7 +62,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     exclude: [...configDefaults.exclude],
-    include: ["packages/**/*.test.ts", "packages/**/*.test.tsx", "sdks/**/*.test.ts"],
+    include: ["packages/**/*.test.ts", "packages/**/*.test.tsx", "apps/**/*.test.ts", "apps/**/*.test.tsx", "sdks/**/*.test.ts"],
     setupFiles: [path.join(workspaceRoot, "vitest.setup.ts")],
   },
 });

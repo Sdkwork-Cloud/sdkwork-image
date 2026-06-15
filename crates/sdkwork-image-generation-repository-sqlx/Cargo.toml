@@ -1,0 +1,9 @@
+[package]
+name = "sdkwork-image-generation-repository-sqlx"
+version = "0.1.0"
+edition = "2021"
+description = "SDKWork image SQLx storage contract and migrations."
+
+[lib]
+name = "sdkwork_image_generation_repository_sqlx"
+path = "src/lib.rs"

@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "kind": "sdkwork.route.manifest",
+  "packageName": "sdkwork-router-image-app-api",
+  "surface": "app-api",
+  "owner": "sdkwork-image",
+  "domain": "image",
+  "capability": "image",
+  "apiAuthority": "sdkwork-image-app-api",
+  "sdkFamily": "sdkwork-image-app-sdk",
+  "prefix": "/app/v3/api",
+  "source": {
+    "crateRoot": "crates/sdkwork-router-image-app-api",
+    "crateImport": "sdkwork_router_image_app_api"
+  },
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/assets",
+      "operationId": "assets.list",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/assets/{assetId}",
+      "operationId": "assets.retrieve",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/app/v3/api/image/edit_tasks",
+      "operationId": "editTasks.create",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/edit_tasks/{taskId}",
+      "operationId": "editTasks.retrieve",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/galleries",
+      "operationId": "galleries.list",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/galleries/{galleryId}",
+      "operationId": "galleries.retrieve",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/app/v3/api/image/galleries/{galleryId}/items",
+      "operationId": "galleries.items.create",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/generations",
+      "operationId": "generations.list",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/app/v3/api/image/generations",
+      "operationId": "generations.create",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/generations/{generationId}",
+      "operationId": "generations.retrieve",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/app/v3/api/image/generations/{generationId}/cancel",
+      "operationId": "generations.cancel",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/app/v3/api/image/generations/{generationId}/refresh",
+      "operationId": "generations.refresh",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/presets",
+      "operationId": "presets.list",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/app/v3/api/image/presets/{presetId}",
+      "operationId": "presets.retrieve",
+      "tags": [
+        "image"
+      ],
+      "auth": {
+        "mode": "dual-token",
+        "required": true
+      },
+      "ownership": {
+        "owner": "sdkwork-image",
+        "apiAuthority": "sdkwork-image-app-api",
+        "sdkFamily": "sdkwork-image-app-sdk",
+        "sourceRouteCrate": "sdkwork-router-image-app-api"
+      }
+    }
+  ]
+}
