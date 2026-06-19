@@ -39,5 +39,11 @@
     "type": "vite",
     "entry": "src/main.tsx",
     "outDir": "dist"
+  },
+  "runtime": {
+    "supportedDeploymentProfiles": [
+      "cloud"
+    ],
+    "defaultDeploymentProfile": "cloud"
   }
 }

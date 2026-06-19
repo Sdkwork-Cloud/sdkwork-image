@@ -30,5 +30,11 @@
     "production": {
       "appRuntimeConfig": "config/app/runtime-env.production.example.json"
     }
+  },
+  "runtime": {
+    "supportedDeploymentProfiles": [
+      "cloud"
+    ],
+    "defaultDeploymentProfile": "cloud"
   }
 }
