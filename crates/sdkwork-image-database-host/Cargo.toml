@@ -1,0 +1,17 @@
+[package]
+name = "sdkwork-image-database-host"
+edition = "2021"
+license = "MIT"
+version = "0.1.0"
+description = "SDKWork Image database lifecycle bootstrap."
+
+[lib]
+name = "sdkwork_image_database_host"
+path = "src/lib.rs"
+
+[dependencies]
+dotenvy = "0.15"
+sdkwork_database_config = { workspace = true }
+sdkwork_database_lifecycle = { workspace = true }
+sdkwork_database_spi = { workspace = true }
+sdkwork_database_sqlx = { workspace = true }

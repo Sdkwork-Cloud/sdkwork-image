@@ -1,3 +1,11 @@
+mod bootstrap;
+
+pub use bootstrap::{
+    bootstrap_image_database, bootstrap_image_database_from_env,
+    connect_and_bootstrap_image_database_from_env, connect_image_database_pool_from_env,
+    ImageDatabaseHost, ImageDatabasePool,
+};
+
 pub const IMAGE_INITIAL_MIGRATION: &str = "0001_image_foundation.sql";
 pub const IMAGE_RUNTIME_MIGRATION: &str = "0002_image_generation_drive_runtime.sql";
 

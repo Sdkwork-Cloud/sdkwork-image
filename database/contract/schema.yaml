@@ -1,0 +1,43 @@
+schema_version: 1
+kind: sdkwork.database.schema
+module_id: image
+contract_version: 1.0.0
+owner_team: image-platform
+compliance_level: L2
+engines:
+  - postgres
+table_prefix: image_
+tables:
+  - name: image_preset
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_generation_job
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_edit_task
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_asset
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_gallery
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_gallery_item
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_generation_output
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_provider_binding
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_provider_task
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_provider_webhook_event
+    lifecycle_status: active
+    owner: image-platform
+  - name: image_notification_outbox
+    lifecycle_status: active
+    owner: image-platform
