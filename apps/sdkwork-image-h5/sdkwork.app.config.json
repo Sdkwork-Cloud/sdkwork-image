@@ -9,14 +9,14 @@
   "version": "0.1.0",
   "login": {
     "provider": "appbase",
-    "sdkFamily": "sdkwork-appbase-app-sdk"
+    "sdkFamily": "sdkwork-iam-app-sdk"
   },
   "sdkDependencies": {
     "sdkwork-image-app-sdk": {
       "version": "workspace:*",
       "surface": "app-api"
     },
-    "sdkwork-appbase-app-sdk": {
+    "sdkwork-iam-app-sdk": {
       "version": "workspace:*",
       "surface": "app-api"
     }
