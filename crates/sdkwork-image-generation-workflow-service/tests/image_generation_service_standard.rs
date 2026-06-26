@@ -36,8 +36,8 @@ fn plans_create_flow_with_provider_result_drive_import_and_outbox() {
 
     let plan = plan_generation_create_service_flow(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             actor: ImageGenerationActor::User {
                 user_id: "user-001".to_string(),
             },
@@ -105,7 +105,7 @@ fn plans_refresh_from_polling_result_with_drive_import_outputs_ready_event() {
 
     let plan = plan_generation_refresh_from_provider_result(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
+            tenant_id: "100001".to_string(),
             organization_id: None,
             actor: ImageGenerationActor::Anonymous {
                 anonymous_id: "anon-001".to_string(),
@@ -159,8 +159,8 @@ fn validates_webhook_consistency_before_planning_refresh() {
 
     let plan = plan_generation_refresh_from_webhook(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             actor: ImageGenerationActor::User {
                 user_id: "user-001".to_string(),
             },
@@ -238,8 +238,8 @@ fn plans_create_persistence_bindings_with_integer_job_status_and_drive_sync_stat
 
     let plan = plan_generation_create_persistence_plan(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             actor: ImageGenerationActor::User {
                 user_id: "user-001".to_string(),
             },
@@ -284,8 +284,8 @@ fn plans_create_persistence_bindings_with_integer_job_status_and_drive_sync_stat
 fn plans_create_persistence_snapshots_with_reference_images_for_replay_and_audit() {
     let plan = plan_generation_create_persistence_plan(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             actor: ImageGenerationActor::User {
                 user_id: "user-001".to_string(),
             },
@@ -373,7 +373,7 @@ fn plans_refresh_persistence_bindings_for_failed_and_ready_outputs() {
 
     let failed_plan = plan_generation_refresh_persistence_plan(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
+            tenant_id: "100001".to_string(),
             organization_id: None,
             actor: ImageGenerationActor::Anonymous {
                 anonymous_id: "anon-persist".to_string(),
@@ -418,7 +418,7 @@ fn plans_refresh_persistence_bindings_for_failed_and_ready_outputs() {
 
     let ready_plan = plan_generation_refresh_persistence_plan(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
+            tenant_id: "100001".to_string(),
             organization_id: None,
             actor: ImageGenerationActor::Anonymous {
                 anonymous_id: "anon-persist".to_string(),
@@ -446,8 +446,8 @@ fn plans_refresh_persistence_bindings_for_failed_and_ready_outputs() {
 fn plans_executable_runtime_steps_for_generation_create_flow() {
     let steps = plan_generation_create_runtime_steps(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             actor: ImageGenerationActor::User {
                 user_id: "user-001".to_string(),
             },
@@ -497,7 +497,7 @@ fn plans_executable_runtime_steps_for_generation_create_flow() {
 fn rejects_executable_runtime_steps_without_generated_create_sdk_method() {
     let result = plan_generation_create_runtime_steps(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
+            tenant_id: "100001".to_string(),
             organization_id: None,
             actor: ImageGenerationActor::User {
                 user_id: "user-001".to_string(),
@@ -562,7 +562,7 @@ fn plans_executable_runtime_steps_for_refresh_outputs_and_drive_sync() {
 
     let steps = plan_generation_refresh_runtime_steps(
         ImageGenerationScope {
-            tenant_id: "tenant-1".to_string(),
+            tenant_id: "100001".to_string(),
             organization_id: None,
             actor: ImageGenerationActor::Anonymous {
                 anonymous_id: "anon-runtime-002".to_string(),

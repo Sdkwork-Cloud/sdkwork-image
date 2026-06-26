@@ -21,16 +21,16 @@ fn exposes_image_domain_identity() {
 #[test]
 fn validates_image_generation_request_boundaries() {
     let request = create_image_generation_request(
-        "tenant-1",
-        Some("org-1"),
+        "100001",
+        Some("0"),
         "Premium device beauty shot",
         "1024x1024",
         "studio",
         ImageVisibility::Tenant,
     );
 
-    assert_eq!(request.tenant_id, "tenant-1");
-    assert_eq!(request.organization_id.as_deref(), Some("org-1"));
+    assert_eq!(request.tenant_id, "100001");
+    assert_eq!(request.organization_id.as_deref(), Some("0"));
     assert_eq!(request.status, ImageJobStatus::Queued);
     assert!(validate_image_generation_request(&request).is_ok());
 
@@ -123,8 +123,8 @@ fn runtime_statuses_map_to_storage_job_status_and_drive_sync_status() {
 fn plans_ai_generated_outputs_into_drive_ai_generated_space_for_logged_in_users() {
     let plans = plan_drive_import_for_generated_outputs(
         DriveGeneratedMediaContext {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             generation_id: "generation-001".to_string(),
             provider_code: "openai".to_string(),
             model: Some("gpt-image-1".to_string()),
@@ -195,8 +195,8 @@ fn plans_ai_generated_outputs_into_drive_ai_generated_space_for_logged_in_users(
 fn builds_drive_uploader_command_with_scene_for_logged_in_generated_output() {
     let plans = plan_drive_import_for_generated_outputs(
         DriveGeneratedMediaContext {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             generation_id: "generation-001".to_string(),
             provider_code: "openai".to_string(),
             model: Some("gpt-image-1".to_string()),
@@ -223,8 +223,8 @@ fn builds_drive_uploader_command_with_scene_for_logged_in_generated_output() {
 
     let command = build_drive_uploader_command_for_generated_output(
         &plans[0],
-        "tenant-1",
-        Some("org-1"),
+        "100001",
+        Some("0"),
         "operator-001",
         1_780_000_000_000,
     )
@@ -260,7 +260,7 @@ fn builds_drive_uploader_command_with_scene_for_logged_in_generated_output() {
 fn plans_anonymous_generated_outputs_with_app_owned_ai_generation_space() {
     let plans = plan_drive_import_for_generated_outputs(
         DriveGeneratedMediaContext {
-            tenant_id: "tenant-1".to_string(),
+            tenant_id: "100001".to_string(),
             organization_id: None,
             generation_id: "generation-anon".to_string(),
             provider_code: "midjourney".to_string(),
@@ -311,7 +311,7 @@ fn plans_anonymous_generated_outputs_with_app_owned_ai_generation_space() {
 fn builds_drive_uploader_command_with_scene_for_anonymous_generated_output() {
     let plans = plan_drive_import_for_generated_outputs(
         DriveGeneratedMediaContext {
-            tenant_id: "tenant-1".to_string(),
+            tenant_id: "100001".to_string(),
             organization_id: None,
             generation_id: "generation-anon".to_string(),
             provider_code: "midjourney".to_string(),
@@ -339,7 +339,7 @@ fn builds_drive_uploader_command_with_scene_for_anonymous_generated_output() {
 
     let command = build_drive_uploader_command_for_generated_output(
         &plans[0],
-        "tenant-1",
+        "100001",
         None,
         "operator-001",
         1_780_000_000_000,
@@ -366,8 +366,8 @@ fn builds_drive_uploader_command_with_scene_for_anonymous_generated_output() {
 fn plans_multi_output_generation_with_distinct_drive_nodes_and_scene() {
     let plans = plan_drive_import_for_generated_outputs(
         DriveGeneratedMediaContext {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             generation_id: "generation-multi".to_string(),
             provider_code: "nano-banana".to_string(),
             model: Some("banana-image-pro".to_string()),
@@ -437,7 +437,7 @@ fn plans_multi_output_generation_with_distinct_drive_nodes_and_scene() {
 fn rejects_duplicate_output_indexes_before_drive_sync() {
     let result = plan_drive_import_for_generated_outputs(
         DriveGeneratedMediaContext {
-            tenant_id: "tenant-1".to_string(),
+            tenant_id: "100001".to_string(),
             organization_id: None,
             generation_id: "generation-duplicate".to_string(),
             provider_code: "openai".to_string(),
@@ -783,8 +783,8 @@ fn normalizes_openai_image_generation_response_into_multi_output_drive_inputs() 
 
     let plans = plan_drive_import_for_generated_outputs(
         DriveGeneratedMediaContext {
-            tenant_id: "tenant-1".to_string(),
-            organization_id: Some("org-1".to_string()),
+            tenant_id: "100001".to_string(),
+            organization_id: Some("0".to_string()),
             generation_id: "generation-openai-sync".to_string(),
             provider_code: "openai".to_string(),
             model: Some("gpt-image-1".to_string()),

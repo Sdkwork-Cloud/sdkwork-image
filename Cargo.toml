@@ -34,5 +34,5 @@ sdkwork-image-generation-repository-sqlx = { path = "crates/sdkwork-image-genera
 sdkwork-routes-image-open-api = { path = "crates/sdkwork-routes-image-open-api" }
 sdkwork-routes-image-app-api = { path = "crates/sdkwork-routes-image-app-api" }
 sdkwork-routes-image-backend-api = { path = "crates/sdkwork-routes-image-backend-api" }
-clawrouter-open-sdk = { path = "../sdkwork-claw-router/sdks/clawrouter-open-sdk/clawrouter-open-sdk-rust/generated/server-openapi" }
+clawrouter-open-sdk = { path = "../sdkwork-clawrouter/sdks/clawrouter-open-sdk/clawrouter-open-sdk-rust/generated/server-openapi" }
 sdkwork-drive-workspace-service = { path = "../sdkwork-drive/crates/sdkwork-drive-workspace-service" }
