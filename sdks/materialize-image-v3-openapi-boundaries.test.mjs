@@ -37,13 +37,13 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
   const backend = readJson("sdks/sdkwork-image-backend-sdk/openapi/sdkwork-image-backend-api.openapi.yaml");
   const open = readJson("sdks/sdkwork-image-sdk/openapi/sdkwork-image-open-api.openapi.yaml");
   const openRouteManifest = readJson(
-    "sdks/_route-manifests/open-api/sdkwork-router-image-open-api.route-manifest.json",
+    "sdks/_route-manifests/open-api/sdkwork-routes-image-open-api.route-manifest.json",
   );
   const appRouteManifest = readJson(
-    "sdks/_route-manifests/app-api/sdkwork-router-image-app-api.route-manifest.json",
+    "sdks/_route-manifests/app-api/sdkwork-routes-image-app-api.route-manifest.json",
   );
   const backendRouteManifest = readJson(
-    "sdks/_route-manifests/backend-api/sdkwork-router-image-backend-api.route-manifest.json",
+    "sdks/_route-manifests/backend-api/sdkwork-routes-image-backend-api.route-manifest.json",
   );
 
   assert.equal(open.openapi, "3.1.2");
@@ -63,7 +63,7 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
   );
   assert.equal(
     open.paths["/image/v3/api/compat/openai/images/generations"].post["x-sdkwork-source-route-crate"],
-    "sdkwork-router-image-open-api",
+    "sdkwork-routes-image-open-api",
   );
   assert.equal(
     open.paths["/image/v3/api/compat/openai/images/generations"].post.requestBody.content["application/json"].schema.$ref,
@@ -98,7 +98,7 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
   assert.equal(app.paths["/app/v3/api/image/generations"].post["x-sdkwork-domain"], "image");
   assert.equal(
     app.paths["/app/v3/api/image/generations"].post["x-sdkwork-source-route-crate"],
-    "sdkwork-router-image-app-api",
+    "sdkwork-routes-image-app-api",
   );
   assert.deepEqual(app.paths["/app/v3/api/image/generations"].post.security, [
     { AuthToken: [], AccessToken: [] },
@@ -127,7 +127,7 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
   assert.equal(backend.paths["/backend/v3/api/image/generations"].get.operationId, "generations.list");
   assert.equal(
     backend.paths["/backend/v3/api/image/generations"].get["x-sdkwork-source-route-crate"],
-    "sdkwork-router-image-backend-api",
+    "sdkwork-routes-image-backend-api",
   );
   assert.equal(
     backend.paths["/backend/v3/api/image/generations/{generationId}/retry"].post.operationId,
@@ -170,19 +170,19 @@ test("image OpenAPI materializer writes app and backend SDK authorities from Rus
   );
 
   assert.deepEqual(open["x-sdkwork-materialized-from"].map((entry) => entry.sourceRouteCrate), [
-    "sdkwork-router-image-open-api",
-    "sdkwork-router-image-app-api",
-    "sdkwork-router-image-backend-api",
+    "sdkwork-routes-image-open-api",
+    "sdkwork-routes-image-app-api",
+    "sdkwork-routes-image-backend-api",
   ]);
-  assert.equal(openRouteManifest.packageName, "sdkwork-router-image-open-api");
+  assert.equal(openRouteManifest.packageName, "sdkwork-routes-image-open-api");
   assert.equal(openRouteManifest.surface, "open-api");
-  assert.equal(openRouteManifest.source.crateRoot, "crates/sdkwork-router-image-open-api");
-  assert.equal(appRouteManifest.packageName, "sdkwork-router-image-app-api");
+  assert.equal(openRouteManifest.source.crateRoot, "crates/sdkwork-routes-image-open-api");
+  assert.equal(appRouteManifest.packageName, "sdkwork-routes-image-app-api");
   assert.equal(appRouteManifest.surface, "app-api");
-  assert.equal(appRouteManifest.source.crateImport, "sdkwork_router_image_app_api");
-  assert.equal(backendRouteManifest.packageName, "sdkwork-router-image-backend-api");
+  assert.equal(appRouteManifest.source.crateImport, "sdkwork_routes_image_app_api");
+  assert.equal(backendRouteManifest.packageName, "sdkwork-routes-image-backend-api");
   assert.equal(backendRouteManifest.surface, "backend-api");
-  assert.equal(backendRouteManifest.source.crateRoot, "crates/sdkwork-router-image-backend-api");
+  assert.equal(backendRouteManifest.source.crateRoot, "crates/sdkwork-routes-image-backend-api");
 
   const serialized = JSON.stringify({ app, backend });
   assert.equal(serialized.includes("generation_jobs"), false);

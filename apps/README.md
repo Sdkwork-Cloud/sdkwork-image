@@ -1,30 +1,41 @@
-# Apps
+# apps/
 
-Independently runnable application roots, application surfaces, and deployable application compositions.
+Application: image
+Status: active
+Owner: SDKWork maintainers
+Specs: APPLICATION_SPEC.md, SDKWORK_WORKSPACE_SPEC.md
 
-## Purpose
+## Primary App Surface
 
-Contains architecture-specific application surface roots for PC, H5, Flutter, and other client platforms.
+The repository root is not the primary runnable app surface.
+Runnable application roots live under `apps/<application-root>/`.
 
-## Owner
+## Directory Index
 
-Repository maintainers.
+| Directory | Surface role | Runnable | Purpose | Entry |
+| --- | --- | --- | --- | --- |
+| sdkwork-image-flutter-mobile | flutter-mobile | yes | sdkwork-image-flutter-mobile flutter-mobile application root. | `sdkwork-image-flutter-mobile/` |
+| sdkwork-image-h5 | h5 | yes | sdkwork-image-h5 h5 application root. | `sdkwork-image-h5/` |
+| sdkwork-image-pc | pc | yes | sdkwork-image-pc pc application root. | `sdkwork-image-pc/` |
 
 ## Allowed Content
 
-- `image-pc/` - PC browser/desktop application root
-- `image-h5/` - H5/Capacitor mobile application root
-- `image-flutter-mobile/` - Flutter mobile application root
+- Selected language/architecture application roots with `README.md`, `AGENTS.md`, `.sdkwork/`, and `specs/` when authored packages exist.
+- Architecture-local `packages/`, `config/`, `src/`, `lib/`, `App/`, or `entry/` directories required by the owning architecture standard.
 
 ## Forbidden Content
 
-- Shared SDK families (belong in `sdks/`)
-- API contracts (belong in `apis/`)
-- Rust crates (belong in `crates/`)
+- Repository-root API contracts, generated SDK workspaces, Rust crates, or deployment descriptors moved under `apps/`.
+- Runtime secrets, user-private state, generated SDK transport output, or cross-application copied business logic.
 
 ## Related Specs
 
 - `../sdkwork-specs/APPLICATION_SPEC.md`
-- `../sdkwork-specs/APP_PC_ARCHITECTURE_SPEC.md`
-- `../sdkwork-specs/APP_H5_ARCHITECTURE_SPEC.md`
-- `../sdkwork-specs/FLUTTER_APP_MOBILE_ARCHITECTURE_SPEC.md`
+- `../sdkwork-specs/SDKWORK_WORKSPACE_SPEC.md`
+- `../sdkwork-specs/APP_CLIENT_ARCHITECTURE_ALIGNMENT_SPEC.md`
+
+## Verification
+
+```bash
+node ../sdkwork-specs/tools/check-apps-directory-index.mjs --root .
+```

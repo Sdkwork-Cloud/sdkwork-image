@@ -116,8 +116,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-open-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "compat.openai.images",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-open-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-open-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-open-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-open-api",
         "x-sdkwork-request-context": "OpenApiRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -245,18 +245,18 @@
   "x-sdkwork-materialized-from": [
     {
       "owner": "image",
-      "sourceRouteCrate": "sdkwork-router-image-open-api",
-      "path": "<sdkwork-image>/crates/sdkwork-router-image-open-api/src/manifest.rs"
+      "sourceRouteCrate": "sdkwork-routes-image-open-api",
+      "path": "<sdkwork-image>/crates/sdkwork-routes-image-open-api/src/manifest.rs"
     },
     {
       "owner": "image",
-      "sourceRouteCrate": "sdkwork-router-image-app-api",
-      "path": "<sdkwork-image>/crates/sdkwork-router-image-app-api/src/manifest.rs"
+      "sourceRouteCrate": "sdkwork-routes-image-app-api",
+      "path": "<sdkwork-image>/crates/sdkwork-routes-image-app-api/src/manifest.rs"
     },
     {
       "owner": "image",
-      "sourceRouteCrate": "sdkwork-router-image-backend-api",
-      "path": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs"
+      "sourceRouteCrate": "sdkwork-routes-image-backend-api",
+      "path": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs"
     }
   ],
   "x-sdkwork-request-context": {

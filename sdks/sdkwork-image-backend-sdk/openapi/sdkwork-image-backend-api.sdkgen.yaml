@@ -164,8 +164,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "assets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       }
@@ -269,8 +269,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "assets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -372,8 +372,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "assets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -475,8 +475,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "assets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -627,8 +627,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "editTasks",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       }
@@ -732,8 +732,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "editTasks",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       }
@@ -874,8 +874,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "galleries",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -968,8 +968,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "galleries",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -1083,8 +1083,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "galleries",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -1186,8 +1186,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "galleries",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -1289,8 +1289,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "galleries",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -1449,8 +1449,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "galleries.items",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -1552,8 +1552,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "galleries.items",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -1675,8 +1675,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "galleries.items",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       }
@@ -1817,8 +1817,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "generations",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       }
@@ -1922,8 +1922,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "generations",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       }
@@ -2027,8 +2027,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "generations",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -2142,8 +2142,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "generations",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -2257,8 +2257,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "generations",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -2409,8 +2409,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "presets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -2503,8 +2503,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "presets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -2618,8 +2618,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "presets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -2721,8 +2721,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "presets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true
       },
@@ -2824,8 +2824,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "presets",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -2939,8 +2939,8 @@
         "x-sdkwork-api-authority": "sdkwork-image-backend-api",
         "x-sdkwork-domain": "image",
         "x-sdkwork-resource": "providerWebhooks",
-        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs",
-        "x-sdkwork-source-route-crate": "sdkwork-router-image-backend-api",
+        "x-sdkwork-source": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs",
+        "x-sdkwork-source-route-crate": "sdkwork-routes-image-backend-api",
         "x-sdkwork-request-context": "AppRequestContext",
         "x-sdkwork-server-request-id": true,
         "requestBody": {
@@ -3555,18 +3555,18 @@
   "x-sdkwork-materialized-from": [
     {
       "owner": "image",
-      "sourceRouteCrate": "sdkwork-router-image-open-api",
-      "path": "<sdkwork-image>/crates/sdkwork-router-image-open-api/src/manifest.rs"
+      "sourceRouteCrate": "sdkwork-routes-image-open-api",
+      "path": "<sdkwork-image>/crates/sdkwork-routes-image-open-api/src/manifest.rs"
     },
     {
       "owner": "image",
-      "sourceRouteCrate": "sdkwork-router-image-app-api",
-      "path": "<sdkwork-image>/crates/sdkwork-router-image-app-api/src/manifest.rs"
+      "sourceRouteCrate": "sdkwork-routes-image-app-api",
+      "path": "<sdkwork-image>/crates/sdkwork-routes-image-app-api/src/manifest.rs"
     },
     {
       "owner": "image",
-      "sourceRouteCrate": "sdkwork-router-image-backend-api",
-      "path": "<sdkwork-image>/crates/sdkwork-router-image-backend-api/src/manifest.rs"
+      "sourceRouteCrate": "sdkwork-routes-image-backend-api",
+      "path": "<sdkwork-image>/crates/sdkwork-routes-image-backend-api/src/manifest.rs"
     }
   ],
   "x-sdkwork-request-context": {

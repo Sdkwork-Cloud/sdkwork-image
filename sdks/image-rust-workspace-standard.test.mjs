@@ -41,9 +41,9 @@ test("image Rust workspace uses standard crates layout and names", () => {
     "crates/sdkwork-image-generation-workflow-service",
     "crates/sdkwork-image-claw-router-provider-service",
     "crates/sdkwork-image-generation-repository-sqlx",
-    "crates/sdkwork-router-image-open-api",
-    "crates/sdkwork-router-image-app-api",
-    "crates/sdkwork-router-image-backend-api",
+    "crates/sdkwork-routes-image-open-api",
+    "crates/sdkwork-routes-image-app-api",
+    "crates/sdkwork-routes-image-backend-api",
   ]) {
     assert.match(rootCargo, new RegExp(expected.replaceAll("/", "[/\\\\]")));
     assert.equal(existsSync(resolve(workspaceRoot, expected, "Cargo.toml")), true, `missing ${expected}`);

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "kind": "sdkwork.route.manifest",
-  "packageName": "sdkwork-router-image-app-api",
+  "packageName": "sdkwork-routes-image-app-api",
   "surface": "app-api",
   "owner": "sdkwork-image",
   "domain": "image",
@@ -10,8 +10,8 @@
   "sdkFamily": "sdkwork-image-app-sdk",
   "prefix": "/app/v3/api",
   "source": {
-    "crateRoot": "crates/sdkwork-router-image-app-api",
-    "crateImport": "sdkwork_router_image_app_api"
+    "crateRoot": "crates/sdkwork-routes-image-app-api",
+    "crateImport": "sdkwork_routes_image_app_api"
   },
   "routes": [
     {
@@ -29,7 +29,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -47,7 +47,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -65,7 +65,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -83,7 +83,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -101,7 +101,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -119,7 +119,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -137,7 +137,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -155,7 +155,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -173,7 +173,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -191,7 +191,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -209,7 +209,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -227,7 +227,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -245,7 +245,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     },
     {
@@ -263,7 +263,7 @@
         "owner": "sdkwork-image",
         "apiAuthority": "sdkwork-image-app-api",
         "sdkFamily": "sdkwork-image-app-sdk",
-        "sourceRouteCrate": "sdkwork-router-image-app-api"
+        "sourceRouteCrate": "sdkwork-routes-image-app-api"
       }
     }
   ]

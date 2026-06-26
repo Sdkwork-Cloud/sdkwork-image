@@ -8,20 +8,20 @@ const imageRoot = resolve(__dirname, "..");
 const routeSources = [
   {
     owner: "image",
-    sourceRouteCrate: "sdkwork-router-image-open-api",
-    path: resolve(imageRoot, "crates/sdkwork-router-image-open-api/src/manifest.rs"),
+    sourceRouteCrate: "sdkwork-routes-image-open-api",
+    path: resolve(imageRoot, "crates/sdkwork-routes-image-open-api/src/manifest.rs"),
     constructors: ["ImageHttpRoute::new"],
   },
   {
     owner: "image",
-    sourceRouteCrate: "sdkwork-router-image-app-api",
-    path: resolve(imageRoot, "crates/sdkwork-router-image-app-api/src/manifest.rs"),
+    sourceRouteCrate: "sdkwork-routes-image-app-api",
+    path: resolve(imageRoot, "crates/sdkwork-routes-image-app-api/src/manifest.rs"),
     constructors: ["ImageHttpRoute::new"],
   },
   {
     owner: "image",
-    sourceRouteCrate: "sdkwork-router-image-backend-api",
-    path: resolve(imageRoot, "crates/sdkwork-router-image-backend-api/src/manifest.rs"),
+    sourceRouteCrate: "sdkwork-routes-image-backend-api",
+    path: resolve(imageRoot, "crates/sdkwork-routes-image-backend-api/src/manifest.rs"),
     constructors: ["ImageHttpRoute::new"],
   },
 ];
@@ -573,7 +573,7 @@ function buildSchemas(surface) {
 }
 
 function routePackageForSurface(surface) {
-  return `sdkwork-router-image-${surface.routeSurface}`;
+  return `sdkwork-routes-image-${surface.routeSurface}`;
 }
 
 function pickSchemas(schemas, names) {

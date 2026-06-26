@@ -1,14 +1,15 @@
 [workspace]
 resolver = "2"
 members = [
+    "crates/sdkwork-image-gateway-assembly",
     "crates/sdkwork-image-database-host",
     "crates/sdkwork-image-generation-service",
     "crates/sdkwork-image-generation-workflow-service",
     "crates/sdkwork-image-claw-router-provider-service",
     "crates/sdkwork-image-generation-repository-sqlx",
-    "crates/sdkwork-router-image-open-api",
-    "crates/sdkwork-router-image-app-api",
-    "crates/sdkwork-router-image-backend-api",
+    "crates/sdkwork-routes-image-open-api",
+    "crates/sdkwork-routes-image-app-api",
+    "crates/sdkwork-routes-image-backend-api",
 ]
 
 [workspace.package]
@@ -30,8 +31,8 @@ sdkwork-image-generation-service = { path = "crates/sdkwork-image-generation-ser
 sdkwork-image-generation-workflow-service = { path = "crates/sdkwork-image-generation-workflow-service" }
 sdkwork-image-claw-router-provider-service = { path = "crates/sdkwork-image-claw-router-provider-service" }
 sdkwork-image-generation-repository-sqlx = { path = "crates/sdkwork-image-generation-repository-sqlx" }
-sdkwork-router-image-open-api = { path = "crates/sdkwork-router-image-open-api" }
-sdkwork-router-image-app-api = { path = "crates/sdkwork-router-image-app-api" }
-sdkwork-router-image-backend-api = { path = "crates/sdkwork-router-image-backend-api" }
+sdkwork-routes-image-open-api = { path = "crates/sdkwork-routes-image-open-api" }
+sdkwork-routes-image-app-api = { path = "crates/sdkwork-routes-image-app-api" }
+sdkwork-routes-image-backend-api = { path = "crates/sdkwork-routes-image-backend-api" }
 clawrouter-open-sdk = { path = "../sdkwork-claw-router/sdks/clawrouter-open-sdk/clawrouter-open-sdk-rust/generated/server-openapi" }
 sdkwork-drive-workspace-service = { path = "../sdkwork-drive/crates/sdkwork-drive-workspace-service" }

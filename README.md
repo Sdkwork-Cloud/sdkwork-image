@@ -53,7 +53,7 @@ The Rust image generation stack is split by ownership boundary:
 - `crates/sdkwork-image-generation-workflow-service` owns service-level orchestration contracts for create, polling refresh, webhook refresh, Drive import planning, Drive upload preparation steps, outbox event planning, and the runtime step contract required for state consistency.
 - `crates/sdkwork-image-claw-router-provider-service` owns the Claw Router provider gateway and calls `clawrouter_open_sdk` generated Rust SDK APIs. Product code must use this gateway or another approved generated-SDK adapter instead of raw provider HTTP.
 - `crates/sdkwork-image-generation-repository-sqlx` owns image database table, migration, and repository SQL contracts for generation jobs, multi-output records, provider tasks, webhook events, Drive sync status, and notification outbox.
-- `crates/sdkwork-router-image-open-api` / `crates/sdkwork-router-image-app-api` / `crates/sdkwork-router-image-backend-api` owns the image API route catalog that materializes OpenAPI and SDK families, including backend provider webhook receive routes.
+- `crates/sdkwork-routes-image-open-api` / `crates/sdkwork-routes-image-app-api` / `crates/sdkwork-routes-image-backend-api` owns the image API route catalog that materializes OpenAPI and SDK families, including backend provider webhook receive routes.
 
 Image API paths use `/generations` resource names. Legacy `/generation_jobs`, `generationJobs`, and `{jobId}` names are intentionally excluded from the generated API surface.
 
@@ -108,3 +108,6 @@ Owner and lifecycle status are tracked in `specs/component.spec.json`.
 - [docs/product/prd/PRD.md](docs/product/prd/PRD.md)
 - [docs/architecture/tech/TECH_ARCHITECTURE.md](docs/architecture/tech/TECH_ARCHITECTURE.md)
 
+## Application Roots
+
+- [apps directory index](apps/README.md)

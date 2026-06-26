@@ -10,7 +10,7 @@
     "test:rust": "cargo test --workspace",
     "openapi:materialize": "node sdks/materialize-image-v3-openapi-boundaries.mjs",
     "sdk:generate:ts": "powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-sdk/bin/generate-sdk.ps1 -Languages typescript && powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-app-sdk/bin/generate-sdk.ps1 -Languages typescript && powershell -NoProfile -ExecutionPolicy Bypass -File sdks/sdkwork-image-backend-sdk/bin/generate-sdk.ps1 -Languages typescript",
-    "db:materialize:contract": "node tools/materialize_image_database_contract.mjs",
+    "db:materialize:contract": "node ../sdkwork-specs/tools/materialize-database-contract-from-baseline.mjs --root . --baseline database/ddl/baseline/postgres/0001_image_legacy_baseline.sql --module-id image --owner image-platform --prefixes image_ --engines postgres",
     "db:validate": "node ../sdkwork-specs/tools/check-database-framework-standard.mjs --root .",
     "db:plan": "cargo run --manifest-path ../sdkwork-database/Cargo.toml -p sdkwork-database-cli -- --app-root . plan",
     "db:init": "cargo run --manifest-path ../sdkwork-database/Cargo.toml -p sdkwork-database-cli -- --app-root . init",
@@ -20,7 +20,9 @@
     "db:drift": "cargo run --manifest-path ../sdkwork-database/Cargo.toml -p sdkwork-database-cli -- --app-root . drift",
     "db:drift:check": "cargo run --manifest-path ../sdkwork-database/Cargo.toml -p sdkwork-database-cli -- --app-root . drift-check",
     "db:bootstrap": "cargo run --manifest-path ../sdkwork-database/Cargo.toml -p sdkwork-database-cli -- --app-root . bootstrap",
-    "test:contract:database": "node ../sdkwork-specs/tools/check-database-framework-standard.mjs --root ."
+    "test:contract:database": "node ../sdkwork-specs/tools/check-database-framework-standard.mjs --root .",
+    "gateway:assembly:materialize": "node scripts/gateway/assembly-materialize.mjs",
+    "gateway:assembly:validate": "node scripts/gateway/assembly-validate.mjs"
   },
   "devDependencies": {
     "@sdkwork/core-pc-react": "workspace:*",

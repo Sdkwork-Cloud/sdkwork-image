@@ -1774,15 +1774,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "sdkwork-router-image-app-api"
+name = "sdkwork-routes-image-app-api"
 version = "0.1.0"
 
 [[package]]
-name = "sdkwork-router-image-backend-api"
+name = "sdkwork-routes-image-backend-api"
 version = "0.1.0"
 
 [[package]]
-name = "sdkwork-router-image-open-api"
+name = "sdkwork-routes-image-open-api"
 version = "0.1.0"
 dependencies = [
  "axum",
