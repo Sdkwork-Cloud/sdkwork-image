@@ -90,22 +90,6 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8(@types/node@25.9.2)(jsdom@29.1.1)(vite@8.0.3(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)(@types/node@25.9.2)(jiti@2.7.0))
 
-  ../sdkwork-iam/sdks/sdkwork-iam-app-sdk/sdkwork-iam-app-sdk-typescript/generated/server-openapi:
-    dependencies:
-      '@sdkwork/sdk-common':
-        specifier: ^1.0.2
-        version: link:../../../../../../sdkwork-sdk-commons/sdkwork-sdk-common-typescript
-    devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.42
-      rollup:
-        specifier: ^4.0.0
-        version: 4.61.1
-      typescript:
-        specifier: ^5.3.0
-        version: 5.9.3
-
   ../sdkwork-core/sdkwork-core-pc-react:
     dependencies:
       '@sdkwork/sdk-common':
@@ -151,6 +135,22 @@ importers:
     devDependencies:
       typescript:
         specifier: ^5.8.2
+        version: 5.9.3
+
+  ../sdkwork-iam/sdks/sdkwork-iam-app-sdk/sdkwork-iam-app-sdk-typescript/generated/server-openapi:
+    dependencies:
+      '@sdkwork/sdk-common':
+        specifier: ^1.0.2
+        version: link:../../../../../../sdkwork-sdk-commons/sdkwork-sdk-common-typescript
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.42
+      rollup:
+        specifier: ^4.0.0
+        version: 4.61.1
+      typescript:
+        specifier: ^5.3.0
         version: 5.9.3
 
   ../sdkwork-sdk-commons/sdkwork-sdk-common-typescript:
@@ -313,7 +313,11 @@ importers:
         specifier: ^3.5.32
         version: 3.5.35(typescript@6.0.2)
 
+  apps/sdkwork-image-h5/packages/sdkwork-image-h5-core: {}
+
   apps/sdkwork-image-pc/packages/sdkwork-image-pc: {}
+
+  apps/sdkwork-image-pc/packages/sdkwork-image-pc-core: {}
 
   apps/sdkwork-image-pc/packages/sdkwork-image-pc-generation:
     dependencies:
@@ -343,22 +347,6 @@ importers:
         version: 5.9.3
 
   sdks/sdkwork-image-backend-sdk/sdkwork-image-backend-sdk-typescript/generated/server-openapi:
-    dependencies:
-      '@sdkwork/sdk-common':
-        specifier: ^1.0.2
-        version: link:../../../../../../sdkwork-sdk-commons/sdkwork-sdk-common-typescript
-    devDependencies:
-      '@types/node':
-        specifier: ^20.0.0
-        version: 20.19.42
-      rollup:
-        specifier: ^4.0.0
-        version: 4.61.1
-      typescript:
-        specifier: ^5.3.0
-        version: 5.9.3
-
-  sdks/sdkwork-image-sdk/sdkwork-image-sdk-typescript/generated/server-openapi:
     dependencies:
       '@sdkwork/sdk-common':
         specifier: ^1.0.2

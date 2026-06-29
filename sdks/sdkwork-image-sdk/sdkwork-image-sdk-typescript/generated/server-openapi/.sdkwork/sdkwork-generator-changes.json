@@ -6,9 +6,10 @@
     "version": "1.0.0",
     "language": "typescript",
     "sdkType": "custom",
+    "protocol": "http",
     "packageName": "@sdkwork/image-sdk"
   },
-  "changeFingerprint": "e364f34acc49ecdc900c5f11a9e108c91d28ed10a6f5f0fdd7282d234d64daf6",
+  "changeFingerprint": "a16bbb09a39070c5e73cfff0517022ea5b0a7eef43d14919f651dc16bc7230d4",
   "changes": {
     "createdGeneratedFiles": [
       "bin/publish-core.mjs",
@@ -32,10 +33,18 @@
       "src/sdk.ts",
       "src/types/common.ts",
       "src/types/field-error.ts",
-      "src/types/image-api-result.ts",
       "src/types/image-operation-command.ts",
       "src/types/index.ts",
+      "src/types/page-info.ts",
       "src/types/problem-detail.ts",
+      "src/types/sdk-work-api-response.ts",
+      "src/types/sdk-work-command-data.ts",
+      "src/types/sdk-work-command-response.ts",
+      "src/types/sdk-work-list-response.ts",
+      "src/types/sdk-work-page-data.ts",
+      "src/types/sdk-work-platform-error-code.ts",
+      "src/types/sdk-work-resource-data.ts",
+      "src/types/sdk-work-resource-response.ts",
       "tsconfig.json"
     ],
     "updatedGeneratedFiles": [],
@@ -77,10 +86,18 @@
         "paths": [
           "src/types/common.ts",
           "src/types/field-error.ts",
-          "src/types/image-api-result.ts",
           "src/types/image-operation-command.ts",
           "src/types/index.ts",
-          "src/types/problem-detail.ts"
+          "src/types/page-info.ts",
+          "src/types/problem-detail.ts",
+          "src/types/sdk-work-api-response.ts",
+          "src/types/sdk-work-command-data.ts",
+          "src/types/sdk-work-command-response.ts",
+          "src/types/sdk-work-list-response.ts",
+          "src/types/sdk-work-page-data.ts",
+          "src/types/sdk-work-platform-error-code.ts",
+          "src/types/sdk-work-resource-data.ts",
+          "src/types/sdk-work-resource-response.ts"
         ]
       },
       {

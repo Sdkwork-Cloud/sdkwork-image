@@ -1,7 +1,7 @@
 import { customApiPath } from './paths';
 import type { HttpClient } from '../http/client';
 
-import type { ImageApiResult, ImageOperationCommand } from '../types';
+import type { ImageOperationCommand } from '../types';
 
 
 export class ImageCompatCompatOpenaiImagesApi {
@@ -13,8 +13,8 @@ export class ImageCompatCompatOpenaiImagesApi {
 
 
 /** Compat openai images generate. */
-  async generate(body: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(customApiPath(`/compat/openai/images/generations`), body, undefined, undefined, 'application/json');
+  async generate(body: ImageOperationCommand): Promise<Record<string, unknown>> {
+    return this.client.post<Record<string, unknown>>(customApiPath(`/compat/openai/images/generations`), body, undefined, undefined, 'application/json');
   }
 }
 

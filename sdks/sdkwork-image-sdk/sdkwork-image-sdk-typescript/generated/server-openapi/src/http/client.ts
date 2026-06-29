@@ -1,6 +1,5 @@
 import type { SdkworkCustomConfig } from '../types/common';
 import type { RequestOptions, QueryParams } from '@sdkwork/sdk-common';
-import type { AuthTokenManager } from '@sdkwork/sdk-common';
 import { BaseHttpClient, withRetry } from '@sdkwork/sdk-common';
 
 type HttpRequestOptions = RequestOptions & {
@@ -12,8 +11,8 @@ type HttpRequestOptions = RequestOptions & {
 
 export class HttpClient extends BaseHttpClient {
   private static readonly API_KEY_HEADER: string = 'X-API-Key';
-  private static readonly ACCESS_TOKEN_HEADER: string = 'Access-Token';
   private static readonly API_KEY_USE_BEARER = false;
+  private static readonly SDKWORK_V3_UNWRAP = true;
 
   constructor(config: SdkworkCustomConfig) {
     super(config as any);
@@ -24,14 +23,6 @@ export class HttpClient extends BaseHttpClient {
     self.authConfig = self.authConfig || {};
     return self.authConfig;
   }
-
-  private getInternalHeaders(): Record<string, string> {
-    const self = this as any;
-    self.config = self.config || {};
-    self.config.headers = self.config.headers || {};
-    return self.config.headers;
-  }
-
   private buildRequestHeaders(
     headers?: Record<string, string>,
     contentType?: string,
@@ -46,7 +37,18 @@ export class HttpClient extends BaseHttpClient {
 
     return Object.keys(mergedHeaders).length > 0 ? mergedHeaders : undefined;
   }
-
+  protected buildHeaders(config: any, skipAuth = false): Record<string, string> {
+    const headers = super.buildHeaders(config, true);
+    if (!skipAuth && !config?.skipAuth) {
+      const apiKey = this.getInternalAuthConfig().apiKey;
+      if (typeof apiKey === 'string' && apiKey.length > 0) {
+        headers[HttpClient.API_KEY_HEADER] = HttpClient.API_KEY_USE_BEARER
+          ? `Bearer ${apiKey}`
+          : apiKey;
+      }
+    }
+    return headers;
+  }
   private buildRequestBody(body: unknown, contentType?: string): unknown {
     if (body == null) {
       return body;
@@ -177,82 +179,28 @@ export class HttpClient extends BaseHttpClient {
     }
     params.append(key, String(value));
   }
-
   setApiKey(apiKey: string): void {
-    const authConfig = this.getInternalAuthConfig();
-    const headers = this.getInternalHeaders();
-    authConfig.apiKey = apiKey;
-    authConfig.tokenManager?.clearTokens?.();
-
-    if (HttpClient.API_KEY_HEADER === 'Authorization' && HttpClient.API_KEY_USE_BEARER) {
-      authConfig.authMode = 'apikey';
-      return;
-    }
-
-    authConfig.authMode = 'dual-token';
-    headers[HttpClient.API_KEY_HEADER] = HttpClient.API_KEY_USE_BEARER
-      ? `Bearer ${apiKey}`
-      : apiKey;
-
-    if (HttpClient.API_KEY_HEADER.toLowerCase() !== 'authorization') {
-      delete headers['Authorization'];
-    }
+    this.getInternalAuthConfig().apiKey = apiKey;
   }
-
-  setAuthToken(token: string): void {
-    const headers = this.getInternalHeaders();
-    if (HttpClient.API_KEY_HEADER.toLowerCase() !== 'authorization') {
-      delete headers[HttpClient.API_KEY_HEADER];
-    }
-    super.setAuthToken(token);
-  }
-
-  setAccessToken(token: string): void {
-    const headers = this.getInternalHeaders();
-    headers[HttpClient.ACCESS_TOKEN_HEADER] = token;
-    super.setAccessToken(token);
-  }
-
-  setTokenManager(manager: AuthTokenManager): void {
-    const baseProto = Object.getPrototypeOf(HttpClient.prototype) as { setTokenManager?: (this: HttpClient, m: AuthTokenManager) => void };
-    if (typeof baseProto.setTokenManager === 'function') {
-      baseProto.setTokenManager.call(this, manager);
-      return;
-    }
-    this.getInternalAuthConfig().tokenManager = manager;
-  }
-
-  private applySdkworkAuthHeaders(headers?: Record<string, string>): Record<string, string> | undefined {
-    const authConfig = this.getInternalAuthConfig();
-    const tokenManager = authConfig.tokenManager;
-    const accessToken = tokenManager?.getAccessToken?.();
-    if (!accessToken) {
-      return headers;
-    }
-
-    return {
-      ...(headers ?? {}),
-      [HttpClient.ACCESS_TOKEN_HEADER]: accessToken,
-    };
-  }
-
   async request<T>(path: string, options: HttpRequestOptions = {}): Promise<T> {
     const execute = (this as any).execute;
     if (typeof execute !== 'function') {
       throw new Error('BaseHttpClient execute method is not available');
     }
-    const { body, headers, contentType, method = 'GET', ...rest } = options;
-    const requestHeaders = this.applySdkworkAuthHeaders(headers);
-    return withRetry(
-      () => execute.call(this, { 
-        url: path, 
+    const { body, headers, contentType, method = 'GET', skipAuth, ...rest } = options;
+    const requestHeaders = headers;
+    const payload = await withRetry(
+      () => execute.call(this, {
+        url: path,
         method,
         ...rest,
+        skipAuth,
         body: this.buildRequestBody(body, contentType),
         headers: this.buildRequestHeaders(requestHeaders, body == null ? undefined : contentType),
       }),
       { maxRetries: 3 }
     );
+    return this.unwrapSdkworkV3Payload<T>(payload);
   }
 
   async *streamJson<T>(path: string, options: HttpRequestOptions = {}): AsyncIterable<T> {
@@ -260,16 +208,16 @@ export class HttpClient extends BaseHttpClient {
     if (typeof stream !== 'function') {
       throw new Error('BaseHttpClient stream method is not available');
     }
-    const { body, headers, contentType, method = 'GET', ...rest } = options;
-    const authHeaders = this.applySdkworkAuthHeaders(headers);
+    const { body, headers, contentType, method = 'GET', skipAuth, ...rest } = options;
     const requestHeaders = this.buildRequestHeaders(
-      { Accept: 'text/event-stream', ...(authHeaders ?? {}) },
+      { Accept: 'text/event-stream', ...(headers ?? {}) },
       body == null ? undefined : contentType,
     );
 
     for await (const data of stream.call(this, path, {
       method,
       ...rest,
+      skipAuth,
       body: this.buildRequestBody(body, contentType),
       headers: requestHeaders,
     })) {

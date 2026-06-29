@@ -1,7 +1,8 @@
 {
   "name": "@sdkwork/image-app-sdk",
   "version": "1.0.0",
-  "description": "sdkwork-image-app-sdk",
+  "private": true,
+  "description": "Generator-owned TypeScript transport SDK for sdkwork-image-app-sdk.",
   "author": "SDKWork Team",
   "license": "MIT",
   "type": "module",

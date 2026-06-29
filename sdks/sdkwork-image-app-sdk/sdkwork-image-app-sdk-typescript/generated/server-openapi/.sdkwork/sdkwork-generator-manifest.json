@@ -6,12 +6,13 @@
     "version": "1.0.0",
     "language": "typescript",
     "sdkType": "app",
+    "protocol": "http",
     "packageName": "@sdkwork/image-app-sdk"
   },
   "generatedFiles": [
     {
       "path": "bin/publish-core.mjs",
-      "sha256": "affb1f1b5400ac492e94e2d01f3104b8dd38b50329e371265d4f0945f2b0763c"
+      "sha256": "98ad0918a78bfbe22bf8f12fec709b0bed545b9e01edd40f5e4abf31a23378a5"
     },
     {
       "path": "bin/publish.ps1",
@@ -39,11 +40,11 @@
     },
     {
       "path": "package.json",
-      "sha256": "e0bf9d0242b65b60e01d4066b664232b04940e1d54c78c52a08f26aad563a6d9"
+      "sha256": "0bea15b1e5cd3c098e89e1d88bcfff5fafea5ffe1b40bee0ec0073bca2ad24c3"
     },
     {
       "path": "README.md",
-      "sha256": "560191ad15c254364b7e76287db65be95d812668e2d4932fb259c45a8df76cd9"
+      "sha256": "972f8bcb05d3e222ccef7aef42ec1fb5d6e62038e6419621c606544c073ea156"
     },
     {
       "path": "sdkwork-sdk.json",
@@ -55,7 +56,7 @@
     },
     {
       "path": "src/api/image.ts",
-      "sha256": "e559f220ad322947e062ab17e8eea4554d1f3b8f763c80a1486e5530e1103e06"
+      "sha256": "a37f2f836990742575dbf8e80dde09f9b191b18145161646103231cb0d450bb3"
     },
     {
       "path": "src/api/index.ts",
@@ -71,7 +72,7 @@
     },
     {
       "path": "src/http/client.ts",
-      "sha256": "05609fa19c8bfded1765dadb8f875dae5dd3e6f11f13244f6239450dea8732fc"
+      "sha256": "902ecbf9b15072c147ac9716f22209cd50b770e517b55d1ce1583671ab4d2c3e"
     },
     {
       "path": "src/http/index.ts",
@@ -83,11 +84,11 @@
     },
     {
       "path": "src/sdk.ts",
-      "sha256": "3ed37bb00544e8b479ee1132e7e90ab56151d6b6f1aecff562bb11d6b46b04f9"
+      "sha256": "984076c0d78cbb8f84cbfb7470f9a7e02a30e3ea98973a0570e4bd5614ad120e"
     },
     {
       "path": "src/types/common.ts",
-      "sha256": "ac5b348259c39e2cd8357dfcf8269268ee1da5f8a6e0770d714ab5eb796b3050"
+      "sha256": "d2506be8c4bdbe8e7059393467e6e71d75ef1d8c018dbf997bb0ab2a77b6c7b6"
     },
     {
       "path": "src/types/drive-sync-status.ts",
@@ -95,11 +96,7 @@
     },
     {
       "path": "src/types/field-error.ts",
-      "sha256": "44b8c95731a9dd8f7b30bb07a415b9541460964861f9ee806c31a4291953bf60"
-    },
-    {
-      "path": "src/types/image-api-result.ts",
-      "sha256": "5ddd501971e7fd96c954c40fa34c5c5fdca28258693e9756227b587132411e4b"
+      "sha256": "df70e331e6bff0817bc35428286fa8de5d7274ab83a6c60d7184759bf680a088"
     },
     {
       "path": "src/types/image-generation-cancel-command.ts",
@@ -135,7 +132,7 @@
     },
     {
       "path": "src/types/index.ts",
-      "sha256": "62857cc84429b83edd244ccd24054dbd5b1c5f7d5ed62bf4a723872f927bc7cb"
+      "sha256": "5202a7dffcce1ba9d0b81aa255d7fa159d2373390e4eb90a848276589793e9f6"
     },
     {
       "path": "src/types/media-ai-provenance.ts",
@@ -154,8 +151,44 @@
       "sha256": "ebb9a604403756a4529cb47f1700dbd9c0beb6e4145b9a51985783429e29adf3"
     },
     {
+      "path": "src/types/page-info.ts",
+      "sha256": "0bf2b44313bc24851eb9ffb6063c1b9eb043e1e5721c8ace8882a3cfa21c932a"
+    },
+    {
       "path": "src/types/problem-detail.ts",
-      "sha256": "7801e79cab9a1ccace62b2a0ba2119f835b41e4e22f858b10490ffd638b7f3a6"
+      "sha256": "deca621176487754cbfa2012aa3eab046131ced5829ddf7cff64de692f8bcb0e"
+    },
+    {
+      "path": "src/types/sdk-work-api-response.ts",
+      "sha256": "79cef2c8e584ba8b8e96c6c77ccf6bda087b0c68cbed63cb97d5fb1ff3e47e1a"
+    },
+    {
+      "path": "src/types/sdk-work-command-data.ts",
+      "sha256": "a875c230e70650e636ac09c1af57ae8ea0f512a89dd21482bb9e6292bb6bad5a"
+    },
+    {
+      "path": "src/types/sdk-work-command-response.ts",
+      "sha256": "36f82aede9b7b352a9b57545705da4003816785c7913fb2436df633f5c2e8447"
+    },
+    {
+      "path": "src/types/sdk-work-list-response.ts",
+      "sha256": "eeb07e413d7e912345eda1cb1093e8e6abfe9b42d8350482f7b580138c7936c5"
+    },
+    {
+      "path": "src/types/sdk-work-page-data.ts",
+      "sha256": "b9f6e60cc3bc39eed4cdf6029a401cc88b6001e4f4c72703487f478001024743"
+    },
+    {
+      "path": "src/types/sdk-work-platform-error-code.ts",
+      "sha256": "f5e30be72be3d1aebd8200627bfac368f10cdd69d2271d24e6b4a2d7edf97fb7"
+    },
+    {
+      "path": "src/types/sdk-work-resource-data.ts",
+      "sha256": "f5a027b000a19c08d5b2560ae47fea43c83f4c5d7e85ad37faafe1e9177459cd"
+    },
+    {
+      "path": "src/types/sdk-work-resource-response.ts",
+      "sha256": "89c05f5549bef773335245f56f61ca1a6959978726799391d584a6bd25d12fdc"
     },
     {
       "path": "tsconfig.json",

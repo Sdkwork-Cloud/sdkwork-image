@@ -12,7 +12,7 @@
   "mode": "apply",
   "hasChanges": true,
   "hasDestructiveChanges": false,
-  "changeFingerprint": "9da4b1c0d401fd8e7f8688e66c731ad09fc78a88f2eef4571de2684a8b316bd2",
+  "changeFingerprint": "85dd8c16c00b70d843ac51ec6d02bf5ae412ea4ce64e4a8f5fb3dc781ed6ae50",
   "changeImpact": {
     "schemaVersion": 1,
     "areas": [
@@ -43,7 +43,6 @@
           "src/types/common.ts",
           "src/types/drive-sync-status.ts",
           "src/types/field-error.ts",
-          "src/types/image-api-result.ts",
           "src/types/image-generation-cancel-command.ts",
           "src/types/image-generation-command.ts",
           "src/types/image-generation-output.ts",
@@ -57,7 +56,16 @@
           "src/types/media-kind.ts",
           "src/types/media-resource.ts",
           "src/types/media-source.ts",
-          "src/types/problem-detail.ts"
+          "src/types/page-info.ts",
+          "src/types/problem-detail.ts",
+          "src/types/sdk-work-api-response.ts",
+          "src/types/sdk-work-command-data.ts",
+          "src/types/sdk-work-command-response.ts",
+          "src/types/sdk-work-list-response.ts",
+          "src/types/sdk-work-page-data.ts",
+          "src/types/sdk-work-platform-error-code.ts",
+          "src/types/sdk-work-resource-data.ts",
+          "src/types/sdk-work-resource-response.ts"
         ]
       },
       {
@@ -216,6 +224,7 @@
     "version": "1.0.0",
     "language": "typescript",
     "sdkType": "backend",
+    "protocol": "http",
     "outputPath": "E:\\sdkwork-space\\sdkwork-image\\sdks\\sdkwork-image-backend-sdk\\sdkwork-image-backend-sdk-typescript\\generated\\server-openapi",
     "packageName": "@sdkwork/image-backend-sdk"
   },
@@ -224,20 +233,21 @@
     "localVersions": []
   },
   "stats": {
-    "totalFiles": 40,
-    "models": 16,
+    "totalFiles": 48,
+    "models": 24,
     "apis": 1,
-    "types": 18
+    "types": 26
   },
   "warnings": [],
   "syncSummary": {
     "dryRun": false,
-    "writtenFiles": 40,
+    "controlPlaneEnabled": true,
+    "writtenFiles": 48,
     "skippedScaffoldFiles": 0,
     "skippedUnchangedGeneratedFiles": 0,
     "deletedGeneratedFiles": 0,
     "changeSummaryPath": ".sdkwork/sdkwork-generator-changes.json",
-    "changeFingerprint": "9da4b1c0d401fd8e7f8688e66c731ad09fc78a88f2eef4571de2684a8b316bd2",
+    "changeFingerprint": "85dd8c16c00b70d843ac51ec6d02bf5ae412ea4ce64e4a8f5fb3dc781ed6ae50",
     "changes": {
       "createdGeneratedFiles": [
         "bin/publish-core.mjs",
@@ -262,7 +272,6 @@
         "src/types/common.ts",
         "src/types/drive-sync-status.ts",
         "src/types/field-error.ts",
-        "src/types/image-api-result.ts",
         "src/types/image-generation-cancel-command.ts",
         "src/types/image-generation-command.ts",
         "src/types/image-generation-output.ts",
@@ -276,7 +285,16 @@
         "src/types/media-kind.ts",
         "src/types/media-resource.ts",
         "src/types/media-source.ts",
+        "src/types/page-info.ts",
         "src/types/problem-detail.ts",
+        "src/types/sdk-work-api-response.ts",
+        "src/types/sdk-work-command-data.ts",
+        "src/types/sdk-work-command-response.ts",
+        "src/types/sdk-work-list-response.ts",
+        "src/types/sdk-work-page-data.ts",
+        "src/types/sdk-work-platform-error-code.ts",
+        "src/types/sdk-work-resource-data.ts",
+        "src/types/sdk-work-resource-response.ts",
         "tsconfig.json"
       ],
       "updatedGeneratedFiles": [],
@@ -319,7 +337,6 @@
             "src/types/common.ts",
             "src/types/drive-sync-status.ts",
             "src/types/field-error.ts",
-            "src/types/image-api-result.ts",
             "src/types/image-generation-cancel-command.ts",
             "src/types/image-generation-command.ts",
             "src/types/image-generation-output.ts",
@@ -333,7 +350,16 @@
             "src/types/media-kind.ts",
             "src/types/media-resource.ts",
             "src/types/media-source.ts",
-            "src/types/problem-detail.ts"
+            "src/types/page-info.ts",
+            "src/types/problem-detail.ts",
+            "src/types/sdk-work-api-response.ts",
+            "src/types/sdk-work-command-data.ts",
+            "src/types/sdk-work-command-response.ts",
+            "src/types/sdk-work-list-response.ts",
+            "src/types/sdk-work-page-data.ts",
+            "src/types/sdk-work-platform-error-code.ts",
+            "src/types/sdk-work-resource-data.ts",
+            "src/types/sdk-work-resource-response.ts"
           ]
         },
         {

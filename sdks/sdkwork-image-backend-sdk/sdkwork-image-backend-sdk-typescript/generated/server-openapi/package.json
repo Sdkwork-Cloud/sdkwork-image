@@ -1,7 +1,8 @@
 {
   "name": "@sdkwork/image-backend-sdk",
   "version": "1.0.0",
-  "description": "sdkwork-image-backend-sdk",
+  "private": true,
+  "description": "Generator-owned TypeScript transport SDK for sdkwork-image-backend-sdk.",
   "author": "SDKWork Team",
   "license": "MIT",
   "type": "module",

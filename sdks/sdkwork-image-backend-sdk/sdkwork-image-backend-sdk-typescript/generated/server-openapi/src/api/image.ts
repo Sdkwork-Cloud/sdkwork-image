@@ -1,7 +1,7 @@
 import { backendApiPath } from './paths';
 import type { HttpClient } from '../http/client';
 
-import type { ImageApiResult, ImageGenerationCancelCommand, ImageGenerationRefreshCommand, ImageGenerationRetryCommand, ImageOperationCommand } from '../types';
+import type { ImageGenerationCancelCommand, ImageGenerationRefreshCommand, ImageGenerationRetryCommand, ImageOperationCommand, PageInfo } from '../types';
 
 
 export class ImageProviderWebhooksApi {
@@ -13,8 +13,8 @@ export class ImageProviderWebhooksApi {
 
 
 /** Provider Webhooks receive. */
-  async receive(providerCode: string, body: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(backendApiPath(`/image/provider_webhooks/${serializePathParameter(providerCode, { name: 'providerCode', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
+  async receive(providerCode: string, body: ImageOperationCommand): Promise<Record<string, unknown>> {
+    return this.client.post<Record<string, unknown>>(backendApiPath(`/image/provider_webhooks/${serializePathParameter(providerCode, { name: 'providerCode', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
   }
 }
 
@@ -35,7 +35,7 @@ export class ImagePresetsApi {
 
 
 /** Presets list. */
-  async list(params?: ImagePresetsListParams): Promise<ImageApiResult> {
+  async list(params?: ImagePresetsListParams): Promise<Record<string, unknown>> {
     const query = buildQueryString([
       { name: 'page', value: params?.page, style: 'form', explode: true, allowReserved: false },
       { name: 'page_size', value: params?.pageSize, style: 'form', explode: true, allowReserved: false },
@@ -43,27 +43,27 @@ export class ImagePresetsApi {
       { name: 'sort', value: params?.sort, style: 'form', explode: true, allowReserved: false },
       { name: 'q', value: params?.q, style: 'form', explode: true, allowReserved: false },
     ]);
-    return this.client.get<ImageApiResult>(appendQueryString(backendApiPath(`/image/presets`), query));
+    return this.client.get<Record<string, unknown>>(appendQueryString(backendApiPath(`/image/presets`), query));
   }
 
 /** Presets create. */
-  async create(body: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(backendApiPath(`/image/presets`), body, undefined, undefined, 'application/json');
+  async create(body: ImageOperationCommand): Promise<Record<string, unknown>> {
+    return this.client.post<Record<string, unknown>>(backendApiPath(`/image/presets`), body, undefined, undefined, 'application/json');
   }
 
 /** Presets delete. */
-  async delete(presetId: string): Promise<ImageApiResult> {
-    return this.client.delete<ImageApiResult>(backendApiPath(`/image/presets/${serializePathParameter(presetId, { name: 'presetId', style: 'simple', explode: false })}`));
+  async delete(presetId: string): Promise<Record<string, unknown>> {
+    return this.client.delete<Record<string, unknown>>(backendApiPath(`/image/presets/${serializePathParameter(presetId, { name: 'presetId', style: 'simple', explode: false })}`));
   }
 
 /** Presets retrieve. */
-  async retrieve(presetId: string): Promise<ImageApiResult> {
-    return this.client.get<ImageApiResult>(backendApiPath(`/image/presets/${serializePathParameter(presetId, { name: 'presetId', style: 'simple', explode: false })}`));
+  async retrieve(presetId: string): Promise<Record<string, unknown>> {
+    return this.client.get<Record<string, unknown>>(backendApiPath(`/image/presets/${serializePathParameter(presetId, { name: 'presetId', style: 'simple', explode: false })}`));
   }
 
 /** Presets update. */
-  async update(presetId: string, body?: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.patch<ImageApiResult>(backendApiPath(`/image/presets/${serializePathParameter(presetId, { name: 'presetId', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
+  async update(presetId: string, body?: ImageOperationCommand): Promise<Record<string, unknown>> {
+    return this.client.patch<Record<string, unknown>>(backendApiPath(`/image/presets/${serializePathParameter(presetId, { name: 'presetId', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
   }
 }
 
@@ -84,7 +84,7 @@ export class ImageGenerationsApi {
 
 
 /** Generations list. */
-  async list(params?: ImageGenerationsListParams): Promise<ImageApiResult> {
+  async list(params?: ImageGenerationsListParams): Promise<Record<string, unknown>> {
     const query = buildQueryString([
       { name: 'page', value: params?.page, style: 'form', explode: true, allowReserved: false },
       { name: 'page_size', value: params?.pageSize, style: 'form', explode: true, allowReserved: false },
@@ -92,27 +92,27 @@ export class ImageGenerationsApi {
       { name: 'sort', value: params?.sort, style: 'form', explode: true, allowReserved: false },
       { name: 'q', value: params?.q, style: 'form', explode: true, allowReserved: false },
     ]);
-    return this.client.get<ImageApiResult>(appendQueryString(backendApiPath(`/image/generations`), query));
+    return this.client.get<Record<string, unknown>>(appendQueryString(backendApiPath(`/image/generations`), query));
   }
 
 /** Generations retrieve. */
-  async retrieve(generationId: string): Promise<ImageApiResult> {
-    return this.client.get<ImageApiResult>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}`));
+  async retrieve(generationId: string): Promise<Record<string, unknown>> {
+    return this.client.get<Record<string, unknown>>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}`));
   }
 
 /** Generations cancel. */
-  async cancel(generationId: string, body: ImageGenerationCancelCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/cancel`), body, undefined, undefined, 'application/json');
+  async cancel(generationId: string, body: ImageGenerationCancelCommand): Promise<Record<string, unknown>> {
+    return this.client.post<Record<string, unknown>>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/cancel`), body, undefined, undefined, 'application/json');
   }
 
 /** Generations refresh. */
-  async refresh(generationId: string, body: ImageGenerationRefreshCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/refresh`), body, undefined, undefined, 'application/json');
+  async refresh(generationId: string, body: ImageGenerationRefreshCommand): Promise<Record<string, unknown>> {
+    return this.client.post<Record<string, unknown>>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/refresh`), body, undefined, undefined, 'application/json');
   }
 
 /** Generations retry. */
-  async retry(generationId: string, body: ImageGenerationRetryCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/retry`), body, undefined, undefined, 'application/json');
+  async retry(generationId: string, body: ImageGenerationRetryCommand): Promise<Record<string, unknown>> {
+    return this.client.post<Record<string, unknown>>(backendApiPath(`/image/generations/${serializePathParameter(generationId, { name: 'generationId', style: 'simple', explode: false })}/retry`), body, undefined, undefined, 'application/json');
   }
 }
 
@@ -133,7 +133,7 @@ export class ImageGalleriesItemsApi {
 
 
 /** Galleries items list. */
-  async list(galleryId: string, params?: ImageGalleriesItemsListParams): Promise<ImageApiResult> {
+  async list(galleryId: string, params?: ImageGalleriesItemsListParams): Promise<Record<string, unknown>> {
     const query = buildQueryString([
       { name: 'page', value: params?.page, style: 'form', explode: true, allowReserved: false },
       { name: 'page_size', value: params?.pageSize, style: 'form', explode: true, allowReserved: false },
@@ -141,17 +141,17 @@ export class ImageGalleriesItemsApi {
       { name: 'sort', value: params?.sort, style: 'form', explode: true, allowReserved: false },
       { name: 'q', value: params?.q, style: 'form', explode: true, allowReserved: false },
     ]);
-    return this.client.get<ImageApiResult>(appendQueryString(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}/items`), query));
+    return this.client.get<Record<string, unknown>>(appendQueryString(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}/items`), query));
   }
 
 /** Galleries items create. */
-  async create(galleryId: string, body: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}/items`), body, undefined, undefined, 'application/json');
+  async create(galleryId: string, body: ImageOperationCommand): Promise<Record<string, unknown>> {
+    return this.client.post<Record<string, unknown>>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}/items`), body, undefined, undefined, 'application/json');
   }
 
 /** Galleries items delete. */
-  async delete(galleryId: string, itemId: string): Promise<ImageApiResult> {
-    return this.client.delete<ImageApiResult>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}/items/${serializePathParameter(itemId, { name: 'itemId', style: 'simple', explode: false })}`));
+  async delete(galleryId: string, itemId: string): Promise<Record<string, unknown>> {
+    return this.client.delete<Record<string, unknown>>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}/items/${serializePathParameter(itemId, { name: 'itemId', style: 'simple', explode: false })}`));
   }
 }
 
@@ -174,7 +174,7 @@ export class ImageGalleriesApi {
 
 
 /** Galleries list. */
-  async list(params?: ImageGalleriesListParams): Promise<ImageApiResult> {
+  async list(params?: ImageGalleriesListParams): Promise<Record<string, unknown>> {
     const query = buildQueryString([
       { name: 'page', value: params?.page, style: 'form', explode: true, allowReserved: false },
       { name: 'page_size', value: params?.pageSize, style: 'form', explode: true, allowReserved: false },
@@ -182,27 +182,27 @@ export class ImageGalleriesApi {
       { name: 'sort', value: params?.sort, style: 'form', explode: true, allowReserved: false },
       { name: 'q', value: params?.q, style: 'form', explode: true, allowReserved: false },
     ]);
-    return this.client.get<ImageApiResult>(appendQueryString(backendApiPath(`/image/galleries`), query));
+    return this.client.get<Record<string, unknown>>(appendQueryString(backendApiPath(`/image/galleries`), query));
   }
 
 /** Galleries create. */
-  async create(body: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.post<ImageApiResult>(backendApiPath(`/image/galleries`), body, undefined, undefined, 'application/json');
+  async create(body: ImageOperationCommand): Promise<Record<string, unknown>> {
+    return this.client.post<Record<string, unknown>>(backendApiPath(`/image/galleries`), body, undefined, undefined, 'application/json');
   }
 
 /** Galleries delete. */
-  async delete(galleryId: string): Promise<ImageApiResult> {
-    return this.client.delete<ImageApiResult>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}`));
+  async delete(galleryId: string): Promise<Record<string, unknown>> {
+    return this.client.delete<Record<string, unknown>>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}`));
   }
 
 /** Galleries retrieve. */
-  async retrieve(galleryId: string): Promise<ImageApiResult> {
-    return this.client.get<ImageApiResult>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}`));
+  async retrieve(galleryId: string): Promise<Record<string, unknown>> {
+    return this.client.get<Record<string, unknown>>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}`));
   }
 
 /** Galleries update. */
-  async update(galleryId: string, body?: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.patch<ImageApiResult>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
+  async update(galleryId: string, body?: ImageOperationCommand): Promise<Record<string, unknown>> {
+    return this.client.patch<Record<string, unknown>>(backendApiPath(`/image/galleries/${serializePathParameter(galleryId, { name: 'galleryId', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
   }
 }
 
@@ -223,7 +223,7 @@ export class ImageEditTasksApi {
 
 
 /** Edit Tasks list. */
-  async list(params?: ImageEditTasksListParams): Promise<ImageApiResult> {
+  async list(params?: ImageEditTasksListParams): Promise<Record<string, unknown>> {
     const query = buildQueryString([
       { name: 'page', value: params?.page, style: 'form', explode: true, allowReserved: false },
       { name: 'page_size', value: params?.pageSize, style: 'form', explode: true, allowReserved: false },
@@ -231,12 +231,12 @@ export class ImageEditTasksApi {
       { name: 'sort', value: params?.sort, style: 'form', explode: true, allowReserved: false },
       { name: 'q', value: params?.q, style: 'form', explode: true, allowReserved: false },
     ]);
-    return this.client.get<ImageApiResult>(appendQueryString(backendApiPath(`/image/edit_tasks`), query));
+    return this.client.get<Record<string, unknown>>(appendQueryString(backendApiPath(`/image/edit_tasks`), query));
   }
 
 /** Edit Tasks retrieve. */
-  async retrieve(taskId: string): Promise<ImageApiResult> {
-    return this.client.get<ImageApiResult>(backendApiPath(`/image/edit_tasks/${serializePathParameter(taskId, { name: 'taskId', style: 'simple', explode: false })}`));
+  async retrieve(taskId: string): Promise<Record<string, unknown>> {
+    return this.client.get<Record<string, unknown>>(backendApiPath(`/image/edit_tasks/${serializePathParameter(taskId, { name: 'taskId', style: 'simple', explode: false })}`));
   }
 }
 
@@ -257,7 +257,7 @@ export class ImageAssetsApi {
 
 
 /** Assets list. */
-  async list(params?: ImageAssetsListParams): Promise<ImageApiResult> {
+  async list(params?: ImageAssetsListParams): Promise<Record<string, unknown>> {
     const query = buildQueryString([
       { name: 'page', value: params?.page, style: 'form', explode: true, allowReserved: false },
       { name: 'page_size', value: params?.pageSize, style: 'form', explode: true, allowReserved: false },
@@ -265,22 +265,22 @@ export class ImageAssetsApi {
       { name: 'sort', value: params?.sort, style: 'form', explode: true, allowReserved: false },
       { name: 'q', value: params?.q, style: 'form', explode: true, allowReserved: false },
     ]);
-    return this.client.get<ImageApiResult>(appendQueryString(backendApiPath(`/image/assets`), query));
+    return this.client.get<Record<string, unknown>>(appendQueryString(backendApiPath(`/image/assets`), query));
   }
 
 /** Assets delete. */
-  async delete(assetId: string): Promise<ImageApiResult> {
-    return this.client.delete<ImageApiResult>(backendApiPath(`/image/assets/${serializePathParameter(assetId, { name: 'assetId', style: 'simple', explode: false })}`));
+  async delete(assetId: string): Promise<Record<string, unknown>> {
+    return this.client.delete<Record<string, unknown>>(backendApiPath(`/image/assets/${serializePathParameter(assetId, { name: 'assetId', style: 'simple', explode: false })}`));
   }
 
 /** Assets retrieve. */
-  async retrieve(assetId: string): Promise<ImageApiResult> {
-    return this.client.get<ImageApiResult>(backendApiPath(`/image/assets/${serializePathParameter(assetId, { name: 'assetId', style: 'simple', explode: false })}`));
+  async retrieve(assetId: string): Promise<Record<string, unknown>> {
+    return this.client.get<Record<string, unknown>>(backendApiPath(`/image/assets/${serializePathParameter(assetId, { name: 'assetId', style: 'simple', explode: false })}`));
   }
 
 /** Assets update. */
-  async update(assetId: string, body?: ImageOperationCommand): Promise<ImageApiResult> {
-    return this.client.patch<ImageApiResult>(backendApiPath(`/image/assets/${serializePathParameter(assetId, { name: 'assetId', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
+  async update(assetId: string, body?: ImageOperationCommand): Promise<Record<string, unknown>> {
+    return this.client.patch<Record<string, unknown>>(backendApiPath(`/image/assets/${serializePathParameter(assetId, { name: 'assetId', style: 'simple', explode: false })}`), body, undefined, undefined, 'application/json');
   }
 }
 
