@@ -6,7 +6,7 @@
     "displayName": "Image Contracts",
     "version": "0.1.0",
     "type": "node-package",
-    "root": "sdkwork-image/packages/common/image/sdkwork-image-contracts",
+    "root": "sdkwork-image/apps/sdkwork-image-common/packages/sdkwork-image-contracts",
     "domain": "content",
     "capability": "image-contracts",
     "languages": [

@@ -2,7 +2,7 @@
 
 This directory is the local SDKWork component contract for `@sdkwork/image-contracts`.
 
-- Component root: `sdkwork-image/packages/common/image/sdkwork-image-contracts`
+- Component root: `sdkwork-image/apps/sdkwork-image-common/packages/sdkwork-image-contracts`
 - Canonical standards: `../../../../../sdkwork-specs/README.md`
 - Machine-readable contract: `specs/component.spec.json`
 

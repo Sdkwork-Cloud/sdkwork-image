@@ -1,4 +1,5 @@
 # SDKWork Image
+repository-kind: application
 
 `sdkwork-image` owns SDKWork image generation, image editing, image galleries, image generation history/workspace UI, image-specific Rust storage/API contracts, and image SDK generation inputs.
 
@@ -24,7 +25,7 @@ sdkwork-image/
   scripts/                        # Build and release scripts
   docs/                           # Documentation and ADRs
   tests/                          # Cross-package tests
-  packages/common/                # Shared cross-architecture contracts
+  apps/sdkwork-image-common/packages/         # Shared cross-architecture contracts
 ```
 
 ## Application Surfaces

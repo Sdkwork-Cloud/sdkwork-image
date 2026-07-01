@@ -22,7 +22,7 @@
     "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
     "paths": {
       "@sdkwork/image-contracts": [
-        "packages/common/image/sdkwork-image-contracts/src/index.ts"
+        "apps/sdkwork-image-common/packages/sdkwork-image-contracts/src/index.ts"
       ],
       "@sdkwork/image-pc": [
         "apps/sdkwork-image-pc/packages/sdkwork-image-pc/src/index.ts"

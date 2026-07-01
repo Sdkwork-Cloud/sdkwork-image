@@ -1,5 +1,9 @@
 packages:
-  - "packages/common/*/*"
+  - "apps/sdkwork-image-common"
+  - "apps/sdkwork-image-common/packages/*"
+  - "apps/sdkwork-image-pc"
+  - "apps/sdkwork-image-h5"
+  - "apps/sdkwork-image-flutter-mobile"
   - "apps/sdkwork-image-pc/packages/*"
   - "apps/sdkwork-image-h5/packages/*"
   - "apps/sdkwork-image-flutter-mobile/packages/*"

@@ -32,7 +32,7 @@ export default defineConfig({
       },
       {
         find: "@sdkwork/image-contracts",
-        replacement: path.resolve(workspaceRoot, "packages/common/image/sdkwork-image-contracts/src/index.ts"),
+        replacement: path.resolve(workspaceRoot, "apps/sdkwork-image-common/packages/sdkwork-image-contracts/src/index.ts"),
       },
       {
         find: "@sdkwork/image-pc",
