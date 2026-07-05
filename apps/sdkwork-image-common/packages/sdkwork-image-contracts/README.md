@@ -1,6 +1,6 @@
 # @sdkwork/image-contracts
 
-Framework-independent SDKWork image contracts and shared media resource shapes used by the image workspace.
+Framework-independent SDKWork image contracts. Media resource shapes are re-exported from `@sdkwork/assets-core` per `MEDIA_RESOURCE_SPEC.md`; this package adds image-specific aliases only.
 
 ## SDKWork Documentation Contract
 

@@ -8,3 +8,6 @@ description = "SDKWork image backend-api Rust route manifest."
 name = "sdkwork_routes_image_backend_api"
 path = "src/lib.rs"
 
+[dependencies]
+axum.workspace = true
+

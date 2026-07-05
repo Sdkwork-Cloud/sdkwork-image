@@ -5,3 +5,5 @@ export * from "./generation-copy.ts";
 export * from "./generation-asset-config.ts";
 export * from "./generation-history.ts";
 export * from "./generation-service.ts";
+export * from "./image-reference-capability.ts";
+export * from "./image-generation-panel-types.ts";

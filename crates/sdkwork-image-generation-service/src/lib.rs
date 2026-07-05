@@ -5,6 +5,13 @@ use sdkwork_drive_workspace_service::{
     uploader::{PrepareUploaderUploadCommand, UploaderActor, UploaderRetention, UploaderTarget},
 };
 
+mod wire;
+
+pub use wire::{
+    ImageGenerationCommandWire, ImageGenerationOutputWire, ImageGenerationRefreshCommandWire,
+    ImageGenerationWire,
+};
+
 pub const IMAGE_WORKSPACE: &str = "sdkwork-image";
 pub const IMAGE_DOMAIN: &str = "image";
 pub const IMAGE_CAPABILITY: &str = "image";

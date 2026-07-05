@@ -15,6 +15,9 @@
     "src",
     "README.md"
   ],
+  "dependencies": {
+    "@sdkwork/assets-core": "workspace:*"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },

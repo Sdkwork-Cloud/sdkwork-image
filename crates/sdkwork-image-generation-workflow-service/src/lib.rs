@@ -5,6 +5,15 @@ use sdkwork_image_generation_service::{
     ImageProviderDispatchPlan, NormalizedProviderGenerationResult,
 };
 
+mod claw_router_dispatch;
+mod dispatch_rehydrate;
+
+pub use claw_router_dispatch::{
+    dispatch_image_provider_via_claw_router, retrieve_image_provider_via_claw_router,
+    ClawRouterDispatchError,
+};
+pub use dispatch_rehydrate::rehydrate_image_provider_dispatch_plan;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ImageGenerationScope {
     pub tenant_id: String,
@@ -70,7 +79,7 @@ pub struct ImageGenerationOutputPersistenceRow {
     pub sync_status: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ImageGenerationInputSnapshot {
     pub prompt: String,
     pub negative_prompt: Option<String>,
@@ -86,7 +95,7 @@ pub struct ImageGenerationInputSnapshot {
     pub idempotency_key: Option<String>,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ImageProviderRequestSnapshot {
     pub provider_code: String,
     pub provider_operation: String,
@@ -122,6 +131,7 @@ pub struct ImageGenerationPersistencePlan {
     pub provider_request_snapshot: Option<ImageProviderRequestSnapshot>,
     pub output_rows: Vec<ImageGenerationOutputPersistenceRow>,
     pub repository_methods: Vec<String>,
+    pub outbox_events: Vec<ImageGenerationOutboxEvent>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -291,13 +301,15 @@ pub fn plan_generation_create_persistence_plan(
 ) -> Result<ImageGenerationPersistencePlan, &'static str> {
     let service_plan =
         plan_generation_create_service_flow(scope, generation_id, command, provider_result)?;
-    Ok(persistence_plan_from_service_plan(
+    let mut plan = persistence_plan_from_service_plan(
         &service_plan.record,
         &service_plan.dispatch.dispatch_plan,
         &service_plan.dispatch.normalized_result,
         &service_plan.drive_import_plans,
         true,
-    ))
+    );
+    plan.outbox_events = service_plan.outbox_events;
+    Ok(plan)
 }
 
 pub fn plan_generation_refresh_from_provider_result(
@@ -386,7 +398,9 @@ pub fn plan_generation_refresh_persistence_plan(
 ) -> Result<ImageGenerationPersistencePlan, &'static str> {
     let plan =
         plan_generation_refresh_from_provider_result(scope, generation_id, scene, model, result)?;
-    Ok(persistence_plan_from_refresh_plan(&plan))
+    let mut persistence = persistence_plan_from_refresh_plan(&plan);
+    persistence.outbox_events = plan.outbox_events;
+    Ok(persistence)
 }
 
 pub fn plan_generation_refresh_from_webhook(
@@ -462,6 +476,7 @@ fn persistence_plan_from_service_plan(
             .map(output_persistence_row_from_drive_plan)
             .collect(),
         repository_methods,
+        outbox_events: Vec::new(),
     }
 }
 
@@ -469,6 +484,9 @@ fn persistence_plan_from_refresh_plan(
     plan: &ImageGenerationRefreshPlan,
 ) -> ImageGenerationPersistencePlan {
     let mut repository_methods = vec!["mark_provider_submitted".to_string()];
+    if plan.provider_task_id.is_some() {
+        repository_methods.push("upsert_provider_task".to_string());
+    }
     if !plan.drive_import_plans.is_empty() {
         repository_methods.push("upsert_generation_outputs".to_string());
     }
@@ -495,6 +513,7 @@ fn persistence_plan_from_refresh_plan(
             .map(output_persistence_row_from_drive_plan)
             .collect(),
         repository_methods,
+        outbox_events: Vec::new(),
     }
 }
 
@@ -571,6 +590,68 @@ fn output_persistence_row_from_drive_plan(
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OutputDriveImportState {
+    pub output_index: i32,
+    pub sync_status: String,
+    pub drive_space_id: Option<String>,
+    pub drive_node_id: Option<String>,
+    pub drive_uri: Option<String>,
+}
+
+pub fn finalize_persistence_after_drive_import(
+    persistence: &mut ImageGenerationPersistencePlan,
+    job_drive_sync_status: &str,
+    outputs: &[OutputDriveImportState],
+) {
+    if outputs.is_empty() {
+        return;
+    }
+    persistence.drive_sync_status = job_drive_sync_status.to_string();
+    for state in outputs {
+        let Some(row) = persistence
+            .output_rows
+            .iter_mut()
+            .find(|row| row.output_index == state.output_index)
+        else {
+            continue;
+        };
+        row.sync_status = state.sync_status.clone();
+        if let Some(value) = &state.drive_space_id {
+            row.drive_space_id = value.clone();
+        }
+        if let Some(value) = &state.drive_node_id {
+            row.drive_node_id = value.clone();
+        }
+        if let Some(value) = &state.drive_uri {
+            row.drive_uri = value.clone();
+        }
+    }
+    let all_imported = persistence
+        .output_rows
+        .iter()
+        .all(|row| row.sync_status == "imported");
+    if job_drive_sync_status == "imported" && all_imported {
+        persistence.runtime_status = ImageGenerationRuntimeStatus::Succeeded;
+        persistence.job_status_code = ImageGenerationRuntimeStatus::Succeeded.as_job_status_code();
+        persistence.drive_sync_status = "imported".to_string();
+        if !persistence
+            .repository_methods
+            .iter()
+            .any(|method| method == "mark_generation_succeeded")
+        {
+            persistence.repository_methods.push("mark_generation_succeeded".to_string());
+        }
+    }
+}
+
+#[doc(hidden)]
+pub fn provider_request_snapshot_from_dispatch_plan_for_test(
+    plan: &ImageProviderDispatchPlan,
+) -> ImageProviderRequestSnapshot {
+    provider_request_snapshot_from_dispatch_plan(plan)
+}
+
 pub fn image_generation_repository_contract_methods() -> Vec<&'static str> {
     vec![
         "create_generation",
@@ -595,18 +676,24 @@ fn plan_drive_imports(
     scene: &str,
     outputs: Vec<GeneratedMediaOutput>,
 ) -> Result<Vec<DriveGeneratedMediaImportPlan>, &'static str> {
-    plan_drive_import_for_generated_outputs(
-        DriveGeneratedMediaContext {
-            tenant_id: scope.tenant_id.clone(),
-            organization_id: scope.organization_id.clone(),
-            generation_id: generation_id.to_string(),
-            provider_code: dispatch_plan.provider_code.clone(),
-            model: dispatch_plan.model.clone(),
-            scene: scene.to_string(),
-            actor: scope.actor.clone(),
-        },
-        outputs,
+    let context = DriveGeneratedMediaContext {
+        tenant_id: scope.tenant_id.clone(),
+        organization_id: scope.organization_id.clone(),
+        generation_id: generation_id.to_string(),
+        provider_code: dispatch_plan.provider_code.clone(),
+        model: dispatch_plan.model.clone(),
+        scene: scene.to_string(),
+        actor: scope.actor.clone(),
+    };
+    let image_plans = plan_drive_import_for_generated_outputs(context.clone(), outputs.clone())?;
+    let assets_plan = sdkwork_assets_bridge_image::plan_unified_assets_drive_import_from_image(
+        &context,
+        dispatch_plan.provider_operation.as_str(),
+        &outputs,
     )
+    .map_err(|_| "unified assets drive import plan failed")?;
+    sdkwork_assets_bridge_image::assert_image_drive_plans_match_assets(&image_plans, &assets_plan)?;
+    Ok(image_plans)
 }
 
 fn require_trimmed_owned(value: String, error: &'static str) -> Result<String, &'static str> {

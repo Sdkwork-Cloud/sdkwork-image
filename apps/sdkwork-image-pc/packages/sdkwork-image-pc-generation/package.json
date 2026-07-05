@@ -44,13 +44,19 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@sdkwork/assets-pc-commons": "workspace:*",
+    "@sdkwork/generations-pc-asset-config": "workspace:*",
+    "@sdkwork/generations-pc-studio": "workspace:*",
     "@sdkwork/image-contracts": "workspace:*",
-    "lucide-react": "catalog:"
+    "@sdkwork/utils": "workspace:*",
+    "lucide-react": "catalog:",
+    "react-i18next": "catalog:"
   },
   "peerDependencies": {
     "@sdkwork/ui-pc-react": "*",
     "react": ">=18.2.0 <20.0.0",
-    "react-dom": ">=18.2.0 <20.0.0"
+    "react-dom": ">=18.2.0 <20.0.0",
+    "react-i18next": ">=14.0.0"
   },
   "peerDependenciesMeta": {
     "@sdkwork/ui-pc-react": {

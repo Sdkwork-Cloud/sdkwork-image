@@ -587,3 +587,68 @@ fn plans_executable_runtime_steps_for_refresh_outputs_and_drive_sync() {
         ],
     );
 }
+
+#[test]
+fn finalize_persistence_marks_generation_succeeded_after_import() {
+    use sdkwork_image_generation_workflow_service::{
+        finalize_persistence_after_drive_import, ImageGenerationOutputPersistenceRow,
+        ImageGenerationPersistencePlan, OutputDriveImportState,
+    };
+
+    let mut persistence = ImageGenerationPersistencePlan {
+        generation_id: "gen-1".to_string(),
+        runtime_status: ImageGenerationRuntimeStatus::Importing,
+        job_status_code: ImageGenerationRuntimeStatus::Importing.as_job_status_code(),
+        drive_sync_status: "importing".to_string(),
+        provider_code: "openai".to_string(),
+        provider_task_id: None,
+        provider_status: None,
+        input_snapshot: None,
+        provider_request_snapshot: None,
+        output_rows: vec![ImageGenerationOutputPersistenceRow {
+            output_index: 0,
+            media_kind: "image".to_string(),
+            scene: "playground_image".to_string(),
+            provider_code: "openai".to_string(),
+            provider_asset_id: None,
+            provider_uri: None,
+            provider_url: Some("https://example.com/a.png".to_string()),
+            drive_space_type: "ai_generated".to_string(),
+            drive_space_id: "space-1".to_string(),
+            drive_parent_node_id: None,
+            drive_node_id: "node-1".to_string(),
+            drive_uri: "drive://spaces/space-1/nodes/node-1".to_string(),
+            resource_snapshot_id: "res-1".to_string(),
+            file_name: Some("a.png".to_string()),
+            mime_type: Some("image/png".to_string()),
+            size_bytes: None,
+            width: None,
+            height: None,
+            duration_seconds: None,
+            sync_status: "pending".to_string(),
+        }],
+        repository_methods: vec!["upsert_generation_outputs".to_string()],
+        outbox_events: Vec::new(),
+    };
+    finalize_persistence_after_drive_import(
+        &mut persistence,
+        "imported",
+        &[OutputDriveImportState {
+            output_index: 0,
+            sync_status: "imported".to_string(),
+            drive_space_id: Some("space-1".to_string()),
+            drive_node_id: Some("node-1".to_string()),
+            drive_uri: Some("drive://spaces/space-1/nodes/node-1".to_string()),
+        }],
+    );
+    assert_eq!(persistence.drive_sync_status, "imported");
+    assert_eq!(persistence.output_rows[0].sync_status, "imported");
+    assert_eq!(
+        persistence.runtime_status,
+        ImageGenerationRuntimeStatus::Succeeded
+    );
+    assert!(persistence
+        .repository_methods
+        .iter()
+        .any(|method| method == "mark_generation_succeeded"));
+}

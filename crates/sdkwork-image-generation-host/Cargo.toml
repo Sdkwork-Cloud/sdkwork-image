@@ -1,0 +1,28 @@
+[package]
+name = "sdkwork-image-generation-host"
+version = "0.1.0"
+edition = "2021"
+description = "Image generation application host — ClawRouter gateway, runtime orchestration, and generation projection store."
+
+[lib]
+name = "sdkwork_image_generation_host"
+path = "src/lib.rs"
+
+[dependencies]
+clawrouter-open-sdk.workspace = true
+sdkwork-iam-context-service.workspace = true
+sdkwork-image-generation-repository-sqlx.workspace = true
+sdkwork-image-claw-router-provider-service.workspace = true
+sdkwork-image-generation-runtime-service.workspace = true
+sdkwork-image-generation-service.workspace = true
+sdkwork-image-generation-workflow-service.workspace = true
+sdkwork-assets-ingestion.workspace = true
+sdkwork-utils-rust.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = "2"
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

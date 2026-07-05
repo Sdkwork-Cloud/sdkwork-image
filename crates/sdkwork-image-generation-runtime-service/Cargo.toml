@@ -1,0 +1,29 @@
+[package]
+name = "sdkwork-image-generation-runtime-service"
+version = "0.1.0"
+edition = "2021"
+description = "SDKWork image generation runtime orchestration — ClawRouter dispatch and Drive import execution."
+
+[lib]
+name = "sdkwork_image_generation_runtime_service"
+path = "src/lib.rs"
+
+[dependencies]
+async-trait = "0.1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls"] }
+sdkwork-database-sqlx.workspace = true
+sdkwork-image-generation-service.workspace = true
+sdkwork-image-generation-workflow-service.workspace = true
+sdkwork-image-claw-router-provider-service.workspace = true
+sdkwork-assets-bridge-image.workspace = true
+sdkwork-assets-ingestion.workspace = true
+sdkwork-assets-ingestion-drive.workspace = true
+sdkwork-drive-workspace-service.workspace = true
+sdkwork-drive-storage-local = { workspace = true }
+sdkwork-drive-storage-contract = { workspace = true }
+sqlx = { version = "0.8", default-features = false, features = ["any"] }
+thiserror = "2"
+tracing = "0.1"
+
+[dev-dependencies]
+tokio = { version = "1.48", features = ["macros", "rt-multi-thread"] }

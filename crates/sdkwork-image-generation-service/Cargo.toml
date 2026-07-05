@@ -10,3 +10,5 @@ path = "src/lib.rs"
 
 [dependencies]
 sdkwork-drive-workspace-service.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }

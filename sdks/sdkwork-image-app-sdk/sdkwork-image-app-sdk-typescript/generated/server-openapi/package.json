@@ -1,5 +1,5 @@
 {
-  "name": "@sdkwork/image-app-sdk",
+  "name": "sdkwork-image-app-sdk-generated-typescript",
   "version": "1.0.0",
   "private": true,
   "description": "Generator-owned TypeScript transport SDK for sdkwork-image-app-sdk.",
@@ -37,5 +37,6 @@
     "api",
     "app",
     "sdkwork"
-  ]
+  ],
+  "sdkworkRole": "transport"
 }

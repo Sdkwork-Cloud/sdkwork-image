@@ -2,13 +2,25 @@
 name = "sdkwork-image-generation-repository-sqlx"
 version = "0.1.0"
 edition = "2021"
-description = "SDKWork image SQLx storage contract and migrations."
+description = "SDKWork image SQLx storage contract, migrations, and generation projection repository."
 
 [lib]
 name = "sdkwork_image_generation_repository_sqlx"
 path = "src/lib.rs"
 
 [dependencies]
+async-trait = "0.1"
+parking_lot = "0.12"
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sqlx = { version = "0.8", default-features = false, features = ["json", "macros", "runtime-tokio", "postgres", "sqlite"] }
 sdkwork-image-database-host.workspace = true
+sdkwork-image-generation-service.workspace = true
+sdkwork-image-generation-workflow-service.workspace = true
 sdkwork-database-config.workspace = true
 sdkwork-database-sqlx.workspace = true
+sdkwork-utils-rust.workspace = true
+thiserror = "2"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

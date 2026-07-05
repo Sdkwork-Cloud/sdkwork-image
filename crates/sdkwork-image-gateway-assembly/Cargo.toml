@@ -11,6 +11,7 @@ path = "src/lib.rs"
 [dependencies]
 axum.workspace = true
 tokio = { version = "1.48", features = ["macros", "rt-multi-thread"] }
+sdkwork-image-generation-host.workspace = true
 sdkwork_routes_image_app_api = { package = "sdkwork-routes-image-app-api", path = "../sdkwork-routes-image-app-api" }
 sdkwork_routes_image_backend_api = { package = "sdkwork-routes-image-backend-api", path = "../sdkwork-routes-image-backend-api" }
 sdkwork_routes_image_open_api = { package = "sdkwork-routes-image-open-api", path = "../sdkwork-routes-image-open-api" }

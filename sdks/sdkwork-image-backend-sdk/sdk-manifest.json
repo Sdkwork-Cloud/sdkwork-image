@@ -1,4 +1,15 @@
 {
+  "schemaVersion": 1,
+  "sdkFamily": "sdkwork-image-backend-sdk",
+  "sdkName": "sdkwork-image-backend-sdk",
+  "packageName": "@sdkwork/image-backend-sdk",
+  "transportPackageName": "sdkwork-image-backend-sdk-generated-typescript",
+  "typescript": {
+    "composedRoot": "sdkwork-image-backend-sdk-typescript",
+    "composedEntry": "sdkwork-image-backend-sdk-typescript/src/index.ts",
+    "transportRoot": "sdkwork-image-backend-sdk-typescript/generated/server-openapi",
+    "transportEntry": "sdkwork-image-backend-sdk-typescript/generated/server-openapi/src/index.ts"
+  },
   "workspace": "sdkwork-image-backend-sdk",
   "title": "SDKWork Image Backend API SDK",
   "apiVersion": "1.0.0",
@@ -11,12 +22,14 @@
   },
   "sdkOwner": "sdkwork-image",
   "apiAuthority": "sdkwork-image-backend-api",
-  "sdkDependencies": [],
   "discoverySurface": {
     "sdkTarget": "backend",
     "apiPrefix": "/backend/v3/api",
     "schemaUrl": "/backend/v3/openapi.json",
-    "generatedProtocols": ["http-openapi"],
+    "generatedProtocols": [
+      "http-openapi"
+    ],
     "manualTransports": []
-  }
+  },
+  "sdkDependencies": []
 }

@@ -11,6 +11,8 @@ pub use web_bootstrap::{
     wrap_router_with_web_framework_from_env,
 };
 
+use sdkwork_web_core::HttpRouteManifest;
+
 pub fn gateway_route_manifest() -> HttpRouteManifest {
     open_route_manifest()
 }

@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "language": "typescript",
   "sdkType": "custom",
-  "packageName": "@sdkwork/image-sdk",
+  "packageName": "sdkwork-image-sdk-generated-typescript",
   "generator": "@sdkwork/sdk-generator",
   "capabilities": {
     "supportsGeneratedTests": true,
@@ -26,5 +26,7 @@
     "stateRoots": [
       ".sdkwork/"
     ]
-  }
+  },
+  "transportPackageName": "sdkwork-image-sdk-generated-typescript",
+  "consumerPackageName": "@sdkwork/image-sdk"
 }

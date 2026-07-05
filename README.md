@@ -52,9 +52,30 @@ The Rust image generation stack is split by ownership boundary:
 
 - `crates/sdkwork-image-generation-service` owns image domain constants, generation command validation, provider dispatch planning, provider task/result normalization, AI generated Drive import planning, and Drive uploader command construction with `scene`.
 - `crates/sdkwork-image-generation-workflow-service` owns service-level orchestration contracts for create, polling refresh, webhook refresh, Drive import planning, Drive upload preparation steps, outbox event planning, and the runtime step contract required for state consistency.
-- `crates/sdkwork-image-claw-router-provider-service` owns the Claw Router provider gateway and calls `clawrouter_open_sdk` generated Rust SDK APIs. Product code must use this gateway or another approved generated-SDK adapter instead of raw provider HTTP.
-- `crates/sdkwork-image-generation-repository-sqlx` owns image database table, migration, and repository SQL contracts for generation jobs, multi-output records, provider tasks, webhook events, Drive sync status, and notification outbox.
-- `crates/sdkwork-routes-image-open-api` / `crates/sdkwork-routes-image-app-api` / `crates/sdkwork-routes-image-backend-api` owns the image API route catalog that materializes OpenAPI and SDK families, including backend provider webhook receive routes.
+- `crates/sdkwork-image-generation-runtime-service` executes ClawRouter provider dispatch, prepares Drive uploader commands through `sdkwork-assets-ingestion-drive`, and runs live Drive import when `ImageDriveImportRuntime::try_from_env()` succeeds (`HttpProviderArtifactFetcher` fetches transient provider artifact URLs over HTTPS only).
+- `crates/sdkwork-image-generation-host` owns the application host injected into gateway assembly: ClawRouter gateway wiring, generation service orchestration (create/refresh execute Drive import when enabled), SQL lifecycle side effects (provider task tracking, notification outbox enqueue), optional background processor (provider polling + webhook callback delivery), and SQLx-backed generation projection storage (`ImageGenerationHost::from_runtime_env`).
+- `crates/sdkwork-image-generation-repository-sqlx` owns SQL migrations, repository SQL contracts, and `SqlxGenerationProjectionRepository` for create/list/get/refresh persistence.
+- `crates/sdkwork-image-claw-router-provider-service` owns the Claw Router provider gateway (`clawrouter_open_sdk` only; no raw provider HTTP).
+- `crates/sdkwork-routes-image-app-api` owns user-facing `/app/v3/api/image/*` HTTP handlers (generations, presets, assets, galleries, edit_tasks) with SdkWorkApiResponse envelopes, IAM runtime subject projection, and dual-token route manifest registration.
+- `crates/sdkwork-routes-image-open-api` / `crates/sdkwork-routes-image-backend-api` owns the remaining image API route catalogs that materialize OpenAPI and SDK families, including backend provider webhook receive routes.
+- `crates/sdkwork-image-gateway-assembly` merges app-api, backend-api, and open-api routers; production bootstrap uses `assemble_application_router_from_env()` (ClawRouter + IMAGE database + optional DRIVE database/object store via `ImageGenerationHost::from_runtime_env()`).
+
+### Drive import runtime environment
+
+When DRIVE database configuration is present and `IMAGE_DRIVE_IMPORT_ENABLED` is not disabled, successful image generations import provider artifacts into Drive `ai_generated` space immediately after create/refresh dispatch:
+
+| Variable | Purpose |
+| --- | --- |
+| `DRIVE_*` | Drive database connection (same as `sdkwork-drive`) |
+| `IMAGE_DRIVE_IMPORT_ENABLED` | `true` (default) / `false` to skip live import |
+| `IMAGE_DRIVE_OBJECT_STORE_ROOT` | Local object store root (default `.data/image-drive-objects`) |
+| `SDKWORK_CLAWROUTER_OPEN_API_BASE_URL` | ClawRouter provider dispatch |
+| `IMAGE_*` | Image projection database |
+| `IMAGE_BACKGROUND_PROCESSOR_ENABLED` | `true` (default) / `false` to disable provider poll + notification delivery loop |
+| `IMAGE_BACKGROUND_POLL_INTERVAL_SECONDS` | Background loop interval (default `30`) |
+| `IMAGE_PROVIDER_POLL_INTERVAL_SECONDS` | Per-task provider poll backoff (default `30`) |
+
+Wire outputs persist `sync_status: imported`, `drive_node_id`, and `drive_uri` when import completes.
 
 Image API paths use `/generations` resource names. Legacy `/generation_jobs`, `generationJobs`, and `{jobId}` names are intentionally excluded from the generated API surface.
 
