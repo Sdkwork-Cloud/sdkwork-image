@@ -4,7 +4,7 @@
   "applicationCode": "image",
   "packageName": "sdkwork-image-gateway-assembly",
   "crateDir": "crates/sdkwork-image-gateway-assembly",
-  "generatedAt": "2026-06-25T13:08:05.549Z",
+  "generatedAt": "2026-07-08T01:34:12.405Z",
   "routeCrates": [
     {
       "packageName": "sdkwork-routes-image-app-api",
@@ -14,7 +14,7 @@
       "pathPrefix": null,
       "mountOrder": 0,
       "hasGatewayMount": true,
-      "hasGatewayRouteManifest": false
+      "hasGatewayRouteManifest": true
     },
     {
       "packageName": "sdkwork-routes-image-backend-api",

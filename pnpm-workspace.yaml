@@ -17,7 +17,7 @@ packages:
   - "../sdkwork-iam/sdks/sdkwork-iam-app-sdk/sdkwork-iam-app-sdk-typescript"
   - "../sdkwork-sdk-commons/sdkwork-sdk-common-typescript"
   - "../sdkwork-utils/packages/sdkwork-utils-typescript"
-  - "../sdkwork-assets/packages/sdkwork-assets-core"
+  - "../sdkwork-assets/apps/sdkwork-assets-common/packages/sdkwork-assets-core"
   - "../sdkwork-assets/apps/sdkwork-assets-pc/packages/sdkwork-assets-pc-assets"
   - "../sdkwork-assets/apps/sdkwork-assets-pc/packages/sdkwork-assets-pc-commons"
   - "../sdkwork-generations/apps/sdkwork-generations-pc/packages/sdkwork-generations-pc-workspace"

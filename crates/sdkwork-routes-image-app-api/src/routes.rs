@@ -26,7 +26,6 @@ struct AppState {
 #[derive(Debug, Deserialize)]
 struct ListQuery {
     page: Option<i64>,
-    #[serde(rename = "pageSize", alias = "page_size")]
     page_size: Option<i64>,
     q: Option<String>,
 }
