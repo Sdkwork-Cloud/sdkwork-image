@@ -284,7 +284,7 @@
         "operationId": "editTasks.create",
         "parameters": [],
         "responses": {
-          "200": {
+          "201": {
             "description": "Success",
             "content": {
               "application/json": {
@@ -751,7 +751,7 @@
           }
         ],
         "responses": {
-          "200": {
+          "201": {
             "description": "Success",
             "content": {
               "application/json": {
@@ -997,7 +997,7 @@
         "operationId": "generations.create",
         "parameters": [],
         "responses": {
-          "200": {
+          "201": {
             "description": "Success",
             "content": {
               "application/json": {
@@ -1822,7 +1822,7 @@
         "format": "int32",
         "minimum": 40001,
         "maximum": 79999,
-        "description": "Platform or domain error code per API_SPEC.md §15.3."
+        "description": "Platform or domain error code per API_SPEC.md 搂15.3."
       },
       "ProblemDetail": {
         "type": "object",

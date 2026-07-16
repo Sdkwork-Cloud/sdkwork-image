@@ -5,7 +5,7 @@
   "type": "module",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "test": "vitest",
+    "stop": "node ../sdkwork-specs/tools/stop-sdkwork-workspace-processes.mjs --workspace .",    "test": "vitest",
     "typecheck": "tsc --noEmit",
     "test:rust": "cargo test --workspace",
     "openapi:materialize": "node sdks/materialize-image-v3-openapi-boundaries.mjs",

@@ -17,7 +17,7 @@
     {
       "method": "POST",
       "path": "/image/v3/api/compat/openai/images/generations",
-      "operationId": "compat.openai.images.generate",
+      "operationId": "compat.openai.images.create",
       "tags": [
         "imageCompat"
       ],

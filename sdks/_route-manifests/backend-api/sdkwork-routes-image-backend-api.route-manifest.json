@@ -449,7 +449,7 @@
     {
       "method": "POST",
       "path": "/backend/v3/api/image/provider_webhooks/{providerCode}",
-      "operationId": "providerWebhooks.receive",
+      "operationId": "providerWebhooks.create",
       "tags": [
         "image"
       ],

@@ -259,7 +259,7 @@ test("image SDK family assembly metadata mirrors component SDK dependencies", ()
     "sdkwork-image-app-sdk",
     "sdkwork-image-backend-sdk",
   ]) {
-    const assembly = readJson(`sdks/${familyName}/.sdkwork-assembly.json`);
+    const assembly = readJson(`sdks/${familyName}/sdk-manifest.json`);
     const component = readJson(`sdks/${familyName}/specs/component.spec.json`);
 
     assert.ok(
