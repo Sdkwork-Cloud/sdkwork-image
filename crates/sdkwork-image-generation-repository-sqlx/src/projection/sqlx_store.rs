@@ -3,17 +3,15 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use sdkwork_database_sqlx::DatabasePool;
 use sdkwork_image_generation_workflow_service::{
-    ImageGenerationInputSnapshot, ImageGenerationOutputPersistenceRow, ImageGenerationPersistencePlan,
-    ImageProviderRequestSnapshot,
+    ImageGenerationInputSnapshot, ImageGenerationOutputPersistenceRow,
+    ImageGenerationPersistencePlan, ImageProviderRequestSnapshot,
 };
 use sdkwork_utils_rust::uuid;
 use serde::{Deserialize, Serialize};
 
+use super::lifecycle::{apply_insert_lifecycle_side_effects, apply_refresh_lifecycle_side_effects};
 use super::scope::{actor_user_id, organization_id, parse_scope_id};
 use super::{GenerationProjectionRecord, GenerationProjectionRepository};
-use super::lifecycle::{
-    apply_insert_lifecycle_side_effects, apply_refresh_lifecycle_side_effects,
-};
 use crate::RepositoryError;
 
 #[derive(Clone)]
@@ -43,11 +41,10 @@ impl GenerationProjectionRepository for SqlxGenerationProjectionRepository {
         let tenant_id = parse_scope_id(&record.scope.tenant_id, "tenant_id")?;
         let organization_id = organization_id(&record.scope)?;
         let user_id = actor_user_id(&record.scope.actor)?;
-        let input = record
-            .persistence
-            .input_snapshot
-            .as_ref()
-            .ok_or_else(|| RepositoryError::Validation("input snapshot is required".to_string()))?;
+        let input =
+            record.persistence.input_snapshot.as_ref().ok_or_else(|| {
+                RepositoryError::Validation("input snapshot is required".to_string())
+            })?;
         let provider_state = ProviderStateSnapshot {
             provider_request: record.provider_request.clone(),
         };
@@ -57,7 +54,10 @@ impl GenerationProjectionRepository for SqlxGenerationProjectionRepository {
         let input_snapshot_json = serde_json::to_value(input)?;
         let provider_state_json = serde_json::to_value(&provider_state)?;
         let metadata_json = serde_json::to_value(&metadata)?;
-        let resolution = input.resolution.clone().unwrap_or_else(|| "1024x1024".to_string());
+        let resolution = input
+            .resolution
+            .clone()
+            .unwrap_or_else(|| "1024x1024".to_string());
         let style = input.style.clone().unwrap_or_else(|| "default".to_string());
 
         match &self.pool {
@@ -115,7 +115,14 @@ INSERT INTO {table} (
                 .execute(&mut *tx)
                 .await?;
 
-                let job_id = fetch_job_id_pg(&mut tx, &table, tenant_id, organization_id, &record.generation_id).await?;
+                let job_id = fetch_job_id_pg(
+                    &mut tx,
+                    &table,
+                    tenant_id,
+                    organization_id,
+                    &record.generation_id,
+                )
+                .await?;
                 upsert_outputs_pg(
                     &mut tx,
                     ctx,
@@ -196,7 +203,14 @@ INSERT INTO {table} (
                 .execute(&mut *tx)
                 .await?;
 
-                let job_id = fetch_job_id_sqlite(&mut tx, &table, tenant_id, organization_id, &record.generation_id).await?;
+                let job_id = fetch_job_id_sqlite(
+                    &mut tx,
+                    &table,
+                    tenant_id,
+                    organization_id,
+                    &record.generation_id,
+                )
+                .await?;
                 upsert_outputs_sqlite(
                     &mut tx,
                     ctx,
@@ -280,7 +294,9 @@ INSERT INTO {table} (
             Some(value) if !value.trim().is_empty() => parse_scope_id(value, "organization_id")?,
             _ => 0,
         };
-        let metadata = JobMetadataSnapshot { api_wire: wire_json };
+        let metadata = JobMetadataSnapshot {
+            api_wire: wire_json,
+        };
         let metadata_json = serde_json::to_value(&metadata)?;
         let drive_space_id = persistence
             .output_rows
@@ -376,9 +392,14 @@ WHERE tenant_id = $2
                     generation_id,
                 )
                 .await?;
-                let (input_snapshot, provider_request) =
-                    fetch_job_lifecycle_snapshots_pg(&mut tx, &table, tenant_id, organization_id, generation_id)
-                        .await?;
+                let (input_snapshot, provider_request) = fetch_job_lifecycle_snapshots_pg(
+                    &mut tx,
+                    &table,
+                    tenant_id,
+                    organization_id,
+                    generation_id,
+                )
+                .await?;
                 apply_refresh_lifecycle_side_effects(
                     &self.pool,
                     ctx,
@@ -520,7 +541,9 @@ WHERE tenant_id = ?2
             Some(value) if !value.trim().is_empty() => parse_scope_id(value, "organization_id")?,
             _ => 0,
         };
-        let metadata = JobMetadataSnapshot { api_wire: wire_json };
+        let metadata = JobMetadataSnapshot {
+            api_wire: wire_json,
+        };
         let metadata_json = serde_json::to_value(&metadata)?;
         let affected = match &self.pool {
             DatabasePool::Postgres(pool, ctx) => {
@@ -631,7 +654,8 @@ impl JobRow {
         let _scene = self.scene;
         let persistence = ImageGenerationPersistencePlan {
             generation_id: self.generation_uuid.clone(),
-            runtime_status: sdkwork_image_generation_service::ImageGenerationRuntimeStatus::Importing,
+            runtime_status:
+                sdkwork_image_generation_service::ImageGenerationRuntimeStatus::Importing,
             job_status_code: self.job_status,
             drive_sync_status: self.drive_sync_status,
             provider_code: self.provider_code.clone().unwrap_or_default(),
@@ -678,7 +702,11 @@ async fn fetch_job_id_pg(
     organization_id: i64,
     generation_id: &str,
 ) -> Result<i64, RepositoryError> {
-    Ok(fetch_job_identity_pg(tx, table, tenant_id, organization_id, generation_id).await?.0)
+    Ok(
+        fetch_job_identity_pg(tx, table, tenant_id, organization_id, generation_id)
+            .await?
+            .0,
+    )
 }
 
 async fn fetch_job_identity_pg(
@@ -706,7 +734,11 @@ async fn fetch_job_id_sqlite(
     organization_id: i64,
     generation_id: &str,
 ) -> Result<i64, RepositoryError> {
-    Ok(fetch_job_identity_sqlite(tx, table, tenant_id, organization_id, generation_id).await?.0)
+    Ok(
+        fetch_job_identity_sqlite(tx, table, tenant_id, organization_id, generation_id)
+            .await?
+            .0,
+    )
 }
 
 async fn fetch_job_identity_sqlite(
@@ -944,16 +976,30 @@ async fn read_job_row_pg(
     generation_id: &str,
 ) -> Result<Option<JobRow>, RepositoryError> {
     let table = ctx.table_name("image_generation_job");
-    let row = sqlx::query_as::<_, (i64, Option<i64>, Option<String>, Option<String>, serde_json::Value, serde_json::Value, serde_json::Value, i32, String, Option<String>, Option<String>, String)>(
-        &format!(
-            r#"
+    let row = sqlx::query_as::<
+        _,
+        (
+            i64,
+            Option<i64>,
+            Option<String>,
+            Option<String>,
+            serde_json::Value,
+            serde_json::Value,
+            serde_json::Value,
+            i32,
+            String,
+            Option<String>,
+            Option<String>,
+            String,
+        ),
+    >(&format!(
+        r#"
 SELECT organization_id, user_id, scene, provider_code, provider_state, metadata, input_snapshot,
        job_status, drive_sync_status, provider_task_id, provider_status, uuid
 FROM {table}
 WHERE tenant_id = $1 AND uuid = $2 AND deleted_at IS NULL
 "#
-        ),
-    )
+    ))
     .bind(tenant_id)
     .bind(generation_id)
     .fetch_optional(pool)
@@ -996,16 +1042,30 @@ async fn read_job_row_sqlite(
     generation_id: &str,
 ) -> Result<Option<JobRow>, RepositoryError> {
     let table = ctx.table_name("image_generation_job");
-    let row = sqlx::query_as::<_, (i64, Option<i64>, Option<String>, Option<String>, serde_json::Value, serde_json::Value, serde_json::Value, i32, String, Option<String>, Option<String>, String)>(
-        &format!(
-            r#"
+    let row = sqlx::query_as::<
+        _,
+        (
+            i64,
+            Option<i64>,
+            Option<String>,
+            Option<String>,
+            serde_json::Value,
+            serde_json::Value,
+            serde_json::Value,
+            i32,
+            String,
+            Option<String>,
+            Option<String>,
+            String,
+        ),
+    >(&format!(
+        r#"
 SELECT organization_id, user_id, scene, provider_code, provider_state, metadata, input_snapshot,
        job_status, drive_sync_status, provider_task_id, provider_status, uuid
 FROM {table}
 WHERE tenant_id = ?1 AND uuid = ?2 AND deleted_at IS NULL
 "#
-        ),
-    )
+    ))
     .bind(tenant_id)
     .bind(generation_id)
     .fetch_optional(pool)
@@ -1148,15 +1208,10 @@ mod tests {
     fn provider_state_round_trips_snapshot() {
         let snapshot = ProviderStateSnapshot {
             provider_request: ImageProviderRequestSnapshot {
+                provider_id: "sdkwork-image-generation-provider-adapter".to_string(),
                 provider_code: "openai".to_string(),
                 provider_operation: "openai.images.generate".to_string(),
                 task_mode: "sync".to_string(),
-                api_path: "/v1/images/generations".to_string(),
-                sdk_resource: "images".to_string(),
-                sdk_method: "create_generation".to_string(),
-                retrieve_api_path: None,
-                retrieve_sdk_resource: None,
-                retrieve_sdk_method: None,
                 prompt: "hero".to_string(),
                 negative_prompt: None,
                 model: None,

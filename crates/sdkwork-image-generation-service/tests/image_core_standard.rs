@@ -481,7 +481,7 @@ fn rejects_duplicate_output_indexes_before_drive_sync() {
 }
 
 #[test]
-fn plans_image_generation_provider_dispatch_through_claw_router_sdk_boundary() {
+fn plans_image_generation_provider_dispatch_without_transport_metadata() {
     let plan = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
         prompt: "Premium product shot on a matte desk".to_string(),
         negative_prompt: Some("blurry, distorted".to_string()),
@@ -503,9 +503,6 @@ fn plans_image_generation_provider_dispatch_through_claw_router_sdk_boundary() {
         ImageProviderOperation::OpenAiImageGeneration,
     );
     assert_eq!(plan.task_mode, ImageProviderTaskMode::Synchronous);
-    assert_eq!(plan.claw_router_api_path, "/v1/images/generations");
-    assert_eq!(plan.claw_router_sdk_resource, "images");
-    assert_eq!(plan.claw_router_sdk_method, "create_generation");
     assert_eq!(plan.prompt, "Premium product shot on a matte desk");
     assert_eq!(plan.model.as_deref(), Some("gpt-image-1"));
     assert_eq!(plan.size.as_deref(), Some("1024x1024"));
@@ -513,8 +510,7 @@ fn plans_image_generation_provider_dispatch_through_claw_router_sdk_boundary() {
     assert_eq!(plan.response_format.as_deref(), Some("url"));
     assert_eq!(plan.output_count, 3);
     assert_eq!(plan.output_count_provider_parameter.as_deref(), Some("n"));
-    assert!(!plan.claw_router_api_path.contains("generation_jobs"));
-    assert!(!plan.claw_router_sdk_method.contains("generationJobs"));
+    assert!(plan.provider_id.is_empty());
 }
 
 #[test]
@@ -541,19 +537,13 @@ fn plans_async_provider_dispatch_for_task_based_image_providers() {
     );
     assert_eq!(plan.task_mode, ImageProviderTaskMode::Task);
     assert_eq!(
-        plan.claw_router_api_path,
-        "/nano-banana/v1/images/generations"
-    );
-    assert_eq!(plan.claw_router_sdk_resource, "images_nano_banana");
-    assert_eq!(plan.claw_router_sdk_method, "create_generations");
-    assert_eq!(
         plan.callback_url.as_deref(),
         Some("https://app.example.com/hooks/nano-banana")
     );
 }
 
 #[test]
-fn plans_vidu_reference_image_dispatch_through_generated_claw_router_sdk() {
+fn plans_vidu_reference_image_dispatch_from_vendor_semantics() {
     let plan = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
         prompt: "Turn this product reference into a campaign visual".to_string(),
         negative_prompt: Some("blurred text".to_string()),
@@ -578,9 +568,6 @@ fn plans_vidu_reference_image_dispatch_through_generated_claw_router_sdk() {
         ImageProviderOperation::ViduReferenceToImageGeneration,
     );
     assert_eq!(plan.task_mode, ImageProviderTaskMode::Task);
-    assert_eq!(plan.claw_router_api_path, "/vidu/ent/v2/reference2image");
-    assert_eq!(plan.claw_router_sdk_resource, "images_vidu");
-    assert_eq!(plan.claw_router_sdk_method, "create_ent_v2_reference2image");
     assert_eq!(plan.reference_images.len(), 2);
     assert_eq!(plan.output_count_provider_parameter, None);
 }
@@ -619,43 +606,18 @@ fn normalizes_reference_images_before_enforcing_effective_item_limit() {
 }
 
 #[test]
-fn plans_task_provider_retrieval_through_generated_claw_router_sdk() {
+fn classifies_task_based_vendors_without_sdk_route_metadata() {
     let cases = [
-        (
-            "midjourney",
-            "mj-v7",
-            "images_midjourney",
-            "list_v1_images_generations",
-            "/midjourney/v1/images/generations/{task_id}",
-            vec![],
-        ),
-        (
-            "nano-banana",
-            "banana-image-pro",
-            "images_nano_banana",
-            "retrieve_generations",
-            "/nano-banana/v1/images/generations/{task_id}",
-            vec![],
-        ),
+        ("midjourney", "mj-v7", vec![]),
+        ("nano-banana", "banana-image-pro", vec![]),
         (
             "vidu",
             "vidu-image-pro",
-            "videos_vidu",
-            "list_ent_v2_tasks_creations",
-            "/vidu/ent/v2/tasks/{task_id}/creations",
             vec!["https://cdn.example.com/reference.png".to_string()],
         ),
     ];
 
-    for (
-        provider_code,
-        model,
-        retrieve_sdk_resource,
-        retrieve_sdk_method,
-        retrieve_api_path,
-        reference_images,
-    ) in cases
-    {
+    for (provider_code, model, reference_images) in cases {
         let plan = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
             prompt: "Poll generated image task".to_string(),
             negative_prompt: None,
@@ -672,26 +634,12 @@ fn plans_task_provider_retrieval_through_generated_claw_router_sdk() {
         .expect("task provider dispatch plan should build");
 
         assert_eq!(plan.task_mode, ImageProviderTaskMode::Task);
-        assert_eq!(
-            plan.claw_router_retrieve_sdk_resource,
-            Some(retrieve_sdk_resource),
-            "{provider_code} retrieve resource must be generated SDK-backed",
-        );
-        assert_eq!(
-            plan.claw_router_retrieve_sdk_method,
-            Some(retrieve_sdk_method),
-            "{provider_code} retrieve method must be generated SDK-backed",
-        );
-        assert_eq!(
-            plan.claw_router_retrieve_api_path,
-            Some(retrieve_api_path),
-            "{provider_code} retrieve path must be auditable",
-        );
+        assert!(plan.provider_id.is_empty());
     }
 }
 
 #[test]
-fn rejects_providers_without_generated_claw_router_image_create_method() {
+fn rejects_vendors_without_registered_image_generation_support() {
     for provider_code in ["gemini", "kling", "jimeng", "volcengine", "custom-provider"] {
         let result = plan_image_generation_provider_dispatch(&ImageGenerationCreateCommand {
             prompt: "Render through a provider that has no generated image SDK resource"
@@ -710,8 +658,8 @@ fn rejects_providers_without_generated_claw_router_image_create_method() {
 
         assert_eq!(
             result,
-            Err("image generation provider is not exposed by the generated Claw Router SDK"),
-            "{provider_code} must not fall back to an unrelated generated SDK method",
+            Err("image generation vendor is not supported by a registered provider"),
+            "{provider_code} must not silently fall back to another vendor",
         );
     }
 }

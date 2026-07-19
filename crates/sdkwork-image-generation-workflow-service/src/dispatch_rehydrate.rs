@@ -8,27 +8,10 @@ pub fn rehydrate_image_provider_dispatch_plan(
     snapshot: &ImageProviderRequestSnapshot,
 ) -> Result<ImageProviderDispatchPlan, &'static str> {
     Ok(ImageProviderDispatchPlan {
+        provider_id: snapshot.provider_id.clone(),
         provider_code: snapshot.provider_code.clone(),
         provider_operation: parse_provider_operation(&snapshot.provider_operation)?,
         task_mode: parse_task_mode(&snapshot.task_mode)?,
-        claw_router_api_path: resolve_api_path(&snapshot.api_path)?,
-        claw_router_sdk_resource: resolve_sdk_token(&snapshot.sdk_resource)?,
-        claw_router_sdk_method: resolve_sdk_token(&snapshot.sdk_method)?,
-        claw_router_retrieve_api_path: snapshot
-            .retrieve_api_path
-            .as_deref()
-            .map(resolve_api_path)
-            .transpose()?,
-        claw_router_retrieve_sdk_resource: snapshot
-            .retrieve_sdk_resource
-            .as_deref()
-            .map(resolve_sdk_token)
-            .transpose()?,
-        claw_router_retrieve_sdk_method: snapshot
-            .retrieve_sdk_method
-            .as_deref()
-            .map(resolve_sdk_token)
-            .transpose()?,
         prompt: snapshot.prompt.clone(),
         negative_prompt: snapshot.negative_prompt.clone(),
         model: snapshot.model.clone(),
@@ -44,6 +27,7 @@ pub fn rehydrate_image_provider_dispatch_plan(
         reference_images: snapshot.reference_images.clone(),
         callback_url: snapshot.callback_url.clone(),
         idempotency_key: snapshot.idempotency_key.clone(),
+        vendor_parameters: None,
     })
 }
 
@@ -55,7 +39,9 @@ fn parse_provider_operation(value: &str) -> Result<ImageProviderOperation, &'sta
         "vidu.images.reference_to_image" => {
             Ok(ImageProviderOperation::ViduReferenceToImageGeneration)
         }
-        "provider_native.images.generate" => Ok(ImageProviderOperation::ProviderNativeImageGeneration),
+        "provider_native.images.generate" => {
+            Ok(ImageProviderOperation::ProviderNativeImageGeneration)
+        }
         _ => Err("stored image provider_operation is unsupported"),
     }
 }
@@ -69,41 +55,6 @@ fn parse_task_mode(value: &str) -> Result<ImageProviderTaskMode, &'static str> {
     }
 }
 
-fn resolve_api_path(value: &str) -> Result<&'static str, &'static str> {
-    match value.trim() {
-        "/v1/images/generations" => Ok("/v1/images/generations"),
-        "/midjourney/v1/images/generations" => Ok("/midjourney/v1/images/generations"),
-        "/midjourney/v1/images/generations/{task_id}" => {
-            Ok("/midjourney/v1/images/generations/{task_id}")
-        }
-        "/nano-banana/v1/images/generations" => Ok("/nano-banana/v1/images/generations"),
-        "/nano-banana/v1/images/generations/{task_id}" => {
-            Ok("/nano-banana/v1/images/generations/{task_id}")
-        }
-        "/vidu/ent/v2/reference2image" => Ok("/vidu/ent/v2/reference2image"),
-        "/vidu/ent/v2/tasks/{task_id}/creations" => Ok("/vidu/ent/v2/tasks/{task_id}/creations"),
-        _ => Err("stored image provider api_path is unsupported"),
-    }
-}
-
-fn resolve_sdk_token(value: &str) -> Result<&'static str, &'static str> {
-    match value.trim() {
-        "images" => Ok("images"),
-        "images_midjourney" => Ok("images_midjourney"),
-        "images_nano_banana" => Ok("images_nano_banana"),
-        "images_vidu" => Ok("images_vidu"),
-        "videos_vidu" => Ok("videos_vidu"),
-        "create_generation" => Ok("create_generation"),
-        "create_v1_images_generation" => Ok("create_v1_images_generation"),
-        "create_generations" => Ok("create_generations"),
-        "create_ent_v2_reference2image" => Ok("create_ent_v2_reference2image"),
-        "list_v1_images_generations" => Ok("list_v1_images_generations"),
-        "retrieve_generations" => Ok("retrieve_generations"),
-        "list_ent_v2_tasks_creations" => Ok("list_ent_v2_tasks_creations"),
-        _ => Err("stored image provider sdk token is unsupported"),
-    }
-}
-
 fn resolve_output_count_parameter(value: &str) -> Result<&'static str, &'static str> {
     match value.trim() {
         "n" => Ok("n"),
@@ -114,9 +65,9 @@ fn resolve_output_count_parameter(value: &str) -> Result<&'static str, &'static 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sdkwork_image_generation_service::ImageGenerationCreateCommand;
-    use sdkwork_image_generation_service::plan_image_generation_provider_dispatch;
     use crate::provider_request_snapshot_from_dispatch_plan_for_test;
+    use sdkwork_image_generation_service::plan_image_generation_provider_dispatch;
+    use sdkwork_image_generation_service::ImageGenerationCreateCommand;
 
     #[test]
     fn rehydrates_dispatch_plan_from_provider_request_snapshot() {
@@ -138,10 +89,7 @@ mod tests {
         let restored = rehydrate_image_provider_dispatch_plan(&snapshot).expect("restore");
         assert_eq!(restored.provider_code, dispatch.provider_code);
         assert_eq!(restored.provider_operation, dispatch.provider_operation);
-        assert_eq!(restored.claw_router_api_path, dispatch.claw_router_api_path);
-        assert_eq!(
-            restored.claw_router_sdk_method,
-            dispatch.claw_router_sdk_method
-        );
+        assert_eq!(restored.provider_id, dispatch.provider_id);
+        assert_eq!(restored.task_mode, dispatch.task_mode);
     }
 }

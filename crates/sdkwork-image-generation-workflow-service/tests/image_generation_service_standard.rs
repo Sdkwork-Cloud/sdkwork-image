@@ -66,8 +66,8 @@ fn plans_create_flow_with_provider_result_drive_import_and_outbox() {
     assert_eq!(plan.record.provider_code, "nano-banana");
     assert_eq!(plan.record.provider_task_id.as_deref(), Some("task-001"));
     assert_eq!(
-        plan.dispatch.dispatch_plan.claw_router_sdk_resource,
-        "images_nano_banana",
+        plan.dispatch.dispatch_plan.provider_operation.as_str(),
+        "nano_banana.images.generate",
     );
     assert_eq!(plan.drive_import_plans.len(), 1);
     assert_eq!(plan.drive_import_plans[0].scene, "product_hero");
@@ -335,20 +335,12 @@ fn plans_create_persistence_snapshots_with_reference_images_for_replay_and_audit
         .provider_request_snapshot
         .as_ref()
         .expect("create persistence must retain the generated provider request snapshot");
-    assert_eq!(provider_request_snapshot.sdk_resource, "images_nano_banana");
-    assert_eq!(provider_request_snapshot.sdk_method, "create_generations");
+    assert_eq!(provider_request_snapshot.provider_code, "nano-banana");
     assert_eq!(
-        provider_request_snapshot.retrieve_sdk_resource.as_deref(),
-        Some("images_nano_banana"),
+        provider_request_snapshot.provider_operation,
+        "nano_banana.images.generate",
     );
-    assert_eq!(
-        provider_request_snapshot.retrieve_sdk_method.as_deref(),
-        Some("retrieve_generations"),
-    );
-    assert_eq!(
-        provider_request_snapshot.retrieve_api_path.as_deref(),
-        Some("/nano-banana/v1/images/generations/{task_id}"),
-    );
+    assert_eq!(provider_request_snapshot.task_mode, "task");
     assert_eq!(
         provider_request_snapshot.reference_images,
         input_snapshot.reference_images,
@@ -475,16 +467,13 @@ fn plans_executable_runtime_steps_for_generation_create_flow() {
             ImageGenerationRuntimeStep::CreateGenerationRecord,
             ImageGenerationRuntimeStep::DispatchProviderGeneration {
                 provider_code: "nano-banana".to_string(),
-                sdk_resource: "images_nano_banana".to_string(),
-                sdk_method: "create_generations".to_string(),
+                provider_operation: "nano_banana.images.generate".to_string(),
             },
             ImageGenerationRuntimeStep::PersistProviderSubmission,
             ImageGenerationRuntimeStep::AwaitProviderWebhook,
             ImageGenerationRuntimeStep::ScheduleProviderPolling {
                 provider_code: "nano-banana".to_string(),
-                api_path: "/nano-banana/v1/images/generations/{task_id}".to_string(),
-                sdk_resource: "images_nano_banana".to_string(),
-                sdk_method: "retrieve_generations".to_string(),
+                provider_operation: "nano_banana.images.generate".to_string(),
             },
             ImageGenerationRuntimeStep::PersistOutboxEvent {
                 event_type: "image.generation.created".to_string(),
@@ -494,7 +483,7 @@ fn plans_executable_runtime_steps_for_generation_create_flow() {
 }
 
 #[test]
-fn rejects_executable_runtime_steps_without_generated_create_sdk_method() {
+fn rejects_executable_runtime_steps_for_unregistered_vendor() {
     let result = plan_generation_create_runtime_steps(
         ImageGenerationScope {
             tenant_id: "100001".to_string(),
@@ -521,7 +510,7 @@ fn rejects_executable_runtime_steps_without_generated_create_sdk_method() {
 
     assert_eq!(
         result,
-        Err("image generation provider is not exposed by the generated Claw Router SDK"),
+        Err("image generation vendor is not supported by a registered provider"),
     );
 }
 

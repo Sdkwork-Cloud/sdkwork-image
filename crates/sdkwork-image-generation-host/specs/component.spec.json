@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "kind": "sdkwork.component.spec",
+  "component": {
+    "name": "sdkwork_image_generation_host",
+    "displayName": "SDKWork Image Generation Host",
+    "version": "0.1.0",
+    "type": "rust-crate",
+    "root": "sdkwork-image/crates/sdkwork-image-generation-host",
+    "domain": "content",
+    "capability": "image-generation-host",
+    "languages": ["rust"],
+    "generated": false,
+    "manifests": ["Cargo.toml"]
+  },
+  "canonicalSpecs": [
+    { "file": "COMPONENT_SPEC.md", "path": "../../../../sdkwork-specs/COMPONENT_SPEC.md", "purpose": "Component contracts." },
+    { "file": "CODE_STYLE_SPEC.md", "path": "../../../../sdkwork-specs/CODE_STYLE_SPEC.md", "purpose": "Authored source boundaries." },
+    { "file": "NAMING_SPEC.md", "path": "../../../../sdkwork-specs/NAMING_SPEC.md", "purpose": "Canonical naming." },
+    { "file": "MODULE_SPEC.md", "path": "../../../../sdkwork-specs/MODULE_SPEC.md", "purpose": "Reusable module boundaries." },
+    { "file": "RUST_CODE_SPEC.md", "path": "../../../../sdkwork-specs/RUST_CODE_SPEC.md", "purpose": "Rust module rules." },
+    { "file": "SDK_SPEC.md", "path": "../../../../sdkwork-specs/SDK_SPEC.md", "purpose": "Generated SDK client construction." },
+    { "file": "CONFIG_SPEC.md", "path": "../../../../sdkwork-specs/CONFIG_SPEC.md", "purpose": "Typed runtime configuration and secrets." },
+    { "file": "APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "path": "../../../../sdkwork-specs/APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "purpose": "L5 runtime composition." },
+    { "file": "COMPOSABLE_ARCHITECTURE_SPEC.md", "path": "../../../../sdkwork-specs/COMPOSABLE_ARCHITECTURE_SPEC.md", "purpose": "Port composition." },
+    { "file": "TEST_SPEC.md", "path": "../../../../sdkwork-specs/TEST_SPEC.md", "purpose": "Host verification." }
+  ],
+  "contracts": {
+    "layerRole": "runtime-service-host",
+    "publicExports": ["."],
+    "providedPorts": [{ "name": "imageGenerationServiceHost", "export": "." }],
+    "requiredPorts": [
+      { "name": "imageGenerationService", "export": "." },
+      { "name": "imageGenerationProvider", "export": "." },
+      { "name": "generationProjectionRepository", "export": "." }
+    ],
+    "runtimeEntrypoints": ["ImageGenerationHost::from_runtime_env"],
+    "routeManifest": null,
+    "sdkClients": ["SdkworkAiClient"],
+    "sdkDependencies": [
+      {
+        "workspace": "clawrouter-open-sdk",
+        "surface": "open-api",
+        "credentialMode": "open-api-key",
+        "required": true
+      }
+    ],
+    "dependencyApiExports": [],
+    "dependencyApiSurfaces": [],
+    "events": [],
+    "configKeys": [
+      "SDKWORK_CLAWROUTER_OPEN_API_BASE_URL",
+      "CLAWROUTER_OPEN_API_BASE_URL",
+      "SDKWORK_CLAWROUTER_OPEN_API_KEY"
+    ]
+  },
+  "verification": {
+    "commands": ["cargo test -p sdkwork-image-generation-host"]
+  }
+}

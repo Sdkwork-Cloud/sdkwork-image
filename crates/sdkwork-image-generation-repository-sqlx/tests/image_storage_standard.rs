@@ -113,8 +113,9 @@ fn runtime_migration_declares_provider_drive_and_multi_output_sync_tables() {
         !sql.contains("asset_url")
             && !sql.contains("thumbnail_url")
             && !sql.contains("image_url")
-            && !sql.contains("video_url"),
-        "image runtime storage must not persist naked business media URL columns",
+            && !sql.contains("video_url")
+            && !sql.contains("claw_router_"),
+        "image runtime storage must not persist transport-specific URL or router columns",
     );
 }
 

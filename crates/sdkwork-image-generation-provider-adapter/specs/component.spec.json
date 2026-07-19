@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "kind": "sdkwork.component.spec",
+  "component": {
+    "name": "sdkwork_image_generation_provider_adapter",
+    "displayName": "SDKWork Image Generation Provider Adapter",
+    "version": "0.1.0",
+    "type": "rust-crate",
+    "root": "sdkwork-image/crates/sdkwork-image-generation-provider-adapter",
+    "domain": "content",
+    "capability": "image-generation-provider-adapter",
+    "languages": ["rust"],
+    "generated": false,
+    "manifests": ["Cargo.toml"]
+  },
+  "canonicalSpecs": [
+    { "file": "COMPONENT_SPEC.md", "path": "../../../../sdkwork-specs/COMPONENT_SPEC.md", "purpose": "Component contracts." },
+    { "file": "CODE_STYLE_SPEC.md", "path": "../../../../sdkwork-specs/CODE_STYLE_SPEC.md", "purpose": "Generated and authored boundaries." },
+    { "file": "NAMING_SPEC.md", "path": "../../../../sdkwork-specs/NAMING_SPEC.md", "purpose": "Canonical naming." },
+    { "file": "MODULE_SPEC.md", "path": "../../../../sdkwork-specs/MODULE_SPEC.md", "purpose": "Reusable module boundaries." },
+    { "file": "RUST_CODE_SPEC.md", "path": "../../../../sdkwork-specs/RUST_CODE_SPEC.md", "purpose": "Rust module rules." },
+    { "file": "SDK_SPEC.md", "path": "../../../../sdkwork-specs/SDK_SPEC.md", "purpose": "Generated SDK consumption." },
+    { "file": "APP_SDK_INTEGRATION_SPEC.md", "path": "../../../../sdkwork-specs/APP_SDK_INTEGRATION_SPEC.md", "purpose": "Injected dependency SDK boundary." },
+    { "file": "APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "path": "../../../../sdkwork-specs/APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "purpose": "L4 provider adapter ownership." },
+    { "file": "COMPOSABLE_ARCHITECTURE_SPEC.md", "path": "../../../../sdkwork-specs/COMPOSABLE_ARCHITECTURE_SPEC.md", "purpose": "Port composition." },
+    { "file": "TEST_SPEC.md", "path": "../../../../sdkwork-specs/TEST_SPEC.md", "purpose": "Adapter verification." }
+  ],
+  "contracts": {
+    "layerRole": "backend-provider",
+    "publicExports": ["."],
+    "providedPorts": [{ "name": "imageGenerationProvider", "export": "." }],
+    "requiredPorts": [{ "name": "imageGenerationProviderPort", "export": "." }],
+    "runtimeEntrypoints": [],
+    "routeManifest": null,
+    "sdkClients": ["SdkworkAiClient"],
+    "sdkDependencies": [
+      {
+        "workspace": "clawrouter-open-sdk",
+        "surface": "open-api",
+        "credentialMode": "open-api-key",
+        "required": true
+      }
+    ],
+    "dependencyApiExports": [],
+    "dependencyApiSurfaces": [],
+    "events": [],
+    "configKeys": []
+  },
+  "verification": {
+    "commands": ["cargo test -p sdkwork-image-generation-provider-adapter"]
+  }
+}

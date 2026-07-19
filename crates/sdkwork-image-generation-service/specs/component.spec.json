@@ -60,8 +60,15 @@
     }
   ],
   "contracts": {
+    "layerRole": "backend-service",
     "publicExports": [
       "."
+    ],
+    "providedPorts": [
+      { "name": "imageGenerationService", "export": "." }
+    ],
+    "requiredPorts": [
+      { "name": "imageGenerationProvider", "export": "." }
     ],
     "runtimeEntrypoints": [],
     "routeManifest": null,

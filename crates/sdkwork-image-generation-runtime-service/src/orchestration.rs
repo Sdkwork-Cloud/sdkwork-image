@@ -1,11 +1,10 @@
-use sdkwork_image_claw_router_provider_service::ClawRouterImageProviderGateway;
 use sdkwork_image_generation_service::{
-    ImageGenerationCreateCommand, ImageProviderDispatchPlan, NormalizedProviderGenerationResult,
+    ImageGenerationCommand, ImageGenerationCreateCommand, ImageGenerationServicePort,
+    ImageProviderDispatchPlan, NormalizedProviderGenerationResult,
 };
-use sdkwork_image_generation_service::plan_image_generation_provider_dispatch;
 use sdkwork_image_generation_workflow_service::{
-    dispatch_image_provider_via_claw_router, plan_generation_create_service_flow,
-    plan_generation_refresh_from_provider_result, retrieve_image_provider_via_claw_router,
+    dispatch_image_generation_provider, plan_generation_create_service_flow_with_dispatch,
+    plan_generation_refresh_from_provider_result, retrieve_image_generation_provider,
     ImageGenerationScope, ImageGenerationServicePlan,
 };
 
@@ -52,17 +51,19 @@ pub struct ImageGenerationRefreshRuntimeResult {
 }
 
 pub async fn execute_create_generation_dispatch(
-    gateway: &ClawRouterImageProviderGateway,
+    provider_service: &dyn ImageGenerationServicePort,
     input: ImageGenerationCreateRuntimeInput,
 ) -> Result<ImageGenerationCreateRuntimeResult, ImageRuntimeError> {
-    let dispatch_plan = plan_image_generation_provider_dispatch(&input.command)
-        .map_err(|message| ImageRuntimeError::Planning(message))?;
-    let provider_result =
-        dispatch_image_provider_via_claw_router(gateway, &dispatch_plan).await?;
-    let service_plan = plan_generation_create_service_flow(
+    let provider_command = ImageGenerationCommand::try_from(&input.command)
+        .map_err(|_| ImageRuntimeError::Validation("invalid image generation provider command"))?;
+    let submission = dispatch_image_generation_provider(provider_service, provider_command).await?;
+    let dispatch_plan = submission.dispatch_plan;
+    let provider_result = submission.result;
+    let service_plan = plan_generation_create_service_flow_with_dispatch(
         input.scope.clone(),
         input.generation_id.clone(),
         input.command.clone(),
+        dispatch_plan.clone(),
         Some(provider_result.clone()),
     )
     .map_err(|message| ImageRuntimeError::Planning(message))?;
@@ -87,11 +88,11 @@ pub async fn execute_create_generation_dispatch(
 }
 
 pub async fn execute_refresh_generation_dispatch(
-    gateway: &ClawRouterImageProviderGateway,
+    provider_service: &dyn ImageGenerationServicePort,
     input: ImageGenerationRefreshRuntimeInput,
 ) -> Result<ImageGenerationRefreshRuntimeResult, ImageRuntimeError> {
-    let provider_result = retrieve_image_provider_via_claw_router(
-        gateway,
+    let provider_result = retrieve_image_generation_provider(
+        provider_service,
         &input.dispatch_plan,
         &input.provider_task_id,
     )

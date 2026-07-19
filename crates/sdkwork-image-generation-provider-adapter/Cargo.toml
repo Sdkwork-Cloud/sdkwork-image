@@ -1,0 +1,19 @@
+[package]
+name = "sdkwork-image-generation-provider-adapter"
+version.workspace = true
+edition.workspace = true
+description = "Default SDK-backed adapter for the SDKWork image generation provider SPI."
+
+[lib]
+name = "sdkwork_image_generation_provider_adapter"
+path = "src/lib.rs"
+
+[dependencies]
+async-trait = "0.1"
+clawrouter-open-sdk.workspace = true
+sdkwork-image-generation-provider-spi.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

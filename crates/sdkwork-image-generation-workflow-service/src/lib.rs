@@ -5,14 +5,14 @@ use sdkwork_image_generation_service::{
     ImageProviderDispatchPlan, NormalizedProviderGenerationResult,
 };
 
-mod claw_router_dispatch;
 mod dispatch_rehydrate;
+mod provider_dispatch;
 
-pub use claw_router_dispatch::{
-    dispatch_image_provider_via_claw_router, retrieve_image_provider_via_claw_router,
-    ClawRouterDispatchError,
-};
 pub use dispatch_rehydrate::rehydrate_image_provider_dispatch_plan;
+pub use provider_dispatch::{
+    dispatch_image_generation_provider, retrieve_image_generation_provider,
+    ImageGenerationProviderDispatchError,
+};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ImageGenerationScope {
@@ -97,15 +97,11 @@ pub struct ImageGenerationInputSnapshot {
 
 #[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 pub struct ImageProviderRequestSnapshot {
+    #[serde(default = "default_provider_id")]
+    pub provider_id: String,
     pub provider_code: String,
     pub provider_operation: String,
     pub task_mode: String,
-    pub api_path: String,
-    pub sdk_resource: String,
-    pub sdk_method: String,
-    pub retrieve_api_path: Option<String>,
-    pub retrieve_sdk_resource: Option<String>,
-    pub retrieve_sdk_method: Option<String>,
     pub prompt: String,
     pub negative_prompt: Option<String>,
     pub model: Option<String>,
@@ -160,15 +156,12 @@ pub enum ImageGenerationRuntimeStep {
     CreateGenerationRecord,
     DispatchProviderGeneration {
         provider_code: String,
-        sdk_resource: String,
-        sdk_method: String,
+        provider_operation: String,
     },
     PersistProviderSubmission,
     ScheduleProviderPolling {
         provider_code: String,
-        api_path: String,
-        sdk_resource: String,
-        sdk_method: String,
+        provider_operation: String,
     },
     AwaitProviderWebhook,
     PersistDriveImportPlan {
@@ -188,9 +181,25 @@ pub fn plan_generation_create_service_flow(
     command: ImageGenerationCreateCommand,
     provider_result: Option<NormalizedProviderGenerationResult>,
 ) -> Result<ImageGenerationServicePlan, &'static str> {
+    let dispatch_plan = plan_image_generation_provider_dispatch(&command)?;
+    plan_generation_create_service_flow_with_dispatch(
+        scope,
+        generation_id,
+        command,
+        dispatch_plan,
+        provider_result,
+    )
+}
+
+pub fn plan_generation_create_service_flow_with_dispatch(
+    scope: ImageGenerationScope,
+    generation_id: impl Into<String>,
+    command: ImageGenerationCreateCommand,
+    dispatch_plan: ImageProviderDispatchPlan,
+    provider_result: Option<NormalizedProviderGenerationResult>,
+) -> Result<ImageGenerationServicePlan, &'static str> {
     let generation_id =
         require_trimmed_owned(generation_id.into(), "image generation id is required")?;
-    let dispatch_plan = plan_image_generation_provider_dispatch(&command)?;
     let outputs = provider_result
         .as_ref()
         .filter(|result| result.ready_for_drive_import)
@@ -257,8 +266,7 @@ pub fn plan_generation_create_runtime_steps(
         ImageGenerationRuntimeStep::CreateGenerationRecord,
         ImageGenerationRuntimeStep::DispatchProviderGeneration {
             provider_code: dispatch_plan.provider_code.clone(),
-            sdk_resource: dispatch_plan.claw_router_sdk_resource.to_string(),
-            sdk_method: dispatch_plan.claw_router_sdk_method.to_string(),
+            provider_operation: dispatch_plan.provider_operation.as_str().to_string(),
         },
         ImageGenerationRuntimeStep::PersistProviderSubmission,
     ];
@@ -269,20 +277,9 @@ pub fn plan_generation_create_runtime_steps(
     if dispatch_plan.task_mode
         != sdkwork_image_generation_service::ImageProviderTaskMode::Synchronous
     {
-        let api_path = dispatch_plan
-            .claw_router_retrieve_api_path
-            .ok_or("image generation provider polling API path is required")?;
-        let sdk_resource = dispatch_plan
-            .claw_router_retrieve_sdk_resource
-            .ok_or("image generation provider polling SDK resource is required")?;
-        let sdk_method = dispatch_plan
-            .claw_router_retrieve_sdk_method
-            .ok_or("image generation provider polling SDK method is required")?;
         steps.push(ImageGenerationRuntimeStep::ScheduleProviderPolling {
             provider_code: dispatch_plan.provider_code.clone(),
-            api_path: api_path.to_string(),
-            sdk_resource: sdk_resource.to_string(),
-            sdk_method: sdk_method.to_string(),
+            provider_operation: dispatch_plan.provider_operation.as_str().to_string(),
         });
     }
 
@@ -299,8 +296,30 @@ pub fn plan_generation_create_persistence_plan(
     command: ImageGenerationCreateCommand,
     provider_result: Option<NormalizedProviderGenerationResult>,
 ) -> Result<ImageGenerationPersistencePlan, &'static str> {
-    let service_plan =
-        plan_generation_create_service_flow(scope, generation_id, command, provider_result)?;
+    let dispatch_plan = plan_image_generation_provider_dispatch(&command)?;
+    plan_generation_create_persistence_plan_with_dispatch(
+        scope,
+        generation_id,
+        command,
+        dispatch_plan,
+        provider_result,
+    )
+}
+
+pub fn plan_generation_create_persistence_plan_with_dispatch(
+    scope: ImageGenerationScope,
+    generation_id: impl Into<String>,
+    command: ImageGenerationCreateCommand,
+    dispatch_plan: ImageProviderDispatchPlan,
+    provider_result: Option<NormalizedProviderGenerationResult>,
+) -> Result<ImageGenerationPersistencePlan, &'static str> {
+    let service_plan = plan_generation_create_service_flow_with_dispatch(
+        scope,
+        generation_id,
+        command,
+        dispatch_plan,
+        provider_result,
+    )?;
     let mut plan = persistence_plan_from_service_plan(
         &service_plan.record,
         &service_plan.dispatch.dispatch_plan,
@@ -541,15 +560,10 @@ fn provider_request_snapshot_from_dispatch_plan(
     plan: &ImageProviderDispatchPlan,
 ) -> ImageProviderRequestSnapshot {
     ImageProviderRequestSnapshot {
+        provider_id: plan.provider_id.clone(),
         provider_code: plan.provider_code.clone(),
         provider_operation: plan.provider_operation.as_str().to_string(),
         task_mode: plan.task_mode.as_str().to_string(),
-        api_path: plan.claw_router_api_path.to_string(),
-        sdk_resource: plan.claw_router_sdk_resource.to_string(),
-        sdk_method: plan.claw_router_sdk_method.to_string(),
-        retrieve_api_path: plan.claw_router_retrieve_api_path.map(str::to_string),
-        retrieve_sdk_resource: plan.claw_router_retrieve_sdk_resource.map(str::to_string),
-        retrieve_sdk_method: plan.claw_router_retrieve_sdk_method.map(str::to_string),
         prompt: plan.prompt.clone(),
         negative_prompt: plan.negative_prompt.clone(),
         model: plan.model.clone(),
@@ -561,6 +575,10 @@ fn provider_request_snapshot_from_dispatch_plan(
         callback_url: plan.callback_url.clone(),
         idempotency_key: plan.idempotency_key.clone(),
     }
+}
+
+fn default_provider_id() -> String {
+    String::new()
 }
 
 fn output_persistence_row_from_drive_plan(
@@ -640,7 +658,9 @@ pub fn finalize_persistence_after_drive_import(
             .iter()
             .any(|method| method == "mark_generation_succeeded")
         {
-            persistence.repository_methods.push("mark_generation_succeeded".to_string());
+            persistence
+                .repository_methods
+                .push("mark_generation_succeeded".to_string());
         }
     }
 }

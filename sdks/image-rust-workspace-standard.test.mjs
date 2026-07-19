@@ -38,8 +38,9 @@ test("image Rust workspace uses standard crates layout and names", () => {
 
   for (const expected of [
     "crates/sdkwork-image-generation-service",
+    "crates/sdkwork-image-generation-provider-spi",
+    "crates/sdkwork-image-generation-provider-adapter",
     "crates/sdkwork-image-generation-workflow-service",
-    "crates/sdkwork-image-claw-router-provider-service",
     "crates/sdkwork-image-generation-repository-sqlx",
     "crates/sdkwork-routes-image-open-api",
     "crates/sdkwork-routes-image-app-api",
@@ -58,6 +59,7 @@ test("image Rust workspace uses standard crates layout and names", () => {
     "sdkwork-image-core-rust",
     "sdkwork-image-service-rust",
     "sdkwork-image-provider-claw-router-rust",
+    "sdkwork-image-claw-router-provider-service",
     "sdkwork-image-storage-sqlx-rust",
     "sdkwork-image-http-rust",
   ]) {

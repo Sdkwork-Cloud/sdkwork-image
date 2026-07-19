@@ -1,0 +1,18 @@
+[package]
+name = "sdkwork-image-generation-provider-spi"
+version.workspace = true
+edition.workspace = true
+description = "SDKWork image generation provider service-provider interface."
+
+[lib]
+name = "sdkwork_image_generation_provider_spi"
+path = "src/lib.rs"
+
+[dependencies]
+async-trait = "0.1"
+serde = { workspace = true, features = ["derive"] }
+serde_json.workspace = true
+thiserror = "2"
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

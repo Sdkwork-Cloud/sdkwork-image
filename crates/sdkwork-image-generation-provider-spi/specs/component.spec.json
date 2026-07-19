@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "kind": "sdkwork.component.spec",
+  "component": {
+    "name": "sdkwork_image_generation_provider_spi",
+    "displayName": "SDKWork Image Generation Provider SPI",
+    "version": "0.1.0",
+    "type": "rust-crate",
+    "root": "sdkwork-image/crates/sdkwork-image-generation-provider-spi",
+    "domain": "content",
+    "capability": "image-generation-provider",
+    "languages": ["rust"],
+    "generated": false,
+    "manifests": ["Cargo.toml"]
+  },
+  "canonicalSpecs": [
+    { "file": "COMPONENT_SPEC.md", "path": "../../../../sdkwork-specs/COMPONENT_SPEC.md", "purpose": "Component contracts." },
+    { "file": "CODE_STYLE_SPEC.md", "path": "../../../../sdkwork-specs/CODE_STYLE_SPEC.md", "purpose": "Authored source boundaries." },
+    { "file": "NAMING_SPEC.md", "path": "../../../../sdkwork-specs/NAMING_SPEC.md", "purpose": "Canonical naming." },
+    { "file": "MODULE_SPEC.md", "path": "../../../../sdkwork-specs/MODULE_SPEC.md", "purpose": "Reusable module boundaries." },
+    { "file": "RUST_CODE_SPEC.md", "path": "../../../../sdkwork-specs/RUST_CODE_SPEC.md", "purpose": "Rust module rules." },
+    { "file": "APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "path": "../../../../sdkwork-specs/APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "purpose": "L3 domain port ownership." },
+    { "file": "COMPOSABLE_ARCHITECTURE_SPEC.md", "path": "../../../../sdkwork-specs/COMPOSABLE_ARCHITECTURE_SPEC.md", "purpose": "Port composition." },
+    { "file": "TEST_SPEC.md", "path": "../../../../sdkwork-specs/TEST_SPEC.md", "purpose": "Contract verification." }
+  ],
+  "contracts": {
+    "layerRole": "backend-domain",
+    "publicExports": ["."],
+    "providedPorts": [{ "name": "imageGenerationProviderPort", "export": "." }],
+    "requiredPorts": [],
+    "runtimeEntrypoints": [],
+    "routeManifest": null,
+    "sdkClients": [],
+    "sdkDependencies": [],
+    "dependencyApiExports": [],
+    "dependencyApiSurfaces": [],
+    "events": [],
+    "configKeys": []
+  },
+  "verification": {
+    "commands": ["cargo test -p sdkwork-image-generation-provider-spi"]
+  }
+}

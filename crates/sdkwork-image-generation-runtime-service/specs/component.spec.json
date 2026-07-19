@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "sdkwork.component.spec",
+  "component": {
+    "name": "sdkwork_image_generation_runtime_service",
+    "displayName": "SDKWork Image Generation Runtime Service",
+    "version": "0.1.0",
+    "type": "rust-crate",
+    "root": "sdkwork-image/crates/sdkwork-image-generation-runtime-service",
+    "domain": "content",
+    "capability": "image-generation-runtime",
+    "languages": ["rust"],
+    "generated": false,
+    "manifests": ["Cargo.toml"]
+  },
+  "canonicalSpecs": [
+    { "file": "COMPONENT_SPEC.md", "path": "../../../../sdkwork-specs/COMPONENT_SPEC.md", "purpose": "Component contracts." },
+    { "file": "CODE_STYLE_SPEC.md", "path": "../../../../sdkwork-specs/CODE_STYLE_SPEC.md", "purpose": "Authored source boundaries." },
+    { "file": "NAMING_SPEC.md", "path": "../../../../sdkwork-specs/NAMING_SPEC.md", "purpose": "Canonical naming." },
+    { "file": "MODULE_SPEC.md", "path": "../../../../sdkwork-specs/MODULE_SPEC.md", "purpose": "Reusable module boundaries." },
+    { "file": "RUST_CODE_SPEC.md", "path": "../../../../sdkwork-specs/RUST_CODE_SPEC.md", "purpose": "Rust module rules." },
+    { "file": "APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "path": "../../../../sdkwork-specs/APPLICATION_LAYERED_ARCHITECTURE_SPEC.md", "purpose": "Runtime service layering." },
+    { "file": "COMPOSABLE_ARCHITECTURE_SPEC.md", "path": "../../../../sdkwork-specs/COMPOSABLE_ARCHITECTURE_SPEC.md", "purpose": "Port composition." },
+    { "file": "DRIVE_SPEC.md", "path": "../../../../sdkwork-specs/DRIVE_SPEC.md", "purpose": "Generated media import." },
+    { "file": "TEST_SPEC.md", "path": "../../../../sdkwork-specs/TEST_SPEC.md", "purpose": "Runtime verification." }
+  ],
+  "contracts": {
+    "layerRole": "backend-service",
+    "publicExports": ["."],
+    "providedPorts": [{ "name": "imageGenerationRuntime", "export": "." }],
+    "requiredPorts": [
+      { "name": "imageGenerationService", "export": "." },
+      { "name": "driveImportRuntime", "export": "." }
+    ],
+    "runtimeEntrypoints": [],
+    "routeManifest": null,
+    "sdkClients": [],
+    "sdkDependencies": [],
+    "dependencyApiExports": [],
+    "dependencyApiSurfaces": [],
+    "events": [],
+    "configKeys": []
+  },
+  "verification": {
+    "commands": ["cargo test -p sdkwork-image-generation-runtime-service"]
+  }
+}

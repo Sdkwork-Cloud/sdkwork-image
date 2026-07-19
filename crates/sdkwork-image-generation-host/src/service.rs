@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use sdkwork_image_claw_router_provider_service::ClawRouterImageProviderGateway;
+use sdkwork_assets_ingestion::DriveImportPlan;
 use sdkwork_image_generation_repository_sqlx::{
     GenerationProjectionRecord, GenerationProjectionRepository, RepositoryError,
 };
@@ -9,13 +9,13 @@ use sdkwork_image_generation_runtime_service::{
     CompletedDriveImportArtifact, ImageDriveImportRuntime, ImageGenerationCreateRuntimeInput,
     ImageGenerationRefreshRuntimeInput,
 };
-use sdkwork_assets_ingestion::DriveImportPlan;
 use sdkwork_image_generation_service::{
     ImageGenerationActor, ImageGenerationCreateCommand, ImageGenerationRuntimeStatus,
+    ImageGenerationService as ProviderGenerationService,
 };
 use sdkwork_image_generation_workflow_service::{
-    finalize_persistence_after_drive_import, plan_generation_create_persistence_plan,
-    plan_generation_refresh_persistence_plan, OutputDriveImportState, ImageGenerationScope,
+    finalize_persistence_after_drive_import, plan_generation_create_persistence_plan_with_dispatch,
+    plan_generation_refresh_persistence_plan, ImageGenerationScope, OutputDriveImportState,
 };
 use sdkwork_utils_rust::uuid;
 
@@ -44,19 +44,19 @@ pub enum ImageGenerationServiceError {
 }
 
 pub struct ImageGenerationService {
-    gateway: ClawRouterImageProviderGateway,
+    provider_service: Arc<ProviderGenerationService>,
     store: Arc<dyn GenerationProjectionRepository>,
     drive_import: Option<Arc<ImageDriveImportRuntime>>,
 }
 
 impl ImageGenerationService {
     pub fn new(
-        gateway: ClawRouterImageProviderGateway,
+        provider_service: Arc<ProviderGenerationService>,
         store: Arc<dyn GenerationProjectionRepository>,
         drive_import: Option<Arc<ImageDriveImportRuntime>>,
     ) -> Self {
         Self {
-            gateway,
+            provider_service,
             store,
             drive_import,
         }
@@ -72,7 +72,7 @@ impl ImageGenerationService {
         let now_epoch_ms = current_epoch_ms();
         let scope = runtime_scope(subject);
         let runtime = execute_create_generation_dispatch(
-            &self.gateway,
+            self.provider_service.as_ref(),
             ImageGenerationCreateRuntimeInput {
                 scope: scope.clone(),
                 generation_id: generation_id.clone(),
@@ -95,10 +95,11 @@ impl ImageGenerationService {
             &mut wire,
         )
         .await?;
-        let mut persistence = plan_generation_create_persistence_plan(
+        let mut persistence = plan_generation_create_persistence_plan_with_dispatch(
             scope.clone(),
             generation_id.clone(),
             domain_command,
+            runtime.dispatch_plan.clone(),
             Some(runtime.provider_result.clone()),
         )
         .map_err(|message| ImageGenerationServiceError::Planning(message.to_string()))?;
@@ -143,7 +144,9 @@ impl ImageGenerationService {
             )));
         }
         let mut updated = wire;
-        updated.status = ImageGenerationRuntimeStatus::CancelRequested.as_str().to_string();
+        updated.status = ImageGenerationRuntimeStatus::CancelRequested
+            .as_str()
+            .to_string();
         if let Some(reason) = reason.filter(|value| !value.trim().is_empty()) {
             updated.metadata = Some(serde_json::json!({ "cancelReason": reason }));
         }
@@ -217,7 +220,7 @@ impl ImageGenerationService {
             })?;
         let scope = runtime_scope(subject);
         let runtime = execute_refresh_generation_dispatch(
-            &self.gateway,
+            self.provider_service.as_ref(),
             ImageGenerationRefreshRuntimeInput {
                 scope: scope.clone(),
                 generation_id: generation_id.to_string(),
@@ -231,8 +234,7 @@ impl ImageGenerationService {
         )
         .await
         .map_err(|error| ImageGenerationServiceError::Dispatch(error.to_string()))?;
-        let mut updated_wire =
-            map_refresh_wire(generation_id, &wire, &runtime.provider_result)?;
+        let mut updated_wire = map_refresh_wire(generation_id, &wire, &runtime.provider_result)?;
         apply_import_plan_to_wire(&mut updated_wire, &runtime.import_plan);
         maybe_execute_drive_imports(
             self.drive_import.as_deref(),
@@ -281,7 +283,9 @@ fn map_repository_error(error: RepositoryError) -> ImageGenerationServiceError {
     }
 }
 
-fn decode_wire(value: serde_json::Value) -> Result<ImageGenerationWire, ImageGenerationServiceError> {
+fn decode_wire(
+    value: serde_json::Value,
+) -> Result<ImageGenerationWire, ImageGenerationServiceError> {
     serde_json::from_value(value)
         .map_err(|error| ImageGenerationServiceError::Persistence(error.to_string()))
 }
@@ -545,15 +549,24 @@ mod tests {
     }
 
     #[test]
-    fn service_accepts_in_memory_repository() {
-        let client =
-            clawrouter_open_sdk::SdkworkAiClient::new(clawrouter_open_sdk::SdkworkConfig::new(
-                "http://127.0.0.1:0",
-            ))
-            .expect("client");
-        let gateway = sdkwork_image_claw_router_provider_service::ClawRouterImageProviderGateway::new(client);
+    fn service_accepts_injected_provider_service_and_in_memory_repository() {
+        let client = clawrouter_open_sdk::SdkworkAiClient::new(
+            clawrouter_open_sdk::SdkworkConfig::new("http://127.0.0.1:0"),
+        )
+        .expect("client");
+        let provider = Arc::new(
+            sdkwork_image_generation_provider_adapter::ImageGenerationProviderAdapter::new(client),
+        );
+        let registry = sdkwork_image_generation_service::ImageGenerationProviderRegistry::builder()
+            .register(provider)
+            .expect("provider")
+            .default_provider(
+                sdkwork_image_generation_provider_adapter::IMAGE_GENERATION_PROVIDER_ADAPTER_ID,
+            )
+            .build()
+            .expect("registry");
         let _service = ImageGenerationService::new(
-            gateway,
+            Arc::new(ProviderGenerationService::new(registry)),
             InMemoryGenerationProjectionRepository::new(),
             None,
         );
