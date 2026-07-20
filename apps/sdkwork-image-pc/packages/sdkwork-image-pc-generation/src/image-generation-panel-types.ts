@@ -1,5 +1,8 @@
 import type { MediaResourceLike } from '@sdkwork/assets-pc-commons';
-import type { SdkworkGenerationSerializedAssetConfig } from './generation-asset-config';
+import type {
+  SdkworkGenerationModelBuckets,
+  SdkworkGenerationSerializedAssetConfig,
+} from './generation-asset-config';
 import type { ImageGenerationModelOption, ImageReferenceMode } from './image-reference-capability';
 
 export interface ImageGenerationReferenceImageInput {
@@ -9,14 +12,8 @@ export interface ImageGenerationReferenceImageInput {
   sizeBytes?: number;
 }
 
-export interface ImageGenerationModelGroup {
+export interface ImageGenerationModelGroup extends SdkworkGenerationModelBuckets<ImageGenerationModelOption> {
   id: string;
-  llms: ImageGenerationModelOption[];
-  images: ImageGenerationModelOption[];
-  videos: ImageGenerationModelOption[];
-  audios: ImageGenerationModelOption[];
-  music: ImageGenerationModelOption[];
-  sfx: ImageGenerationModelOption[];
 }
 
 export interface ImageGenerationSubmitInput {

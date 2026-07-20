@@ -37,8 +37,12 @@ describe("sdkwork-generation-pc-react asset planning", () => {
   it("selects models across reusable generation model buckets", () => {
     const imageModel = createModel({ id: "image-1" });
     const groups: SdkworkGenerationModelBuckets<TestModel>[] = [{
+      audios: [],
       images: [imageModel],
       llms: [],
+      music: [],
+      sfx: [],
+      videos: [],
     }];
 
     expect(findSdkworkGenerationModelById(groups, "image-1")).toBe(imageModel);

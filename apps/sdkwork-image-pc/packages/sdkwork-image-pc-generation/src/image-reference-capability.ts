@@ -1,6 +1,8 @@
+import type { SdkworkGenerationPricedModel } from './generation-asset-config';
+
 export type ImageReferenceMode = 'text_to_image' | 'image_to_image' | 'multi_reference';
 
-export interface ImageGenerationModelOption {
+export interface ImageGenerationModelOption extends SdkworkGenerationPricedModel {
   id: string;
   catalogKey: string;
   model: string;

@@ -22,8 +22,6 @@ pub async fn assemble_api_router(
     let mut router = Router::new();
     router =
         router.merge(sdkwork_routes_image_app_api::gateway_mount(generation_host.clone()).await);
-    router = router.merge(sdkwork_routes_image_backend_api::gateway_mount());
-    router = router.merge(sdkwork_routes_image_open_api::gateway_mount());
     ApiAssembly {
         router,
         background_processor,
