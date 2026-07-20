@@ -14,4 +14,3 @@ sdkwork-image-generation-provider-spi.workspace = true
 sdkwork-assets-bridge-image.workspace = true
 serde = { workspace = true, features = ["derive"] }
 thiserror = "2"
-

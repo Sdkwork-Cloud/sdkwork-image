@@ -2,7 +2,6 @@
 resolver = "2"
 members = [
     "crates/sdkwork-api-image-assembly",
-    "crates/sdkwork-api-image-assembly",
     "crates/sdkwork-image-database-host",
     "crates/sdkwork-image-generation-service",
     "crates/sdkwork-image-generation-mcp-service",
@@ -12,9 +11,7 @@ members = [
     "crates/sdkwork-image-generation-runtime-service",
     "crates/sdkwork-image-generation-host",
     "crates/sdkwork-image-generation-repository-sqlx",
-    "crates/sdkwork-routes-image-open-api",
     "crates/sdkwork-routes-image-app-api",
-    "crates/sdkwork-routes-image-backend-api",
 ]
 
 [workspace.package]
@@ -48,9 +45,7 @@ sdkwork-image-generation-provider-spi = { path = "crates/sdkwork-image-generatio
 sdkwork-image-generation-provider-adapter = { path = "crates/sdkwork-image-generation-provider-adapter" }
 sdkwork-image-generation-workflow-service = { path = "crates/sdkwork-image-generation-workflow-service" }
 sdkwork-image-generation-repository-sqlx = { path = "crates/sdkwork-image-generation-repository-sqlx" }
-sdkwork-routes-image-open-api = { path = "crates/sdkwork-routes-image-open-api" }
 sdkwork-routes-image-app-api = { path = "crates/sdkwork-routes-image-app-api" }
-sdkwork-routes-image-backend-api = { path = "crates/sdkwork-routes-image-backend-api" }
 sdkwork-image-generation-runtime-service = { path = "crates/sdkwork-image-generation-runtime-service" }
 sdkwork-image-generation-host = { path = "crates/sdkwork-image-generation-host" }
 sdkwork-assets-bridge-image = { path = "../sdkwork-assets/crates/sdkwork-assets-bridge-image" }
