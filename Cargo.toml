@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "crates/sdkwork-api-image-assembly",
     "crates/sdkwork-image-gateway-assembly",
     "crates/sdkwork-image-database-host",
     "crates/sdkwork-image-generation-service",
