@@ -11,6 +11,7 @@ path = "src/lib.rs"
 [dependencies]
 axum.workspace = true
 tokio.workspace = true
+sdkwork-image-generation-host.workspace = true
 sdkwork-routes-image-app-api.workspace = true
 sdkwork-routes-image-backend-api.workspace = true
 sdkwork-routes-image-open-api.workspace = true

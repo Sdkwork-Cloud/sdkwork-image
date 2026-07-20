@@ -59,7 +59,7 @@ The Rust image generation stack is split by ownership boundary:
 - `crates/sdkwork-image-generation-repository-sqlx` owns SQL migrations, repository SQL contracts, and `SqlxGenerationProjectionRepository` for create/list/get/refresh persistence.
 - `crates/sdkwork-routes-image-app-api` owns user-facing `/app/v3/api/image/*` HTTP handlers (generations, presets, assets, galleries, edit_tasks) with SdkWorkApiResponse envelopes, IAM runtime subject projection, and dual-token route manifest registration.
 - `crates/sdkwork-routes-image-open-api` / `crates/sdkwork-routes-image-backend-api` owns the remaining image API route catalogs that materialize OpenAPI and SDK families, including backend provider webhook receive routes.
-- `crates/sdkwork-image-gateway-assembly` merges app-api, backend-api, and open-api routers; production bootstrap uses `assemble_application_router_from_env()` (provider SDK adapter + IMAGE database + optional DRIVE database/object store via `ImageGenerationHost::from_runtime_env()`).
+- `crates/sdkwork-api-image-assembly` merges app-api, backend-api, and open-api routers; production bootstrap uses `assemble_api_router_from_env()` (provider SDK adapter + IMAGE database + optional DRIVE database/object store via `ImageGenerationHost::from_runtime_env()`).
 
 ### Drive import runtime environment
 

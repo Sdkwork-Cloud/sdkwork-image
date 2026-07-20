@@ -17,12 +17,12 @@ Gateway assembly injects `Arc<ImageGenerationHost>` and optionally starts the ba
 
 ```rust
 // Production: ClawRouter + IMAGE database + optional DRIVE import + background processor
-let assembly = assemble_application_router_from_env().await?;
+let assembly = assemble_api_router_from_env().await?;
 // assembly.background_processor holds the tokio task when IMAGE_BACKGROUND_PROCESSOR_ENABLED (default true)
 
 // Tests / custom wiring
 let host = ImageGenerationHost::for_test(gateway);
-let assembly = assemble_application_router(host).await;
+let assembly = assemble_api_router(host).await;
 ```
 
 Handlers are mounted through `gateway_mount(host).await`, which wraps the router with IAM/web-framework layers from environment.
